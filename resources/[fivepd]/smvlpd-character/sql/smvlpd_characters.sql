@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS smvlpd_characters (
+    id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    license VARCHAR(80) NOT NULL,
+    slot TINYINT UNSIGNED NOT NULL DEFAULT 1,
+    first_name VARCHAR(32) NOT NULL,
+    last_name VARCHAR(32) NOT NULL,
+    gender ENUM('male','female') NOT NULL,
+    appearance LONGTEXT NOT NULL,
+    last_position JSON NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_smvlpd_character_slot (license, slot)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,0 +1,14 @@
+{
+  "Deathkidnapping":{
+    "IgnoreDistance":false,
+    "MinTimeout":0,
+    "Probability":2,
+    "Departments":null
+  },
+  "NormalKidnapping":{
+    "IgnoreDistance":false,
+    "MinTimeout":0,
+    "Probability":2,
+    "Departments":null
+  }
+}

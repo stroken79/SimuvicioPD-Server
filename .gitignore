@@ -1,0 +1,14 @@
+# Configuración privada del servidor
+server.cfg
+
+# Archivos temporales / caché
+cache/
+.replxx_history
+
+# Entornos de desarrollo
+.vs/
+.vscode/
+
+# Sistema
+Thumbs.db
+.DS_Store

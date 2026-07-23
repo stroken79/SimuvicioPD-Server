@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="style.css"><title>SMVLPD Characters</title></head>
+<body><main id="panel" class="hidden">
+  <section id="selection"><h1>SMVLPD</h1><p>Selecciona tu agente.</p><div id="characters"></div><button id="newCharacter">Crear personaje</button></section>
+  <section id="creator" class="hidden"><h1>Crear agente</h1><label>Nombre<input id="firstName" maxlength="32" autocomplete="off"></label><label>Apellido<input id="lastName" maxlength="32" autocomplete="off"></label>
+  <div class="gender"><button data-gender="male" class="selected">Hombre</button><button data-gender="female">Mujer</button></div>
+  <div class="editor">
+  <h2>Aspecto</h2>
+
+<div class="row">
+    <span>Cara</span>
+    <button id="facePrev">◀</button>
+    <b id="face">0</b>
+    <button id="faceNext">▶</button>
+</div>
+
+<div class="row">
+    <span>Pelo</span>
+    <button id="hairPrev">◀</button>
+    <b id="hair">0</b>
+    <button id="hairNext">▶</button>
+</div>
+
+<div class="row">
+    <span>Color pelo</span>
+    <button id="hairColorPrev">◀</button>
+    <b id="hairColor">0</b>
+    <button id="hairColorNext">▶</button>
+</div>
+
+<div class="row">
+    <span>Barba</span>
+    <button id="beardPrev">◀</button>
+    <b id="beard">0</b>
+    <button id="beardNext">▶</button>
+</div>
+
+<div class="row">
+    <span>Gafas</span>
+    <button id="glassesPrev">◀</button>
+    <b id="glasses">Ninguna</b>
+    <button id="glassesNext">▶</button>
+</div>
+  <p id="error"></p><button id="confirm">Confirmar personaje</button></section>
+</main><script src="app.js"></script></body></html>
