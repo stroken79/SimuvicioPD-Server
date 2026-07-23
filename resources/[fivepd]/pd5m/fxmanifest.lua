@@ -59,6 +59,7 @@ server_scripts {
 client_scripts {
   "Common/def_cl.lua",
   "Config/config_cl.lua",
+  "Uniforms/pd5m_uniforms_cl.lua",
 
 }
 

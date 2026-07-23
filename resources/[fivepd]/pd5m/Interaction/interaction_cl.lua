@@ -62,6 +62,46 @@ CreateThread(function()
 				if not IsPedInAnyVehicle(playerped, true) then
 					local lookingvector = GetPlayerLookingVector(playerped, 30)
 					local flag_hasTarget, targetcoords, SelectTarget = GetPedInDirection(camcoords, lookingvector)
+
+					-- Fallback de selección: si el raycast de cámara no encuentra un peatón,
+					-- busca el NPC válido más cercano en un radio corto y delante del jugador.
+					-- Esto hace más fiable la interacción con NPCs de callouts sin alterar
+					-- la prioridad del sistema original de PD5M.
+					if not (flag_hasTarget and GetEntityType(SelectTarget) == 1 and GetPedType(SelectTarget) ~= 28 and not IsPedAPlayer(SelectTarget)) then
+						local closestPed = nil
+						local closestDistance = 4.0
+						local playerForward = GetEntityForwardVector(playerped)
+						local handle, ped = FindFirstPed()
+						local success = true
+
+						repeat
+							if DoesEntityExist(ped) and ped ~= playerped and not IsPedAPlayer(ped)
+								and GetPedType(ped) ~= 28 and not IsEntityDead(ped) then
+								local pedCoords = GetEntityCoords(ped)
+								local dx = pedCoords.x - playerpedcoords.x
+								local dy = pedCoords.y - playerpedcoords.y
+								local dz = pedCoords.z - playerpedcoords.z
+								local distance = math.sqrt(dx * dx + dy * dy + dz * dz)
+
+								if distance > 0.001 and distance <= closestDistance then
+									local dot = (dx / distance) * playerForward.x + (dy / distance) * playerForward.y
+									if dot > 0.35 and HasEntityClearLosToEntity(playerped, ped, 17) then
+										closestPed = ped
+										closestDistance = distance
+									end
+								end
+							end
+							success, ped = FindNextPed(handle)
+						until not success
+						EndFindPed(handle)
+
+						if closestPed then
+							SelectTarget = closestPed
+							targetcoords = GetEntityCoords(closestPed)
+							flag_hasTarget = true
+						end
+					end
+
 					if flag_hasTarget and GetEntityType(SelectTarget) == 1 and GetPedType(SelectTarget) ~=28 and not IsPedAPlayer(SelectTarget) then
 						local distanceToTarget = GetDistanceBetweenCoords(playerpedcoords, targetcoords)
 						if distanceToTarget <= 10 then
@@ -3383,25 +3423,19 @@ CreateThread(function()
 	local ActionsList = {'vehicle seizure', 'object confiscation', 'arrest', 'fine'} -- vehicle seizure = 131072, object confiscation = 262144, arrest = 524288, fine = 1048576
 	local CurrentActionsIndex = 1
 	local SelectedActionsIndex = 1
-
+	
 	WarMenu.CreateMenu('pd5m:int:talkmenu', 'Talk')
-	WarMenu.CreateSubMenu(
-    'fivepd:barfight:questions',
-    'pd5m:int:talkmenu',
-    'Preguntas sobre la pelea'
-)
+
+	
 	--WarMenu.CreateMenu('pd5m:int:missionmenu', 'Talk')
 	--WarMenu.CreateMenu('pd5m:int:arrestedmenu', 'Verhör')
 	
 
 	while true do
     if WarMenu.IsMenuOpened('pd5m:int:talkmenu') then
-	if WarMenu.MenuButton(
-    'Preguntas sobre la pelea',
-    'fivepd:barfight:questions'
-) then
+	
 
-elseif WarMenu.Button('Saludar') then
+    if WarMenu.Button('Saludar') then
     TriggerServerEvent('pd5m:syncsv:RemovePedFlagEntry', MenuTargetNetID, 'Talking')
     TriggerServerEvent('pd5m:syncsv:ShowCommunication', MenuPlayerPedNetID, MenuTargetNetID, "Buenos días, soy el agente " .. GetPlayerName(PlayerId()) .. ".", 2000)
     Wait(2000)
@@ -3509,23 +3543,7 @@ end
 
 WarMenu.Display()
 
-elseif WarMenu.IsMenuOpened('fivepd:barfight:questions') then
 
-    if WarMenu.Button('¿Qué ha ocurrido aquí?') then
-        TriggerEvent('fivepd-police:barfight:question', MenuTargetNetID, 'what_happened')
-
-    elseif WarMenu.Button('¿Quién empezó la pelea?') then
-        TriggerEvent('fivepd-police:barfight:question', MenuTargetNetID, 'who_started')
-
-    elseif WarMenu.Button('¿Cuál fue el motivo?') then
-        TriggerEvent('fivepd-police:barfight:question', MenuTargetNetID, 'motive')
-
-    elseif WarMenu.Button('¿Ha consumido alcohol?') then
-        TriggerEvent('fivepd-police:barfight:question', MenuTargetNetID, 'alcohol')
-
-    elseif WarMenu.Button('¿Había algún arma?') then
-        TriggerEvent('fivepd-police:barfight:question', MenuTargetNetID, 'weapons')
-    end
 
     WarMenu.Display()
 

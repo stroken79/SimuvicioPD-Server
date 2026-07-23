@@ -10,6 +10,11 @@ local optionCount = 0
 local currentKey = nil
 local currentMenu = nil
 
+-- Evita procesar la misma pulsación de navegación más de una vez en el mismo frame.
+-- Esto corrige saltos de dos opciones cuando WarMenu.Display() se ejecuta desde
+-- más de un hilo durante el mismo tick.
+local lastNavigationFrame = -1
+
 local titleHeight = 0.11
 local titleYOffset = 0.03
 local titleScale = 1.0
@@ -391,7 +396,10 @@ function WarMenu.Display()
 
 			currentKey = nil
 
-			if IsControlJustReleased(1, keys.down) then
+			local navigationFrame = GetFrameCount()
+
+			if IsControlJustReleased(1, keys.down) and lastNavigationFrame ~= navigationFrame then
+				lastNavigationFrame = navigationFrame
 				PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
 
 				if menus[currentMenu].currentOption < optionCount then
@@ -399,7 +407,8 @@ function WarMenu.Display()
 				else
 					menus[currentMenu].currentOption = 1
 				end
-			elseif IsControlJustReleased(1, keys.up) then
+			elseif IsControlJustReleased(1, keys.up) and lastNavigationFrame ~= navigationFrame then
+				lastNavigationFrame = navigationFrame
 				PlaySoundFrontend(-1, "NAV_UP_DOWN", "HUD_FRONTEND_DEFAULT_SOUNDSET", true)
 
 				if menus[currentMenu].currentOption > 1 then
