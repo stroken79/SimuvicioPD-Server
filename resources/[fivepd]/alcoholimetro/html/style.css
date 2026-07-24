@@ -1,0 +1,269 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: transparent;
+    font-family: Arial, Helvetica, sans-serif;
+    user-select: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.device-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+}
+
+.lcd-screen {
+    position: absolute;
+    left: 28.90625%;
+    top: 15.8203125%;
+    width: 23.6328125%;
+    height: 20.1171875%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ececec;
+    container-type: size;
+}
+
+.lcd-header {
+    flex: 0 0 18%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0 6%;
+    background: #1f5fae;
+    color: #fff;
+}
+
+.lcd-clock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.05;
+    font-size: 9cqw;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+}
+
+.lcd-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4% 6%;
+    text-align: center;
+    color: #111;
+    position: relative;
+}
+
+.lcd-mode {
+    position: absolute;
+    top: 8%;
+    left: 0;
+    right: 0;
+    font-size: 10cqw;
+    font-weight: 400;
+}
+
+.lcd-main {
+    font-size: 24cqw;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+}
+
+.lcd-sub {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+    font-size: 9cqw;
+    font-weight: 400;
+}
+
+.lcd-footer {
+    flex: 0 0 16%;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #1f5fae;
+    color: #fff;
+    font-size: 10cqw;
+    font-weight: 400;
+}
+
+.lcd-footer:empty {
+    display: none;
+}
+
+.lcd-screen.state-ready .lcd-mode,
+.lcd-screen.state-ready .lcd-sub {
+    visibility: hidden;
+}
+
+.lcd-screen.state-fail .lcd-main {
+    color: #b00020;
+}
+
+.device-btn {
+    position: absolute;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+    border-radius: 50%;
+}
+
+.device-btn:focus-visible {
+    outline: 2px solid rgba(255, 255, 255, 0.45);
+    outline-offset: 2px;
+}
+
+#breathalyzer {
+    position: fixed;
+    right: 1.25vw;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 50;
+    transform: translateY(35%);
+    transform-origin: bottom right;
+}
+
+#breathalyzer:not(.hidden) {
+    pointer-events: auto;
+}
+
+#breathalyzer .device {
+    position: relative;
+    width: min(33vw, 440px);
+    aspect-ratio: 1024 / 1536;
+}
+
+.btn-left {
+    left: 28%;
+    top: 40%;
+    width: 7%;
+    aspect-ratio: 1;
+}
+
+.btn-ok {
+    left: calc(50% - 13.5%);
+    top: 43%;
+    width: 10%;
+    aspect-ratio: 1;
+}
+
+#testee-overlay {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 40;
+    transform: rotate(-22deg) translate(27%, 44%);
+    transform-origin: bottom right;
+}
+
+#testee-overlay:not(.hidden) {
+    pointer-events: auto;
+}
+
+.testee-device {
+    position: relative;
+    width: min(41vw, 475px);
+    aspect-ratio: 1024 / 1536;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45));
+}
+
+.testee-input-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6%;
+    padding: 8%;
+    background: rgba(236, 236, 236, 0.97);
+    z-index: 2;
+}
+
+.testee-input-label {
+    font-size: 9cqw;
+    font-weight: 600;
+    color: #111;
+}
+
+.testee-input-hint {
+    font-size: 7cqw;
+    color: #444;
+}
+
+.testee-input-buttons {
+    display: flex;
+    gap: 8%;
+    width: 100%;
+    justify-content: center;
+}
+
+.testee-btn {
+    border: none;
+    border-radius: 3px;
+    padding: 8% 10%;
+    font-size: 9cqw;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+}
+
+.testee-btn-pass {
+    background: #2e7d32;
+}
+
+.testee-btn-fail {
+    background: #b00020;
+}
+
+.testee-btn-submit {
+    background: #1f5fae;
+    width: 55%;
+}
+
+.testee-bac-input {
+    width: 75%;
+    text-align: center;
+    font-size: 14cqw;
+    font-weight: 700;
+    border: 2px solid #1f5fae;
+    border-radius: 3px;
+    padding: 4% 2%;
+    color: #111;
+    background: #fff;
+}
+
+.testee-bac-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(31, 95, 174, 0.35);
+}
+
+#testee-lcd-body.show-input .lcd-mode,
+#testee-lcd-body.show-input .lcd-main,
+#testee-lcd-body.show-input .lcd-sub {
+    visibility: hidden;
+}

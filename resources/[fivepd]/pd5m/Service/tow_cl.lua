@@ -37,7 +37,7 @@ AddEventHandler('pd5m:tow:calltowtruck', function()
 					flagtowing = CheckVehFlag(TargetVehNetID, 'Towing')
 
 					if flagtowing then
-						Notify('Towtruck aborted')
+						Notify('Grua cancelada.')
 						GlobalFlagTowCar = false
 						TriggerServerEvent('pd5m:towsv:aborttowtruck', TargetVehNetID)
 						TriggerServerEvent('pd5m:syncsv:RemoveVehFlagEntry', TargetVehNetID, 'Towing')
@@ -65,17 +65,17 @@ AddEventHandler('pd5m:tow:calltowtruck', function()
 							TriggerServerEvent('pd5m:syncsv:AddVehFlagEntry', TargetVehNetID, 'Towing')
 							TriggerEvent('pd5m:tow:inittowtruck', TargetVehNetID)
 						else
-							Notify('You cannot have this car towed.')
+							Notify('No puedes solicitar grua para este vehiculo.')
 						end
 					end
 				else
-					Notify('Car is not empty.')
+					Notify('El vehiculo no esta vacio.')
 				end
 			else
-				Notify('Too far away.')
+				Notify('Demasiado lejos.')
 			end
 		else
-			Notify('No car found.')
+			Notify('No se ha encontrado ningun vehiculo.')
 		end
 	end
 end)
@@ -170,7 +170,7 @@ AddEventHandler('pd5m:tow:inittowtruck', function(TargetVehNetID)
 	end]]
 
 	if #availableTrucks == 0 then
-		Notify('This vehicle cannot be towed.')
+		Notify('Este vehiculo no puede ser remolcado.')
 		TriggerServerEvent('pd5m:syncsv:RemoveVehFlagEntry', TargetVehNetID, 'Towing')
 	else
 		local traveldistance = CalculateTravelDistanceBetweenPoints(stationvec.x, stationvec.y, stationvec.z, tarx, tary, tarz)
@@ -178,10 +178,10 @@ AddEventHandler('pd5m:tow:inittowtruck', function(TargetVehNetID)
 
 		BeginTextCommandThefeedPost("TWOSTRINGS")
 
-		AddTextComponentSubstringPlayerName("A towtruck has been dispatched from ~o~" .. list_handles[station.handle][1].handles[station.handle].stationname .. "~s~.")
-		AddTextComponentSubstringPlayerName("It will arrive in approximately ~o~" .. traveltime .. "~s~ minutes.")
+		AddTextComponentSubstringPlayerName("Se ha enviado una grua desde ~o~" .. list_handles[station.handle][1].handles[station.handle].stationname .. "~s~.")
+		AddTextComponentSubstringPlayerName("Llegara en aproximadamente ~o~" .. traveltime .. "~s~ minutos.")
 
-		EndTextCommandThefeedPostMessagetext("CHAR_PROPERTY_TOWING_IMPOUND", "CHAR_PROPERTY_TOWING_IMPOUND", false, 4, 'Department of', 'Public Order and Safety')
+		EndTextCommandThefeedPostMessagetext("CHAR_PROPERTY_TOWING_IMPOUND", "CHAR_PROPERTY_TOWING_IMPOUND", false, 4, 'Departamento de', 'Orden Publico y Seguridad')
 		EndTextCommandThefeedPostTicker(false, false)
 
 		towtruckid = availableTrucks[math.random(#availableTrucks)]

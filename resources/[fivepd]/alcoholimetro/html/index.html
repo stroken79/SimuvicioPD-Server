@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alcotest 7510</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="breathalyzer" class="hidden" aria-hidden="true">
+        <div class="device">
+            <img id="device-image" class="device-image" src="breathalyzer_pas.png" alt="Alcotest 7510">
+
+            <div class="lcd-screen" id="lcd-screen">
+                <div class="lcd-header">
+                    <div class="lcd-clock">
+                        <span id="lcd-time">00:00:00</span>
+                        <span id="lcd-date">01.01.2026</span>
+                    </div>
+                </div>
+                <div class="lcd-body">
+                    <div id="lcd-mode" class="lcd-mode">Passive</div>
+                    <div id="lcd-main" class="lcd-main">READY</div>
+                    <div id="lcd-sub" class="lcd-sub"></div>
+                </div>
+                <div id="lcd-footer" class="lcd-footer"></div>
+            </div>
+
+            <button type="button" class="device-btn btn-left" id="btn-left" aria-label="Down"></button>
+            <button type="button" class="device-btn btn-ok" id="btn-ok" aria-label="OK"></button>
+        </div>
+    </div>
+
+    <div id="testee-overlay" class="hidden" aria-hidden="true">
+        <div class="testee-device">
+            <img id="testee-device-image" class="device-image" src="breathalyzer_pas.png" alt="Alcotest 7510">
+
+            <div class="lcd-screen" id="testee-lcd-screen">
+                <div class="lcd-header">
+                    <div class="lcd-clock">
+                        <span id="testee-lcd-time">00:00:00</span>
+                        <span id="testee-lcd-date">01.01.2026</span>
+                    </div>
+                </div>
+                <div class="lcd-body" id="testee-lcd-body">
+                    <div id="testee-lcd-mode" class="lcd-mode">Passive</div>
+                    <div id="testee-lcd-main" class="lcd-main">Wait</div>
+                    <div id="testee-lcd-sub" class="lcd-sub">Analyzing</div>
+
+                    <div id="testee-passive-input" class="testee-input-panel hidden">
+                        <p class="testee-input-label">Enter result</p>
+                        <div class="testee-input-buttons">
+                            <button type="button" class="testee-btn testee-btn-pass" id="input-pass">PASS</button>
+                            <button type="button" class="testee-btn testee-btn-fail" id="input-fail">FAIL</button>
+                        </div>
+                    </div>
+
+                    <div id="testee-evidential-input" class="testee-input-panel hidden">
+                        <p class="testee-input-label" id="testee-input-unit-label">Reading (mcg)</p>
+                        <input type="number" id="input-bac" class="testee-bac-input" step="0.001" min="0" max="9.999" placeholder="0.000">
+                        <p class="testee-input-hint" id="testee-limit-hint">Limit: 0.250 mcg</p>
+                        <button type="button" class="testee-btn testee-btn-submit" id="input-submit">OK</button>
+                    </div>
+                </div>
+                <div id="testee-lcd-footer" class="lcd-footer"></div>
+            </div>
+        </div>
+    </div>
+
+    <audio id="beep" src="audio/beep.wav" preload="auto"></audio>
+    <audio id="testing" src="audio/testing.wav" preload="auto"></audio>
+
+    <script src="app.js"></script>
+</body>
+</html>

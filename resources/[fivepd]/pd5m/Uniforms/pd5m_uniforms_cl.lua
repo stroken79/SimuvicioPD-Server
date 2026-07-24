@@ -38,7 +38,29 @@ local uniforms = {
         -- Base / Global
         SetPedComponentVariation(ped, 3, 11, 0, 0) -- brazos
         SetPedComponentVariation(ped, 6, 25, 0, 0) -- zapatos negros
-        SetPedComponentVariation(ped, 10, 0, 0, 0) -- galones/insignias
+        SetPedComponentVariation(ped, 10, 0, 0, 0) -- galones/insignias P2
+    end,
+
+    -- ==========================================
+    -- P3 - OFICIAL
+    -- Igual que P2, cambiando solo los galones
+    -- ==========================================
+    p3 = function(ped)
+        -- EmergencyEUP
+        SetPedCollectionComponentVariation(ped, 11, "mp_m_emergency", 30, 1, 0) -- camisa manga corta
+        SetPedCollectionComponentVariation(ped, 8,  "mp_m_emergency", 58, 0, 0) -- cinturon + Taser
+        SetPedCollectionComponentVariation(ped, 7,  "mp_m_emergency", 14, 0, 0) -- pistola en cinturon
+        SetPedCollectionComponentVariation(ped, 5,  "mp_m_emergency", 3,  9, 0) -- placa + radio
+
+        -- LSPD_EUP
+        SetPedCollectionComponentVariation(ped, 4, "mp_m_lspd", 0, 2, 0) -- pantalon
+
+        -- Base / Global
+        SetPedComponentVariation(ped, 3, 11, 0, 0) -- brazos
+        SetPedComponentVariation(ped, 6, 25, 0, 0) -- zapatos negros
+
+        -- Galones P3 - EmergencyEUP
+        SetPedCollectionComponentVariation(ped, 10, "mp_m_emergency", 6, 0, 0)
     end
 }
 
@@ -48,7 +70,7 @@ RegisterCommand("uniforme", function(_, args)
 
     if not fn then
         TriggerEvent("chat:addMessage", {
-            args = {"PD5M", "Uso: /uniforme novato | /uniforme p2"}
+            args = {"PD5M", "Uso: /uniforme novato | /uniforme p2 | /uniforme p3"}
         })
         return
     end

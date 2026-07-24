@@ -173,7 +173,7 @@ function WarMenu.CreateMenu(id, title)
 	-- Default settings
 	menus[id] = { }
 	menus[id].title = title
-	menus[id].subTitle = 'INTERACTION MENU'
+	menus[id].subTitle = 'MENU DE INTERACCION'
 
 	menus[id].visible = false
 

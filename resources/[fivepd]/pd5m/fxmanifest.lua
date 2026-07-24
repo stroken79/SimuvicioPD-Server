@@ -361,16 +361,16 @@ end
 -- Loading marker system
 server_scripts {
   "Duty/ranks_sv.lua",
-  "HUD/tp_sv.lua",
+  "Common/HUD/tp_sv.lua",
   "Startup/startup_sv.lua",
 }
 
 client_scripts {
   "Duty/ranks_cl.lua",
-  "HUD/blips_cl.lua",
-	"HUD/crosshair_cl.lua",
-	"HUD/markers_cl.lua",
-  "HUD/tp_cl.lua",
+  "Common/HUD/blips_cl.lua",
+	"Common/HUD/crosshair_cl.lua",
+	"Common/HUD/markers_cl.lua",
+  "Common/HUD/tp_cl.lua",
   "Startup/startup_cl.lua",
 }
 
@@ -408,7 +408,7 @@ if ConvarEnableMainScript == true and ConvarEnableMissionScript == true then
   }
 
   client_scripts {
-    "HUD/MissionTemp_cl.lua",
+    "Common/HUD/MissionTemp_cl.lua",
     "Callouts/MissionData/AmbientEvents/**/*.lua",
   	"Callouts/MissionData/MissionLoader_gl.lua",
   	"Callouts/MissionHandler_cl.lua",
