@@ -115,9 +115,23 @@ RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
 end)
 
 lib.callback.register('smvlpd-ranks:server:getRank', function(source)
+
     local rankId = playerRanks[source] or 1
+
     local rank = getRank(rankId)
-    return { id = rankId, label = rank.label, uniform = Config.Uniforms[rankId] }
+
+    return {
+
+        id = rankId,
+
+        label = rank.label,
+
+        uniform = Config.Uniforms[rankId],
+
+        image = rank.image
+
+    }
+
 end)
 
 

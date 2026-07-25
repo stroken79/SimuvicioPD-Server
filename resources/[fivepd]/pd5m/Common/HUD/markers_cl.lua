@@ -1805,26 +1805,36 @@ if ActivateWeaponMarkers then
 					index= {},
 					data= {},
 				}
+				local rank = exports['smvlpd-ranks']:GetPlayerPoliceRank()
 
-				for i, weapon in ipairs(ListWarMenuArmory[2].data) do
+for i, weapon in ipairs(ListWarMenuArmory[2].data) do
+	
 
-					if weapon.attachments.HasAttachments then
-						if WarMenu.MenuButton(weapon.name, 'AttachmentsW') then
-							SelectedWeapon = weapon
-							for i, Component in ipairs(SelectedWeapon.attachments.Components) do
-								table.insert(AttachmentBoolList, false)
-							end
-							GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
-						end
-					elseif weapon.armor.IsArmor then
+    print(("RANGO: %s | HANDLE: %s"):format(rank.id, tostring(weapon.handle)))
 
-					else
-						if WarMenu.Button(weapon.name) then
-							GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
-						end
-					end
+if exports['smvlpd-ranks']:HasWeaponAccess(rank.id, weapon.handle) then
+    print("PERMITIDA")
 
-				end
+        if weapon.attachments.HasAttachments then
+            if WarMenu.MenuButton(weapon.name, 'AttachmentsW') then
+                SelectedWeapon = weapon
+                for i, Component in ipairs(SelectedWeapon.attachments.Components) do
+                    table.insert(AttachmentBoolList, false)
+                end
+                GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
+            end
+
+        elseif weapon.armor.IsArmor then
+
+        else
+            if WarMenu.Button(weapon.name) then
+                GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
+            end
+        end
+
+    end
+
+end
 				if WarMenu.MenuButton('Volver al menú principal', 'Armería') then
 				end
 
@@ -1868,27 +1878,40 @@ if ActivateWeaponMarkers then
 				table.insert(VestList.data, ArmoryUnderarmorVestDefinition)
 				table.insert(VestList.names, ArmoryUnderarmorVestDefinition.name)
 
-				for i, weapon in ipairs(ListWarMenuArmory[1].data) do
+				local rank = exports['smvlpd-ranks']:GetPlayerPoliceRank()
 
-					if weapon.attachments.HasAttachments then
-						if WarMenu.MenuButton(weapon.name, 'AttachmentsE') then
-							SelectedWeapon = weapon
-							for i, Component in ipairs(SelectedWeapon.attachments.Components) do
-								table.insert(AttachmentBoolList, false)
-							end
-							GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
-						end
-					elseif weapon.armor.IsArmor then
-						if ArmorAllowed then
-							table.insert(VestList.data, weapon)
-							table.insert(VestList.names, weapon.name)
-						end
-					else
-						if WarMenu.Button(weapon.name) then
-							GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
-						end
-					end
-				end
+for i, weapon in ipairs(ListWarMenuArmory[1].data) do
+
+    if exports['smvlpd-ranks']:HasWeaponAccess(rank.id, weapon.handle) then
+
+        if weapon.attachments.HasAttachments then
+
+            if WarMenu.MenuButton(weapon.name, 'AttachmentsE') then
+                SelectedWeapon = weapon
+                for i, Component in ipairs(SelectedWeapon.attachments.Components) do
+                    table.insert(AttachmentBoolList, false)
+                end
+                GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
+            end
+
+        elseif weapon.armor.IsArmor then
+
+            if ArmorAllowed then
+                table.insert(VestList.data, weapon)
+                table.insert(VestList.names, weapon.name)
+            end
+
+        else
+
+            if WarMenu.Button(weapon.name) then
+                GiveWeaponToPed(playerped, GetHashKey(weapon.handle), weapon.ammo, false, true)
+            end
+
+        end
+
+    end
+
+end
 				if #VestList.data > 0 then
 					if WarMenu.ComboBox('Vests', VestList.names, VestCurrentIndex, VestSelectedIndex, function(currentIndex, selectedIndex)
 							VestCurrentIndex = currentIndex

@@ -1,3 +1,20 @@
+local currentRank = {
+    id = 1,
+    label = "Novato"
+}
+
+local function updateHud(rank)
+
+    currentRank = rank
+
+    SendNUIMessage({
+        action = "update",
+        player = GetPlayerName(PlayerId()),
+        rank = rank.label,
+        image = rank.image
+    })
+
+end
 local function notify(description, notifyType)
     lib.notify({ description = description, type = notifyType or 'inform' })
 end
@@ -39,7 +56,15 @@ RegisterNetEvent('smvlpd-ranks:client:receiveWeapon', function(weapon)
 end)
 
 RegisterNetEvent('smvlpd-ranks:client:rankUpdated', function(rankId, rankLabel)
+
+    local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+
+    if rank then
+        updateHud(rank)
+    end
+
     notify(('Rango actual: %s'):format(rankLabel), 'success')
+
 end)
 
 RegisterNetEvent('smvlpd-ranks:client:showRank', function()
@@ -83,7 +108,21 @@ RegisterNetEvent('smvlpd-ranks:client:confirmRank', function(data)
 end)
 
 RegisterNetEvent('smvlpd-character:client:characterLoaded', function(character)
+
     TriggerServerEvent('smvlpd-ranks:server:characterLoaded', character.id)
+
+    CreateThread(function()
+
+        Wait(1000)
+
+        local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+
+        if rank then
+            updateHud(rank)
+        end
+
+    end)
+
 end)
 
 RegisterCommand('armeria', openArmory, false)
@@ -120,3 +159,10 @@ RegisterCommand('puntos', function()
     end
     notify(text, 'inform')
 end, false)
+function GetPlayerPoliceRank()
+    return currentRank
+end
+
+exports('GetPlayerPoliceRank', GetPlayerPoliceRank)
+exports('HasWeaponAccess', ExportHasWeaponAccess)
+exports('HasVehicleAccess', ExportHasVehicleAccess)

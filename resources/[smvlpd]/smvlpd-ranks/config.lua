@@ -57,74 +57,143 @@ Config.PointRewards = {
 }
 
 Config.Ranks = {
-    [1] = { label = 'Novato', weapons = {
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-    } },
-    [2] = { label = 'Oficial P2', weapons = {
-        { name = 'WEAPON_PISTOL', ammo = 72 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-    } },
-    [3] = { label = 'Oficial P3', weapons = {
-        { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-    } },
-    [4] = { label = 'Oficial P3+1 / Senior', weapons = {
-        { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-    } },
-    [5] = { label = 'Sargento I', weapons = {
-        { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-    } },
-    [6] = { label = 'Sargento II', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-    } },
-    [7] = { label = 'Teniente I', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-    } },
-    [8] = { label = 'Teniente II', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-        { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
-    } },
-    [9] = { label = 'Capitan I', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-        { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
-    } },
-    [10] = { label = 'Capitan II', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-        { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
-    } },
-    [11] = { label = 'Capitan III', weapons = {
-        { name = 'WEAPON_PISTOL50', ammo = 54 },
-        { name = 'WEAPON_STUNGUN', ammo = 5 },
-        { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
-        { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
-        { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
-        { name = 'WEAPON_MARKSMANRIFLE', ammo = 30 },
-    } },
-    [12] = { label = 'Commander / Comandante', administrative = true },
-    [13] = { label = 'Assistant Chief / Jefe asistente', administrative = true },
-    [14] = { label = 'Chief of Police / Jefe de Policia', administrative = true },
+    [1] = {
+        label = 'Novato',
+        image = nil,
+        weapons = {
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+        }
+    },
+
+    [2] = {
+        label = 'Oficial P2',
+        image = nil,
+        weapons = {
+            { name = 'WEAPON_PISTOL', ammo = 72 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+        }
+    },
+
+    [3] = {
+        label = 'Oficial P3',
+        image = 'p3.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+        }
+    },
+
+    [4] = {
+        label = 'Oficial P3+1 / Senior',
+        image = 'senior.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+        }
+    },
+
+    [5] = {
+        label = 'Sargento I',
+        image = 'sargento1.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+        }
+    },
+
+    [6] = {
+        label = 'Sargento II',
+        image = 'sargento2.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+        }
+    },
+
+    [7] = {
+        label = 'Teniente I',
+        image = 'teniente.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+        }
+    },
+
+    [8] = {
+        label = 'Teniente II',
+        image = 'teniente.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+            { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
+        }
+    },
+
+    [9] = {
+        label = 'Capitan I',
+        image = 'capitan.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+            { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
+        }
+    },
+
+    [10] = {
+        label = 'Capitan II',
+        image = 'capitan.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+            { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
+        }
+    },
+
+    [11] = {
+        label = 'Capitan III',
+        image = 'capitan.png',
+        weapons = {
+            { name = 'WEAPON_PISTOL50', ammo = 54 },
+            { name = 'WEAPON_STUNGUN', ammo = 5 },
+            { name = 'WEAPON_FLASHLIGHT', ammo = 1 },
+            { name = 'WEAPON_PUMPSHOTGUN', ammo = 24 },
+            { name = 'WEAPON_CARBINERIFLE', ammo = 90 },
+            { name = 'WEAPON_MARKSMANRIFLE', ammo = 30 },
+        }
+    },
+
+    [12] = {
+        label = 'Commander / Comandante',
+        image = 'comandante.png',
+        administrative = true
+    },
+
+    [13] = {
+        label = 'Assistant Chief / Jefe asistente',
+        image = 'ayudante.png',
+        administrative = true
+    },
+
+    [14] = {
+        label = 'Chief of Police / Jefe de Policia',
+        image = 'jefe.png',
+        administrative = true
+    },
 }
