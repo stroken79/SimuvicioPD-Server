@@ -1,8 +1,0 @@
-FiveM Install
-
-Drag and Drop the "LSPD_EUP" folder into a resource folder and ensure it in your cfg
-Video if needed (https://www.youtube.com/watch?v=-WoaSCAdn90)
-
-If there is an issue then go to my support channel. We may or may not respond depend on what's goin on.
-
-Short and Easy. Enjoy!!!
