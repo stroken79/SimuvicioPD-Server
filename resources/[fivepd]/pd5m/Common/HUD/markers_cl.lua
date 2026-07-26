@@ -1611,8 +1611,8 @@ if ActivateGarages then
 				end
 				WarMenu.Display()
 			elseif IsControlJustPressed(0, 51) and atgarage and PlayerData.job.name == 'police' then
-				WarMenu.OpenMenu('Garaje')
-			end
+                 TriggerEvent('smvlpd-garage:client:openGarage')
+			    end
 			Wait(0)
 		end
 	end)

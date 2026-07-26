@@ -88,30 +88,36 @@ MySQL.ready(function()
     print('[smvlpd-ranks] Sistema de rangos y puntos listo.')
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
-    local source = source
+local function loadCharacter(playerSource, characterId)
+
     characterId = tonumber(characterId)
     if not characterId then return end
 
-    local license = GetPlayerIdentifierByType(source, 'license')
+    local license = GetPlayerIdentifierByType(playerSource, 'license')
     local ownsCharacter = MySQL.scalar.await('SELECT id FROM smvlpd_characters WHERE id = ? AND license = ?', { characterId, license })
     if not ownsCharacter then return end
 
-    activeCharacters[source] = characterId
+    activeCharacters[playerSource] = characterId
 
-    MySQL.insert.await([[INSERT IGNORE INTO smvlpd_police_points (character_id, points) VALUES (?, 0)]], { characterId })
+    MySQL.insert.await('INSERT IGNORE INTO smvlpd_police_points (character_id, points) VALUES (?, 0)', { characterId })
+
     local points = tonumber(MySQL.scalar.await('SELECT points FROM smvlpd_police_points WHERE character_id = ?', { characterId })) or 0
-    playerPoints[source] = points
-    Player(source).state:set('smvlpdPolicePoints', points, true)
+    playerPoints[playerSource] = points
+    Player(playerSource).state:set('smvlpdPolicePoints', points, true)
 
     local rankId = tonumber(MySQL.scalar.await('SELECT rank_id FROM smvlpd_police_ranks WHERE character_id = ?', { characterId })) or 1
+
     if not MySQL.scalar.await('SELECT 1 FROM smvlpd_police_ranks WHERE character_id = ?', { characterId }) then
-        setPlayerRank(source, characterId, 1, 'system')
+        setPlayerRank(playerSource, characterId, 1, 'system')
     else
-        playerRanks[source] = rankId
-        Player(source).state:set('smvlpdPoliceRank', rankId, true)
-        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', source, rankId, getRank(rankId).label)
+        playerRanks[playerSource] = rankId
+        Player(playerSource).state:set('smvlpdPoliceRank', rankId, true)
+        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label)
     end
+end
+
+RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
+    loadCharacter(source, characterId)
 end)
 
 lib.callback.register('smvlpd-ranks:server:getRank', function(source)
@@ -236,9 +242,35 @@ RegisterNetEvent('smvlpd-ranks:server:setRank', function(targetId, rankId)
     if not ok then return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = message }) end
     TriggerClientEvent('ox_lib:notify', source, { type = 'success', description = 'Rango actualizado correctamente.' })
 end)
+local function GetAllowedVehicles(source)
+
+    local rankId = playerRanks[source] or 1
+
+    return Config.Vehicles[rankId] or {}
+
+end
+
+exports('GetAllowedVehicles', GetAllowedVehicles)
 
 AddEventHandler('playerDropped', function()
     activeCharacters[source] = nil
     playerRanks[source] = nil
     playerPoints[source] = nil
+end)
+AddEventHandler('onResourceStart', function(resource)
+    if resource ~= GetCurrentResourceName() then return end
+
+    Wait(1000)
+
+    for _, playerId in ipairs(GetPlayers()) do
+
+        playerId = tonumber(playerId)
+
+        local characterId = exports['smvlpd-character']:GetActiveCharacter(playerId)
+
+        if characterId then
+            loadCharacter(playerId, characterId)
+        end
+
+    end
 end)

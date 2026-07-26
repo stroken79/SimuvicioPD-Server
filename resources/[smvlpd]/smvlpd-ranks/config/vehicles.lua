@@ -1,100 +1,161 @@
 Config.Vehicles = {
 
-    -- Novato
-    [1] = {
-        "polvic"
-    },
+    [1] = { "pd8" },
 
-    -- Oficial P2
     [2] = {
-        "polvic",
-        "charger"
+        "pd8",
+        "scout2020",
+        "pd9"
     },
 
-    -- Oficial P3
     [3] = {
-        "polvic",
-        "charger",
-        "explorer14"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4"
     },
 
-    -- Oficial Senior
     [4] = {
-        "polvic",
-        "charger",
-        "explorer14",
-        "explorer16"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5"
     },
 
-    -- Sargento I
     [5] = {
-        "polvic",
-        "charger",
-        "explorer14",
-        "explorer16",
-        "expedition",
-        "unmarked"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10"
     },
 
-    -- Sargento II
     [6] = {
-        "polvic",
-        "charger",
-        "explorer14",
-        "explorer16",
-        "expedition",
-        "unmarked"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10"
     },
 
-    -- Teniente I
     [7] = {
-        "polvic",
-        "charger",
-        "explorer14",
-        "explorer16",
-        "expedition",
-        "unmarked",
-        "f350"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4"
     },
 
-    -- Teniente II
     [8] = {
-        "polvic",
-        "charger",
-        "explorer14",
-        "explorer16",
-        "expedition",
-        "unmarked",
-        "f350",
-        "scout2020"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4"
     },
 
-    -- Capitanes
     [9] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4"
     },
 
     [10] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4"
     },
 
     [11] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4",
+        "ndds63sivil"
     },
 
-    -- Comandante
     [12] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4",
+        "ndds63sivil"
     },
 
-    -- Ayudante
     [13] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4",
+        "ndds63sivil"
     },
 
-    -- Jefe
     [14] = {
-        "ALL"
+        "pd8",
+        "scout2020",
+        "pd9",
+        "pd",
+        "pd4",
+        "pd3",
+        "pd5",
+        "pd6",
+        "pd10",
+        "police4",
+        "ndds63sivil"
     }
 
 }

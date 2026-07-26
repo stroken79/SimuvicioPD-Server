@@ -166,3 +166,23 @@ end
 exports('GetPlayerPoliceRank', GetPlayerPoliceRank)
 exports('HasWeaponAccess', ExportHasWeaponAccess)
 exports('HasVehicleAccess', ExportHasVehicleAccess)
+
+CreateThread(function()
+    Wait(2000)
+
+    local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+
+    if rank then
+        updateHud(rank)
+    end
+end)
+
+RegisterNetEvent('smvlpd-ranks:client:reloadRank', function()
+
+    local character = exports['smvlpd-character']:GetCurrentCharacter()
+
+    if character then
+        TriggerServerEvent('smvlpd-ranks:server:characterLoaded', character.id)
+    end
+
+end)

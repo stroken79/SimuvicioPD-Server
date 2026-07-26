@@ -78,6 +78,12 @@ RegisterNetEvent('smvlpd-character:server:saveCharacter', function(id, appearanc
     })
 end)
 
+function GetActiveCharacter(source)
+    return activeCharacters[source]
+end
+
+exports('GetActiveCharacter', GetActiveCharacter)
+
 AddEventHandler('playerDropped', function()
     activeCharacters[source] = nil
 end)
