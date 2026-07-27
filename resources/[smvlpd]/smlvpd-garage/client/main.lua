@@ -1,3 +1,6 @@
+local function IsPoliceOnDuty()
+    return exports['pd5m']:IsOnDuty()
+end
 local activeTextUI
 
 local function setTextUI(text)
@@ -17,7 +20,18 @@ local function setTextUI(text)
 end
 
 local function openGarage(garageId)
+
+    if not IsPoliceOnDuty() then
+        lib.notify({
+            title = 'Garaje',
+            description = 'Debes estar de servicio para acceder al garaje.',
+            type = 'error'
+        })
+        return
+    end
+
     setTextUI(nil)
+
     local vehicles = lib.callback.await('smvlpd-garage:server:getVehicles', false)
 
     if not vehicles or #vehicles == 0 then
@@ -74,6 +88,19 @@ local function drawMarker(position, color)
         nil,
         false
     )
+end
+
+local function applyDefaultVehicleVariation(vehicle)
+    SetVehicleModKit(vehicle, 0)
+
+    if GetVehicleLiveryCount(vehicle) > 0 then
+        SetVehicleLivery(vehicle, 0)
+        return
+    end
+
+    if GetNumVehicleMods(vehicle, 48) > 0 then
+        SetVehicleMod(vehicle, 48, 0, false)
+    end
 end
 
 local function storeVehicle(ped)
@@ -212,6 +239,7 @@ RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
         return
     end
 
+    applyDefaultVehicleVariation(vehicle)
     SetVehicleOnGroundProperly(vehicle)
     SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
     SetVehicleEngineOn(vehicle, true, true, false)

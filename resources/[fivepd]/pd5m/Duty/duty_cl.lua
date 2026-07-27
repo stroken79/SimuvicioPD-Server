@@ -12,3 +12,8 @@ AddEventHandler('pd5m:setDuty', function(onDuty)
         print('^1[PD5M] FUERA DE SERVICIO^7')
     end
 end)
+exports('IsOnDuty', function()
+    return PlayerData
+        and PlayerData.job
+        and PlayerData.job.name == 'police'
+end)
