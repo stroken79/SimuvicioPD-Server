@@ -1,0 +1,117 @@
+/* ==================== THEME OVERRIDE LAYER ==================== */
+/*
+ * Optional, additive layer that lets the runtime theme picker
+ * (NUI/js/utilities/theme_picker.js) recolor Tailwind blue utility classes
+ * baked into JS templates across the codebase.
+ *
+ * HOW IT WORKS:
+ *   - Tailwind 2.x ships .text-blue-400 with a hard-coded hex (#60a5fa).
+ *   - This file shadows those classes with rules that resolve through the
+ *     --mdt-primary* token family from ers_tokens.css (:root).
+ *   - The token family defaults to the same blue palette as Tailwind, so this
+ *     file is a VISUAL NO-OP when no custom theme is applied.
+ *   - The theme picker writes computed shades + rgba stops onto
+ *     document.documentElement at runtime, recoloring everything that flows
+ *     through these classes.
+ *
+ * SAFE TO REMOVE:
+ *   Removing this file (and the picker) reverts to Tailwind's stock blue.
+ *   Nothing else in the codebase depends on the rules below.
+ *
+ * LOAD ORDER:
+ *   index.html includes this AFTER tailwind + ers_tokens.css so equal-specificity
+ *   rules win on source order.
+ *
+ *   --mdt-primary-darker / --mdt-primary-darkest live in ers_tokens.css with
+ *   the rest of the primary ramp.
+ */
+
+/* === text-blue-* === */
+.text-blue-200 { color: var(--mdt-primary-lightest); }
+.text-blue-300 { color: var(--mdt-primary-lighter); }
+.text-blue-400 { color: var(--mdt-primary-light); }
+.text-blue-500 { color: var(--mdt-primary); }
+.text-blue-600 { color: var(--mdt-primary-dark); }
+.text-blue-700 { color: var(--mdt-primary-darker); }
+.text-blue-800,
+.text-blue-900 { color: var(--mdt-primary-darkest); }
+
+/* Tailwind 3-style /opacity suffix used in a couple of templates */
+.text-blue-400\/80 { color: var(--mdt-primary-light); opacity: 0.8; }
+
+/* === bg-blue-* === */
+.bg-blue-200 { background-color: var(--mdt-primary-lightest); }
+.bg-blue-300 { background-color: var(--mdt-primary-lighter); }
+.bg-blue-400 { background-color: var(--mdt-primary-light); }
+.bg-blue-500 { background-color: var(--mdt-primary); }
+.bg-blue-600 { background-color: var(--mdt-primary-dark); }
+.bg-blue-700 { background-color: var(--mdt-primary-darker); }
+.bg-blue-800,
+.bg-blue-900 { background-color: var(--mdt-primary-darkest); }
+
+/* Slash-opacity background classes seen in the codebase */
+.bg-blue-500\/30 { background-color: var(--mdt-primary-30); }
+
+/* === border-blue-* === */
+.border-blue-200 { border-color: var(--mdt-primary-lightest); }
+.border-blue-300 { border-color: var(--mdt-primary-lighter); }
+.border-blue-400 { border-color: var(--mdt-primary-light); }
+.border-blue-500 { border-color: var(--mdt-primary); }
+.border-blue-600 { border-color: var(--mdt-primary-dark); }
+.border-blue-700 { border-color: var(--mdt-primary-darker); }
+.border-blue-800,
+.border-blue-900 { border-color: var(--mdt-primary-darkest); }
+
+.border-blue-500\/30 { border-color: var(--mdt-primary-30); }
+
+/* === ring-blue-* === */
+.ring-blue-200 { --tw-ring-color: var(--mdt-primary-lightest); }
+.ring-blue-300 { --tw-ring-color: var(--mdt-primary-lighter); }
+.ring-blue-400 { --tw-ring-color: var(--mdt-primary-light); }
+.ring-blue-500 { --tw-ring-color: var(--mdt-primary); }
+.ring-blue-600 { --tw-ring-color: var(--mdt-primary-dark); }
+.ring-blue-700 { --tw-ring-color: var(--mdt-primary-darker); }
+
+/* === gradient stops (from/via/to) === */
+.from-blue-200 { --tw-gradient-from: var(--mdt-primary-lightest); }
+.from-blue-300 { --tw-gradient-from: var(--mdt-primary-lighter); }
+.from-blue-400 { --tw-gradient-from: var(--mdt-primary-light); }
+.from-blue-500 { --tw-gradient-from: var(--mdt-primary); }
+.from-blue-600 { --tw-gradient-from: var(--mdt-primary-dark); }
+.from-blue-700 { --tw-gradient-from: var(--mdt-primary-darker); }
+
+.via-blue-300 { --tw-gradient-via: var(--mdt-primary-lighter); }
+.via-blue-400 { --tw-gradient-via: var(--mdt-primary-light); }
+.via-blue-500 { --tw-gradient-via: var(--mdt-primary); }
+.via-blue-600 { --tw-gradient-via: var(--mdt-primary-dark); }
+
+.to-blue-300 { --tw-gradient-to: var(--mdt-primary-lighter); }
+.to-blue-400 { --tw-gradient-to: var(--mdt-primary-light); }
+.to-blue-500 { --tw-gradient-to: var(--mdt-primary); }
+.to-blue-600 { --tw-gradient-to: var(--mdt-primary-dark); }
+.to-blue-700 { --tw-gradient-to: var(--mdt-primary-darker); }
+
+/* === hover: variants === */
+.hover\:text-blue-300:hover { color: var(--mdt-primary-lighter); }
+.hover\:text-blue-400:hover { color: var(--mdt-primary-light); }
+.hover\:text-blue-500:hover { color: var(--mdt-primary); }
+.hover\:text-blue-600:hover { color: var(--mdt-primary-dark); }
+
+.hover\:bg-blue-400:hover { background-color: var(--mdt-primary-light); }
+.hover\:bg-blue-500:hover { background-color: var(--mdt-primary); }
+.hover\:bg-blue-600:hover { background-color: var(--mdt-primary-dark); }
+.hover\:bg-blue-700:hover { background-color: var(--mdt-primary-darker); }
+
+.hover\:border-blue-400:hover { border-color: var(--mdt-primary-light); }
+.hover\:border-blue-500:hover { border-color: var(--mdt-primary); }
+.hover\:border-blue-600:hover { border-color: var(--mdt-primary-dark); }
+
+/* === focus: variants === */
+.focus\:ring-blue-400:focus { --tw-ring-color: var(--mdt-primary-light); }
+.focus\:ring-blue-500:focus { --tw-ring-color: var(--mdt-primary); }
+.focus\:border-blue-400:focus { border-color: var(--mdt-primary-light); }
+.focus\:border-blue-500:focus { border-color: var(--mdt-primary); }
+
+/* === pulse-blue (custom utility from styles.css uses hard-coded blue rgba) === */
+/* Keep the keyframe as-is in styles.css; pulse-blue uses --mdt-primary tokens
+   indirectly through this layer when authored as inline style. */

@@ -1,0 +1,1157 @@
+/* Eurostyle Example */
+/* @font-face {
+    font-family: 'Eurostile Becker Heavy';
+    src: url('fonts/EurostileBeckerHeavy.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Eurostile Becker Heavy', sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+} */
+
+/* AVENIR Example */
+/* @font-face {
+    font-family: 'Avenir Regular';
+    src: url('fonts/AvenirRegular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Avenir Regular', sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+} */
+
+/* A default font */
+html, body {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    overflow: hidden;
+}
+
+/* Here you can configure UI in the root */
+:root {
+    /* Overwrite Bootstrap */
+    --bs-body-bg: transparent; 
+
+    /* Interaction & Callout UI Background settings */
+    --interaction-bg-color: rgba(0, 0, 0, 0.5);
+    --interaction-box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.5);
+
+    /* Top-centre banners: pursuit lightbar + pullover HUD share this viewport offset */
+    --top-centre-hud-offset: 115px;
+
+    /* Logical HUD design box: 1920×1080 for ≤16∶9 viewports; ers_hud_stage widens logical W only when aspect >16∶9; max-width % calcs relate to this box not 100vw. */
+    --ers-hud-edge-inset: 10px;
+
+    /* Prompt Positioning */
+    --prompt-default-x: 75%;
+    --prompt-default-y: 50%;
+
+    /* Interaction Module Positioning */
+    --module-default-x: 75%;
+    --module-default-y: 50%;
+
+    /* Zone Change Positioning */
+    --zone-change-x: 50%;
+    --zone-change-y: 25%;
+
+    /* Menu Positioning */
+    --menu-default-x: 50%;
+    --menu-default-y: 50%;
+
+    /* Ped Details Prompt Positioning */
+    --ped-details-prompt-x: 25%;
+    --ped-details-prompt-y: 50%;
+
+    /* Dual Steering Mode Prompt Positioning */
+    --dual-steering-mode-prompt-x: 20px;
+    --dual-steering-mode-prompt-y: 20px;
+}
+
+/* Microtext */
+
+.microtext {
+    font-size: 12px;
+}
+
+.microtext-11 {
+    font-size: 11px;
+}
+
+/* Card adjustments */
+.card:hover {
+    filter: brightness(1.2); /* Adjust brightness as desired */
+    transition: filter 0.3s ease;
+}
+
+.card-flash {
+    position: relative;
+    overflow: hidden;
+}
+
+.card-flash::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 10px;
+    height: 200%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.2)); /* Adjusted gradient for softer edges */
+    transform: rotate(45deg);
+    transition: left 1.5s ease-in-out, opacity 1.5s ease-in-out, box-shadow 0.5s ease-in-out; /* Fine-tuned transition durations */
+    opacity: 0;
+    box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0); /* Adjusted initial box-shadow for a subtle glow effect */
+}
+
+.card-flash:hover::before {
+    left: 150%;
+    opacity: 1;
+    box-shadow: 0 0 10px 5px rgba(255, 255, 255, 0.8); /* Adjusted box-shadow properties for a stronger glow effect */
+}
+
+/* Prompts */
+
+#ers-selection-menu {
+    position: absolute;
+    left: var(--menu-default-x, 50%);
+    top: var(--menu-default-y, 50%);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+}
+
+.logo {
+    width: 36px;
+    height: 36px;
+    margin: 0 5px; /* Adjust spacing between logos if needed */
+}
+
+/*
+ * Zone A (#ers-hud-logical): position comes from NUI/js/ers_drag.js + .ers-hud-logical > [id$='-container'].
+ * No fixed edges, transforms, or entrance animations here — they fight the scaled stage and cause edge bleed.
+ */
+#hint-prompt-container,
+#callout-prompt-container,
+#dispatch-message-prompt-container,
+#callout-interface-container,
+#callout-pre-interface-container,
+#ped-interaction-id-card-container,
+#vehicle-info-container,
+#ped-interaction-inventory-container,
+#ped-interaction-module-container {
+    z-index: 1;
+    width: max-content;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    border: none;
+    box-shadow: none;
+}
+
+#hint-prompt-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 28rem);
+}
+
+#callout-prompt-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 32rem);
+}
+
+#dispatch-message-prompt-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 36rem);
+    display: flex;
+    flex-direction: column;
+    /* flex-start keeps the draggable root flush with painted `.ers-panel-scale-inner` union; flex-end + w-full left dead horizontal band that grows oddly with HUD zoom (ers_drag clamp uses union span). */
+    align-items: flex-start;
+    gap: 0.35rem;
+}
+
+#callout-interface-container,
+#callout-pre-interface-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 36rem);
+}
+
+#ped-interaction-id-card-container,
+#vehicle-info-container,
+#ped-interaction-inventory-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 22rem);
+}
+
+#ped-interaction-module-container {
+    max-width: min(calc(100% - 2 * var(--ers-hud-edge-inset, 10px)), 42rem);
+}
+
+#callout-interface-container h4,
+#callout-pre-interface-container h4 {
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+#callout-interface-container h5,
+#callout-pre-interface-container h5 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+#callout-interface-container h6,
+#callout-pre-interface-container h6 {
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    margin-top: 0;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+#unified-prompt {
+    position: absolute;
+    left: var(--prompt-default-x, 75%);
+    top: var(--prompt-default-y, 50%);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    opacity: 0;
+    animation: fadeIn 0.25s ease forwards;
+    background-color: var(--interaction-bg-color);
+    box-shadow: var(--interaction-box-shadow);
+    border-radius: 10px; 
+    padding: 10px;
+}
+
+#unified-prompt .unified-prompt-line + .unified-prompt-line {
+    margin-top: 0.35rem;
+}
+
+/* Ped interaction + vehicle/ID prompts: `#…-module` lives under `#ped-interaction-module-container` (#ers-hud-logical drag root). */
+
+#ped-interaction-module-container #ped-interaction-module {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    margin: 0;
+    z-index: 1;
+    min-width: 550px;
+    max-width: 100%;
+    box-sizing: border-box;
+    opacity: 1;
+    animation: fadeIn 0.25s ease forwards;
+    background-color: var(--interaction-bg-color);
+    box-shadow: var(--interaction-box-shadow);
+    border-radius: 10px;
+    padding: 15px;
+}
+
+/* `ToggleCalloutDisplayPrompt`-style shell lives inside `.ers-hud-card` — outer `#ped-interaction-module` chrome would double-stack fills */
+#ped-interaction-module-container #ped-interaction-module:has(.ers-hud-card) {
+    background-color: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    min-width: 0;
+}
+
+#ped-interaction-id-card-container #ped-interaction-id-card,
+#vehicle-info-container #vehicle-info,
+#ped-interaction-inventory-container #ped-interaction-inventory {
+    position: relative;
+    left: auto;
+    top: auto;
+    margin-left: 0;
+    margin-top: 0;
+    z-index: 1;
+    opacity: 1;
+    animation: fadeIn 0.25s ease forwards;
+    width: 360px;
+    max-width: 100%;
+    max-height: 80vh;
+    overflow-y: auto;
+    /* .ers-hud-card uses a tall downward box-shadow (ers_nui_compat); padding prevents overflow clip slab under rounded corners */
+    padding-bottom: 3rem;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    box-sizing: border-box;
+}
+
+/* Simple loading indicator */
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loading-indicator i {
+    animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loading-pulse {
+    0%, 100% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+/* Compact ID Card Styles */
+#ped-interaction-id-card .card {
+    margin: 8px !important;
+    font-size: 12px;
+}
+
+#ped-interaction-id-card .card-header {
+    padding: 8px 12px;
+    font-size: 13px;
+}
+
+#ped-interaction-id-card .card-body {
+    padding: 8px 12px;
+}
+
+#ped-interaction-id-card .list-group-item {
+    padding: 6px 8px;
+    font-size: 11px;
+}
+
+#ped-interaction-id-card .profile-picture {
+    max-height: 120px !important;
+    object-fit: cover;
+}
+
+#ped-interaction-id-card .license-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    margin: 1px;
+}
+
+#ped-interaction-id-card .fs-5 {
+    font-size: 14px !important;
+}
+
+#ped-interaction-id-card .col-md-4,
+#ped-interaction-id-card .col-md-8 {
+    padding: 0 4px;
+}
+
+#ped-interaction-id-card .row {
+    margin: 0;
+}
+
+#ped-interaction-id-card .mb-3 {
+    margin-bottom: 8px !important;
+}
+
+#ped-interaction-id-card .mb-2 {
+    margin-bottom: 4px !important;
+}
+
+/* Compact License Display */
+.license-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.license-compact-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: #fff !important;
+}
+
+.license-compact-item i {
+    font-size: 12px;
+}
+
+/* Icon colors only - text stays white */
+.license-compact-item.text-success i {
+    color: #28a745;
+}
+
+.license-compact-item.text-danger i {
+    color: #dc3545;
+}
+
+.license-compact-item.text-warning i {
+    color: var(--mdt-warning-light);
+}
+
+.license-compact-item.text-secondary i {
+    color: #6c757d;
+}
+
+.spinner-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+    padding: 20px;
+}
+
+.spinner {
+    border: 4px solid rgba(255, 255, 255, 0.3); 
+    border-radius: 50%; 
+    border-top: 4px solid var(--mdt-primary); 
+    width: 40px; 
+    height: 40px; 
+    animation: spin 1s linear infinite; 
+    margin-bottom: 15px; 
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Waypoint */
+
+.waypoint {
+    top: -1000;
+    left: 0;
+    position: absolute;
+    display: flex;
+    row-gap: 5px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+    transition: 0.1s;
+}
+
+/* Matches HUD theme primary (ERSTheme / layout picker); replaces fixed Bootstrap warning colour */
+.ers-waypoint-distance-marker {
+    color: var(--mdt-primary-light);
+}
+
+/* Zone change */
+
+#zone-change-ui {
+    position: absolute;
+    left: var(--zone-change-x, 50%);
+    top: var(--zone-change-y, 25%);
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    text-align: center;
+    font-family: inherit;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+}
+
+#zone-change-ui.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+#zone-change-ui h3 {
+    font-size: 1.5em;
+    margin-bottom: 0.5em;
+}
+
+#zone-change-ui p {
+    font-size: 1.2em;
+    margin: 0;
+}
+
+.new-zone {
+    font-size: 2.5em;
+    font-weight: bold;
+    text-decoration: underline;
+    position: relative;
+    display: inline-block;
+    background: linear-gradient(to right, rgba(255,255,255,0.7), rgba(255,255,255,0.9));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.new-zone.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.new-zone::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+    filter: blur(8px);
+    z-index: -1;
+}
+
+.old-zone {
+    opacity: 0.7;
+    color: rgba(255,255,255,0.7);
+    font-size: 1.2em;
+}
+
+.zone-arrow {
+    margin: 0 0.5em;
+    font-size: 1.5em;
+    color:#ffbf00;
+}
+
+/* Unit waypoint */
+
+.unit-waypoint-container {
+    position: absolute; /* Ensure the container is positioned absolutely */
+    transform: translate(-50%, -50%); /* Center the waypoint if needed */
+}
+
+.unit-waypoint-container.smooth-transition {
+    transition: left 0.5s ease, top 0.5s ease; /* Adjust the duration and easing as needed */
+}
+
+.unit-waypoint {
+    top: -1000;
+    left: 0;
+    position: absolute;
+    display: flex;
+    row-gap: 5px;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px;
+}
+
+.unit-waypoint-distance {
+    font-size: 13px;
+    color: var(--mdt-primary-light);
+    font-weight: 700;
+}
+
+.unit-waypoint-distance-text {
+    font-size: 11px;
+    color: rgb(255, 255, 255);
+    font-weight: 700;
+    font-family: -apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+
+/* Radial dial, backdrop, hover hint: NUI/css/ers_radial_dial.css. Menu data + markup: main.js (setupRadialMenu / setupPursuitRadialMenu). */
+
+.instruction-title {
+    position: fixed;
+    top: 170px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px;
+    z-index: 998;
+}
+
+/* Pursuit Mode UI */
+
+.pursuit-container {
+    position: fixed;
+    top: var(--top-centre-hud-offset);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 300px; /* Match lightbar width */
+}
+
+.lightbar-container {
+    position: relative;
+}
+
+.lightbar {
+    width: 300px;
+    height: 40px;
+    background: linear-gradient(90deg, rgba(0,0,0,0.2), rgba(0,0,0,0.3), rgba(0,0,0,0.2));
+    border-radius: 10px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Animated gradient background */
+.lightbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        rgba(24, 116, 255, 0.3),
+        rgba(255, 43, 43, 0.3));
+    animation: gradientMove 2s infinite;
+    z-index: 0;
+}
+
+@keyframes gradientMove {
+    0% {
+        opacity: 0;
+        background: linear-gradient(90deg, 
+            rgba(24, 116, 255, 0.3),
+            rgba(255, 43, 43, 0.3));
+    }
+    50% {
+        opacity: 1;
+        background: linear-gradient(90deg, 
+            rgba(255, 43, 43, 0.3),
+            rgba(24, 116, 255, 0.3));
+    }
+    100% {
+        opacity: 0;
+        background: linear-gradient(90deg, 
+            rgba(24, 116, 255, 0.3),
+            rgba(255, 43, 43, 0.3));
+    }
+}
+
+.pursuit-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: 800;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 16px;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    animation: pulseText 2s infinite;
+    z-index: 1;
+}
+
+.pursuit-text::before {
+    content: '»»»';
+    margin-right: 10px;
+    animation: arrowPulse 1s infinite;
+}
+
+.pursuit-text::after {
+    content: '«««';
+    margin-left: 10px;
+    animation: arrowPulse 1s infinite;
+}
+
+@keyframes pulseText {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes arrowPulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.5;
+        transform: scale(0.95);
+    }
+}
+
+.pursuit-hotkey-hint-container {
+    width: 100%;
+    text-align: center;
+}
+
+.pursuit-hotkey-hint {
+    font-size: 11px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    font-family: inherit;
+    margin-top: 2px;
+    width: 100%;
+    display: inline-block;
+}
+
+/* Screen Flash */
+
+.screen-flash-left {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 500px;
+    background: linear-gradient(90deg, rgba(255,0,0,0.2) 0%, rgba(255,0,0,0) 100%);
+    animation: screenFlashLeft 2s infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.screen-flash-right {
+    position: fixed;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 500px;
+    background: linear-gradient(-90deg, rgba(0,0,255,0.2) 0%, rgba(0,0,255,0) 100%);
+    animation: screenFlashRight 2s infinite;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+@keyframes screenFlashLeft {
+    0%, 100% { opacity: 0; }
+    12.5% { opacity: 1; }
+    25% { opacity: 0; }
+    37.5% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+@keyframes screenFlashRight {
+    50%, 100% { opacity: 0; }
+    62.5% { opacity: 1; }
+    75% { opacity: 0; }
+    87.5% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* ID card display */
+
+.profile-picture {
+    background: #2c2c2c; /* Fallback color */
+}
+
+.profile-picture[src=""] {
+    display: none;
+}
+
+.license-item {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.license-item i {
+    margin-right: 5px;
+}
+
+.license-status {
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.license-status i {
+    margin-right: 5px;
+}
+
+.license-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    font-size: 0.875rem;
+}
+
+.license-badge i {
+    font-size: 1rem;
+}
+
+/* Questioning */
+
+#ped-interaction-questioning {
+    position: fixed;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+/* QUESTION BUTTONS */
+
+.gold-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: gold;
+    box-shadow: 0 0 6px 2px rgba(255, 215, 0, 0.5);
+    margin-right: 1rem;
+}
+
+.btn-glass {
+    position: relative;
+    background: transparent;
+    border: none;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.85) 100%);
+    /* box-shadow: 0 4px 24px rgba(0,0,0,0.10); */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    transition: transform 0.3s ease;
+    overflow: hidden;
+}
+
+.question-btn {
+    text-align: left;
+    white-space: normal;
+    height: auto;
+    min-height: 48px;
+}
+
+.question-text {
+    line-height: 1.4;
+    text-align: left;
+    white-space: pre-line;
+}
+
+/* The sliding background element */
+.btn-glass::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.0) 0%, rgba(0, 0, 0, 0.85) 100%);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+}
+
+.btn-glass:hover {
+    transform: scale(1.03);
+}
+
+.btn-glass:hover::before {
+    transform: translateX(0);
+}
+
+/* Questioning Answers */
+
+#question-answers-list {
+    position: fixed;
+    left: 15%;
+    top: 15%;
+    z-index: 1000;
+    display: block;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    max-width: 400px;
+}
+
+.chat-history::-webkit-scrollbar {
+    width: 6px;
+}
+.chat-history::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+.chat-history::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 3px;
+}
+.chat-history::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Dual steering mode */
+#dual-steering-mode {
+    position: absolute;
+    bottom: var(--dual-steering-mode-prompt-y, 20px);
+    right: var(--dual-steering-mode-prompt-x, 20px);
+    z-index: 1200;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 24px rgba(0,0,0,0.35);
+    color: #fff;
+    min-width: 260px;
+}
+
+.dual-steering-mode-title {
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    opacity: .9;
+}
+
+.dual-steering-mode-hint-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dual-steering-mode-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 28px;
+    height: 28px;
+    padding: 0 8px;
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.dual-steering-mode-action {
+    font-size: 13px;
+    opacity: .9;
+}
+
+.dual-steering-mode-sep {
+    height: 1px;
+    background: rgba(255,255,255,0.5);
+    margin: 4px 0 6px 0;
+}
+
+/*
+ * HUD layout mode: body.ers-layout-mode (NUI/css/ers_nui_compat.css) + ERSDrag.
+ * Removed unused legacy .layout-mode-element / .layout-control-panel bootstrap-era CSS.
+ */
+
+/* ── Task completion flash (callout task rows) ─────────────────────────────────
+   Overlay stays out of layout: avoids margin/BFC side effects + keeps viewport-clamp measurements stable. */
+@keyframes ersTaskFlashOverlay {
+    0% {
+        opacity: 0;
+        background-color: rgba(80, 220, 110, 0);
+    }
+
+    15% {
+        opacity: 1;
+        background-color: rgba(80, 220, 110, 0.40);
+    }
+
+    40% {
+        opacity: 1;
+        background-color: rgba(80, 220, 110, 0.20);
+    }
+
+    100% {
+        opacity: 0;
+        background-color: rgba(80, 220, 110, 0);
+    }
+}
+
+.ers-hud-task-row.task-flash {
+    position: relative;
+}
+
+.ers-hud-task-row.task-flash::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 0;
+    animation: ersTaskFlashOverlay 0.75s ease-out forwards;
+}
+
+.ers-hud-task-row.task-flash > span {
+    position: relative;
+    z-index: 1;
+}
+
+/* Module indicator for TAB key reminder — above layout banner (100050), below modal overlay (100060). */
+.module-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 100055;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid var(--mdt-primary-40);
+    border-radius: 8px;
+    padding: 12px 16px;
+    padding-bottom: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    display: none;
+    animation: fadeIn 0.3s ease;
+    min-width: 100px;
+    overflow: hidden;
+}
+
+.module-indicator i {
+    color: var(--mdt-primary-light);
+    font-size: 1.1rem;
+}
+
+.module-indicator span {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.875rem;
+}
+
+.module-indicator kbd {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: monospace;
+}
+
+/* Progress bar container - integrated into bottom border */
+.module-indicator-progress-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+/* Progress bar fill - fills from left to right */
+.module-indicator-progress {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+        90deg,
+        rgba(var(--mdt-primary-rgb), 0.55) 0%,
+        rgba(var(--mdt-primary-rgb), 1) 100%
+    );
+    transition: width 0.1s linear;
+}
+
+/* Pullover command menu — themed shell matches .ers-hud-card (+ heading strip like .ers-drag-bar) */
+
+@keyframes pullover-command-enter {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#pullover-command-menu {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--top-centre-hud-offset);
+    width: 100%;
+    z-index: 1001;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 18px 0;
+    pointer-events: none;
+}
+
+/* Appearance from .ers-hud-card — keep animation + width clamp here only */
+.pullover-command-panel {
+    pointer-events: none;
+    text-align: center;
+    max-width: min(94vw, 26rem);
+    animation: pullover-command-enter 0.26s ease-out forwards;
+}
+
+.pullover-command-nav {
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.pullover-command-mode-core {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+}
+
+.pullover-command-mode-label {
+    margin: 0;
+    padding: 0 6px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--mdt-text-primary);
+    line-height: 1.4;
+}
+
+.pullover-command-side-key {
+    flex: 0 0 auto;
+}
+
+.pullover-command-enter-key i {
+    font-size: 1rem;
+    line-height: 1;
+    opacity: 0.95;
+}
+
+.pullover-command-footer {
+    margin: 0;
+}
+
+/* Pullover pre-stop progress — same shell as command menu */
+#pullover-progress-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: var(--top-centre-hud-offset);
+    width: 100%;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 18px 0;
+    pointer-events: none;
+}
+
+.pullover-progress-subtitle.pullover-progress-subtitle--urgent {
+    color: var(--btn-red-text, #fca5a5) !important;
+}

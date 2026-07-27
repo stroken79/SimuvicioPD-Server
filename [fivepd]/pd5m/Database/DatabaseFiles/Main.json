@@ -1,0 +1,30 @@
+[
+    {
+        "steamid": false,
+        "discord": "discord:284413657322881026",
+        "dbid": 1,
+        "fivem": "fivem:135891",
+        "license": "license:faae5c0912622b2c421f6b7c8f44ea53101ceaf2"
+    },
+    {
+        "steamid": false,
+        "discord": "discord:382511412901183488",
+        "dbid": 2,
+        "fivem": false,
+        "license": "license:b7348e7064be1db1e4bb646fe191a65acc0c1e33"
+    },
+    {
+        "steamid": false,
+        "discord": "discord:122694922921967616",
+        "dbid": 3,
+        "fivem": "fivem:19454340",
+        "license": "license:746e77e196b84bdd50bbc81ef6ac4fdc81e353b3"
+    },
+    {
+        "steamid": false,
+        "discord": false,
+        "license": "license:8ad1d398b8dc9382b53c0ed41b90237db7056614",
+        "fivem": "fivem:4788025",
+        "dbid": 4
+    }
+]

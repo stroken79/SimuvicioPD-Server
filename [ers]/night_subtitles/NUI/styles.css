@@ -1,0 +1,70 @@
+/* Option 1 - Example Generic */
+
+/* .subtitle-text {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+} */
+
+/* Option 2 - Example Bold */
+
+/* .subtitle-text {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+} */
+
+
+/* Option 3 - Example Italic */
+
+/* .subtitle-text {
+    font-family: Arial, sans-serif;
+    font-size: 20px;
+    font-style: italic;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+} */
+
+/* Option 4 - Example Alternative font */
+
+.subtitle-text {
+    font-family: -apple-system,system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+}

@@ -1,0 +1,306 @@
+/* ERS tokens — mirrored from Night Shifts MDT NUI/css/styles.css (:root palette) */
+:root {
+    /* === BRAND COLORS === */
+    --mdt-primary: #3b82f6;           /* Blue - Primary brand color */
+    --mdt-primary-dark: #2563eb;      /* Darker blue */
+    /* Deepest blues: Tailwind blue-700 / blue-900 — used by ers_theme_overrides (.text-blue-800, etc.) */
+    --mdt-primary-darker: #1d4ed8;
+    --mdt-primary-darkest: #1e3a8a;
+    --mdt-primary-light: #60a5fa;     /* Lighter blue */
+    --mdt-primary-lighter: #93c5fd;   /* Even lighter blue */
+    --mdt-primary-lightest: #dbeafe;  /* Lightest blue */
+    /* Comma-separated R,G,B triple of the primary. Lets ad-hoc opacity stops
+       like rgba(var(--mdt-primary-rgb), 0.42) follow the theme picker without
+       declaring a token per alpha. */
+    --mdt-primary-rgb: 59, 130, 246;
+    
+    /* === PRIMARY COLOR WITH OPACITY ===
+       Defined via the --mdt-primary-rgb triple so the theme picker only needs
+       to update one variable to recolor every alpha stop. Default values are
+       unchanged: --mdt-primary-rgb defaults to "59, 130, 246". */
+    --mdt-primary-5:    rgba(var(--mdt-primary-rgb), 0.05);
+    --mdt-primary-10:   rgba(var(--mdt-primary-rgb), 0.1);
+    --mdt-primary-15:   rgba(var(--mdt-primary-rgb), 0.15);
+    --mdt-primary-20:   rgba(var(--mdt-primary-rgb), 0.2);
+    --mdt-primary-25:   rgba(var(--mdt-primary-rgb), 0.25);
+    --mdt-primary-30:   rgba(var(--mdt-primary-rgb), 0.3);
+    --mdt-primary-33:   rgba(var(--mdt-primary-rgb), 0.33);
+    --mdt-primary-40:   rgba(var(--mdt-primary-rgb), 0.4);
+    --mdt-primary-50:   rgba(var(--mdt-primary-rgb), 0.5);
+    --mdt-primary-60:   rgba(var(--mdt-primary-rgb), 0.6);
+    --mdt-primary-70:   rgba(var(--mdt-primary-rgb), 0.7);
+    --mdt-primary-80:   rgba(var(--mdt-primary-rgb), 0.8);
+    --mdt-primary-90:   rgba(var(--mdt-primary-rgb), 0.9);
+    --mdt-primary-full: rgba(var(--mdt-primary-rgb), 1);
+    
+    /* === BACKGROUND COLORS === */
+    --mdt-bg-dark: #0f172a;           /* Dark background */
+    --mdt-bg-darker: #020617;         /* Darker background */
+    --mdt-bg-card: #1e293b;           /* Card background */
+    --mdt-bg-elevated: #1f2937;       /* Elevated elements */
+    /* Comma-separated R,G,B triples mirror the bg colors so the theme picker
+       can shift the chrome's hue at runtime. Keeps existing alpha-based panel
+       backgrounds following the picker without per-rule overrides. */
+    --mdt-bg-dark-rgb:     15, 23, 42;
+    --mdt-bg-darker-rgb:   2, 6, 23;
+    --mdt-bg-card-rgb:     30, 41, 59;
+    --mdt-bg-elevated-rgb: 31, 41, 55;
+    --mdt-bg-surface: rgba(var(--mdt-bg-dark-rgb), 0.5);  /* Semi-transparent panel/card overlay */
+    --mdt-bg-hover: rgba(var(--mdt-primary-rgb), 0.1);
+    
+    /* === TEXT COLORS === */
+    --mdt-text-primary: #ffffff;      /* Primary text (white) */
+    --mdt-text-secondary: #e5e7eb;    /* Secondary text (gray-200) */
+    --mdt-text-tertiary: #9ca3af;     /* Tertiary text (gray-400) */
+    --mdt-text-muted: #6b7280;        /* Muted text (gray-500) */
+    
+    /* === PRIORITY/GRADE COLORS === */
+    /* NOTE: These are FALLBACK colors only. Actual priorities are configured in Admin Panel > System Settings.
+       Calls store priority label and color at creation time in the database (nsmdt_calls.priorityLabel, priorityColor).
+       These CSS variables are used only when config hasn't loaded or for backward compatibility. */
+    --mdt-priority-1: #dc2626;        /* Grade 1 - Emergency (Red) */
+    --mdt-priority-1-bg: rgba(220, 38, 38, 0.2);
+    --mdt-priority-1-border: rgba(220, 38, 38, 0.5);
+    --mdt-priority-1-gradient: rgba(220, 38, 38, 0.08);
+    
+    --mdt-priority-2: #f59e0b;        /* Grade 2 - Urgent (Orange) */
+    --mdt-priority-2-bg: rgba(245, 158, 11, 0.2);
+    --mdt-priority-2-border: rgba(245, 158, 11, 0.5);
+    --mdt-priority-2-gradient: rgba(245, 158, 11, 0.08);
+    
+    --mdt-priority-3: #f59e0b;        /* Grade 3 - Priority (Orange) */
+    --mdt-priority-3-bg: rgba(245, 158, 11, 0.2);
+    --mdt-priority-3-border: rgba(245, 158, 11, 0.5);
+    --mdt-priority-3-gradient: rgba(245, 158, 11, 0.08);
+    
+    --mdt-priority-4: #10b981;        /* Grade 4 - Routine (Green) */
+    --mdt-priority-4-bg: rgba(16, 185, 129, 0.2);
+    --mdt-priority-4-border: rgba(16, 185, 129, 0.5);
+    --mdt-priority-4-gradient: rgba(16, 185, 129, 0.08);
+    
+    --mdt-priority-5: #6b7280;        /* Grade 5 - Info (Gray) */
+    --mdt-priority-5-bg: rgba(107, 114, 128, 0.2);
+    --mdt-priority-5-border: rgba(107, 114, 128, 0.5);
+    --mdt-priority-5-gradient: rgba(107, 114, 128, 0.08);
+    
+    /* === DEPARTMENT TYPE COLORS (Fallbacks) === */
+    /* NOTE: Actual department colors are set in admin panel and applied via inline styles.
+       These are department type colors reflecting the department types: police, ambulance, fire, tow, council */
+    /* Police is a semantic color (PD = blue), so the bg/border resolve to a
+       fixed blue rather than the theme picker's primary. Otherwise picking an
+       amber/red theme would recolor the Police filter chip in hotline /
+       dispatch and break the universal "PD = blue" cue. */
+    --mdt-dept-type-police: #3b82f6;       /* Police type default (Blue) */
+    --mdt-dept-type-police-bg: rgba(59, 130, 246, 0.2);
+    --mdt-dept-type-police-border: rgba(59, 130, 246, 0.5);
+    
+    --mdt-dept-type-ambulance: #10b981;    /* Ambulance type default (Green) */
+    --mdt-dept-type-ambulance-bg: rgba(16, 185, 129, 0.2);
+    --mdt-dept-type-ambulance-border: rgba(16, 185, 129, 0.5);
+    
+    --mdt-dept-type-fire: #dc2626;         /* Fire type default (Red) */
+    --mdt-dept-type-fire-bg: rgba(220, 38, 38, 0.2);
+    --mdt-dept-type-fire-border: rgba(220, 38, 38, 0.5);
+    
+    --mdt-dept-type-tow: #eab308;          /* Tow type default (Yellow) */
+    --mdt-dept-type-tow-bg: var(--mdt-accent-yellow-bg);
+    --mdt-dept-type-tow-border: var(--mdt-accent-yellow-border);
+    
+    --mdt-dept-type-council: #6b7280;      /* Council type default (Gray) */
+    --mdt-dept-type-council-bg: rgba(107, 114, 128, 0.2);
+    --mdt-dept-type-council-border: rgba(107, 114, 128, 0.5);
+    
+    /* === CALL/UNIT STATUS COLORS (UI States) === */
+    /* NOTE: Shift status colors are configured per department in admin panel.
+       These are for UI elements showing call/unit states. */
+    --mdt-call-active: #3b82f6;       /* Active call (Blue) */
+    --mdt-call-resolved: #10b981;     /* Resolved call (Green) */
+    --mdt-call-cancelled: #6b7280;    /* Cancelled call (Gray) */
+    
+    /* === FLAG / NOTICE SEVERITY COLORS (PNC Flags, Personal Info badges) === */
+    /* Single source of truth: Red → Orange → Yellow → Light yellow (no green – flags are always caution). True red for critical, no pink. */
+    --flag-severity-critical-bg: rgba(220, 38, 38, 0.2);
+    --flag-severity-critical-border: rgba(220, 38, 38, 0.6);
+    --flag-severity-critical-text: #ef4444;
+    --flag-severity-high-bg: rgba(234, 88, 12, 0.2);
+    --flag-severity-high-border: rgba(234, 88, 12, 0.6);
+    --flag-severity-high-text: #f97316;
+    --flag-severity-medium-bg: rgba(202, 138, 4, 0.2);
+    --flag-severity-medium-border: rgba(202, 138, 4, 0.6);
+    --flag-severity-medium-text: #eab308;
+    --flag-severity-low-bg: rgba(250, 204, 21, 0.15);
+    --flag-severity-low-border: rgba(250, 204, 21, 0.5);
+    --flag-severity-low-text: #fef08a;
+    
+    /* === SECONDARY COLORS === */
+    --mdt-secondary-purple: #c084fc;         /* Purple for inter-department chat */
+    --mdt-secondary-purple-bg: rgba(168, 85, 247, 0.2);
+    --mdt-secondary-purple-border: rgba(168, 85, 247, 0.5);
+    
+    /* === SUCCESS/ERROR/WARNING/INFO === */
+    --mdt-success: #22c55e;           /* Success (Green) */
+    --mdt-success-light: #86efac;     /* Success light text */
+    --mdt-success-bg: rgba(34, 197, 94, 0.2);     /* Success background */
+    --mdt-success-border: rgba(34, 197, 94, 0.5); /* Success border */
+    --mdt-success-gradient: rgba(16, 185, 129, 0.08); /* For resolved calls */
+    --mdt-success-toast-bg: rgba(34, 197, 94, 0.95); /* Toast background (opaque) */
+    --mdt-success-toast-border: rgba(34, 197, 94, 1); /* Toast border (solid) */
+    
+    --mdt-error: #ef4444;             /* Error (Red) */
+    --mdt-error-light: #fca5a5;       /* Error light text */
+    --mdt-error-bg: rgba(239, 68, 68, 0.2);       /* Error background */
+    --mdt-error-border: rgba(239, 68, 68, 0.5);   /* Error border */
+    --mdt-error-glow: rgba(239, 68, 68, 0.1);     /* Error glow/shadow */
+    --mdt-error-toast-bg: rgba(239, 68, 68, 0.95); /* Toast background (opaque) */
+    --mdt-error-toast-border: rgba(239, 68, 68, 1); /* Toast border (solid) */
+    
+    --mdt-warning: #f59e0b;           /* Warning (Orange) */
+    --mdt-warning-light: #facc15;     /* Warning light text */
+    --mdt-warning-bg: rgba(245, 158, 11, 0.2);       /* Warning background */
+    --mdt-warning-border: rgba(245, 158, 11, 0.5);   /* Warning border */
+    --mdt-warning-gradient: rgba(245, 158, 11, 0.08); /* Warning gradient */
+    --mdt-warning-toast-bg: rgba(245, 158, 11, 0.95); /* Toast background (opaque) */
+    --mdt-warning-toast-border: rgba(245, 158, 11, 1); /* Toast border (solid) */
+    
+    /* Info is a SEMANTIC color (blue = "neutral notice") and must stay blue
+       regardless of the active theme. Otherwise picking a red theme makes
+       info toasts/badges look like errors and a green theme makes them look
+       like successes — both genuinely confusing. Kept as literal rgba so the
+       theme picker can never reach in here. */
+    --mdt-info: #3b82f6;              /* Info (Blue) */
+    --mdt-info-light: #60a5fa;        /* Info light text */
+    --mdt-info-bg: rgba(59, 130, 246, 0.2);       /* Info background */
+    --mdt-info-border: rgba(59, 130, 246, 0.5);   /* Info border */
+    --mdt-info-gradient: rgba(59, 130, 246, 0.08); /* Info gradient */
+    --mdt-info-toast-bg: rgba(59, 130, 246, 0.95); /* Toast background (opaque) */
+    --mdt-info-toast-border: rgba(59, 130, 246, 1); /* Toast border (solid) */
+    
+    /* === BUTTON COLORS === */
+    /* Consistent button styling for actions across the MDT */
+    /* Blue - Edit/Manage/View Actions */
+    --btn-blue-bg: rgba(var(--mdt-primary-rgb), 0.2);
+    --btn-blue-border: rgba(var(--mdt-primary-rgb), 0.5);
+    --btn-blue-text: #60a5fa;
+    --btn-blue-hover-bg: rgba(var(--mdt-primary-rgb), 0.3);
+
+    /* Green - Add/Create/Success Actions */
+    --btn-green-bg: rgba(34, 197, 94, 0.2);
+    --btn-green-border: rgba(34, 197, 94, 0.5);
+    --btn-green-text: #86efac;
+    --btn-green-hover-bg: rgba(34, 197, 94, 0.3);
+
+    /* Red - Delete/Reset/Danger Actions */
+    --btn-red-bg: rgba(239, 68, 68, 0.2);
+    --btn-red-border: rgba(239, 68, 68, 0.5);
+    --btn-red-text: #fca5a5;
+    --btn-red-hover-bg: rgba(239, 68, 68, 0.3);
+
+    /* Purple - Special Actions */
+    --btn-purple-bg: rgba(168, 85, 247, 0.2);
+    --btn-purple-border: rgba(168, 85, 247, 0.5);
+    --btn-purple-text: #c084fc;
+    --btn-purple-hover-bg: rgba(168, 85, 247, 0.3);
+
+    /* Yellow - Warning Actions */
+    --btn-yellow-bg: rgba(245, 158, 11, 0.2);
+    --btn-yellow-border: rgba(245, 158, 11, 0.5);
+    --btn-yellow-text: #fbbf24;
+    --btn-yellow-hover-bg: rgba(245, 158, 11, 0.3);
+
+    /* Indigo - Settings/Config Actions */
+    --btn-indigo-bg: rgba(99, 102, 241, 0.2);
+    --btn-indigo-border: rgba(99, 102, 241, 0.5);
+    --btn-indigo-text: #a5b4fc;
+    --btn-indigo-hover-bg: rgba(99, 102, 241, 0.3);
+    
+    /* === BORDER COLORS === */
+    --mdt-border-default: rgba(75, 85, 99, 0.5);
+    --mdt-border-light: rgba(255, 255, 255, 0.1);
+    --mdt-border-primary: rgba(var(--mdt-primary-rgb), 0.3);
+    --mdt-border-focus: rgba(var(--mdt-primary-rgb), 0.5);
+    
+    /* === OVERLAY COLORS === */
+    --mdt-overlay-dark: rgba(0, 0, 0, 0.7);
+    --mdt-overlay-light: rgba(0, 0, 0, 0.3);
+    
+    /* === ACCENT COLORS === */
+    --mdt-accent-yellow: #fbbf24;     /* Yellow accent */
+    --mdt-accent-yellow-light: #fde047;  /* Light yellow text */
+    --mdt-accent-yellow-bg: rgba(234, 179, 8, 0.2);      /* Yellow background */
+    --mdt-accent-yellow-border: rgba(234, 179, 8, 0.5);  /* Yellow border */
+    
+    --mdt-accent-cyan: #38bdf8;       /* Cyan accent (for distance/location) */
+    --mdt-accent-cyan-light: #7dd3fc;    /* Light cyan text */
+    --mdt-accent-cyan-bg: rgba(56, 189, 248, 0.2);       /* Cyan background */
+    --mdt-accent-cyan-border: rgba(56, 189, 248, 0.3);   /* Cyan border */
+    
+    --mdt-accent-purple: #a855f7;     /* Purple accent */
+    --mdt-accent-pink: #ec4899;       /* Pink accent */
+    
+    /* === SHADOW COLORS === */
+    --mdt-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --mdt-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --mdt-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --mdt-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    
+    /* === GLOW EFFECTS === */
+    --mdt-glow-primary: 0 0 20px rgba(var(--mdt-primary-rgb), 0.5);
+    --mdt-glow-success: 0 0 20px rgba(34, 197, 94, 0.5);
+    --mdt-glow-error: 0 0 20px rgba(239, 68, 68, 0.5);
+    --mdt-glow-warning: 0 0 20px rgba(245, 158, 11, 0.5);
+    
+    /* === GRADIENT OVERLAYS === */
+    --mdt-gradient-fade-bottom: linear-gradient(to bottom, transparent 0%, rgba(var(--mdt-bg-dark-rgb), 0.95) 100%);
+    --mdt-gradient-fade-top: linear-gradient(to top, transparent 0%, rgba(var(--mdt-bg-dark-rgb), 0.95) 100%);
+    
+    /* === CALL NOTES WINDOW === */
+    /* Draggable notes window for calls (dispatch.js & hotline.js) */
+    /* Subtle, professional styling that's distinct but not intrusive */
+    --mdt-notes-window-bg: rgba(var(--mdt-bg-dark-rgb), 0.96);
+    --mdt-notes-window-bg-secondary: rgba(17, 24, 39, 0.96);
+    --mdt-notes-window-border: rgba(var(--mdt-primary-rgb), 0.35);
+    --mdt-notes-window-glow: rgba(var(--mdt-primary-rgb), 0.15);
+    --mdt-notes-inset: rgba(var(--mdt-primary-rgb), 0.05);
+    --mdt-notes-header-bg: rgba(var(--mdt-bg-card-rgb), 0.8);
+    --mdt-notes-window-border-header: rgba(var(--mdt-primary-rgb), 0.25);
+    --mdt-notes-input-bg: rgba(var(--mdt-bg-dark-rgb), 0.7);
+    --mdt-notes-button-bg: rgba(234, 179, 8, 0.2);
+    --mdt-notes-button-bg-hover: rgba(234, 179, 8, 0.3);
+    --mdt-notes-button-border: rgba(234, 179, 8, 0.5);
+    --mdt-notes-button-text: #fbbf24;
+    --mdt-notes-item-bg: rgba(var(--mdt-bg-card-rgb), 0.6);
+    --mdt-notes-item-border: rgba(75, 85, 99, 0.3);
+    --mdt-notes-item-hover-bg: rgba(var(--mdt-primary-rgb), 0.15);
+    --mdt-notes-item-hover-border: rgba(var(--mdt-primary-rgb), 0.35);
+    --mdt-notes-content-bg: rgba(var(--mdt-bg-dark-rgb), 0.5);
+    --mdt-notes-content-border: rgba(75, 85, 99, 0.3);
+    --mdt-notes-system-border: rgba(234, 179, 8, 0.3);
+    --mdt-notes-system-hover-bg: rgba(234, 179, 8, 0.1);
+    --mdt-notes-system-hover-border: rgba(234, 179, 8, 0.4);
+    --mdt-notes-system-content-bg: rgba(234, 179, 8, 0.08);
+    --mdt-notes-system-content-border: rgba(234, 179, 8, 0.3);
+    --mdt-notes-text: #ffffff;
+    --mdt-notes-text-muted: rgba(255, 255, 255, 0.6);
+    --mdt-notes-icon: #fbbf24;
+    --mdt-notes-shadow-main: rgba(0, 0, 0, 0.4);
+    --mdt-notes-glow: rgba(var(--mdt-primary-rgb), 0.1);
+    
+    /* === COMMUNICATIONS CHAT === */
+    /* Chat messages in communications.js - Same styling as notes by default */
+    --mdt-comms-item-bg: rgba(var(--mdt-primary-rgb), 0.08);
+    --mdt-comms-item-border: rgba(var(--mdt-primary-rgb), 0.25);
+    --mdt-comms-item-hover-bg: rgba(var(--mdt-primary-rgb), 0.15);
+    --mdt-comms-item-hover-border: rgba(var(--mdt-primary-rgb), 0.4);
+    --mdt-comms-content-bg: rgba(var(--mdt-bg-card-rgb), 0.4);
+    --mdt-comms-content-border: rgba(var(--mdt-primary-rgb), 0.3);
+    --mdt-comms-text: #ffffff;
+    --mdt-comms-text-muted: rgba(255, 255, 255, 0.6);
+    
+    /* === OPACITY LEVELS === */
+    --mdt-opacity-hover: 0.1;
+    --mdt-opacity-disabled: 0.5;
+    --mdt-opacity-subtle: 0.05;
+
+    --ers-font-scale: 1;
+    --ers-panel-scale: 1;
+}

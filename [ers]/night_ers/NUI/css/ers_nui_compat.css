@@ -1,0 +1,1361 @@
+/*
+ * ERS NUI: Tailwind preflight + Bootstrap coexistence, HUD stage/layout, and MDT-token chrome.
+ * Load order: ers_tokens.css → ers_theme_overrides.css → this file → styles.css → ers_radial_dial.css
+ */
+
+/* --- Root scale (HUD typography / panel zoom) --- */
+
+html {
+  /* ERSTheme pins --ers-font-scale to 1; HUD size uses `--ers-panel-scale` as `zoom` on `.ers-panel-scale-inner` (layout reflow). */
+  font-size: calc(16px * var(--ers-font-scale, 1));
+}
+
+body.ers-layout-mode {
+  outline: none;
+}
+
+body.ers-layout-dragging {
+  cursor: grabbing !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+body.ers-layout-dragging * {
+  cursor: grabbing !important;
+}
+
+body.ers-layout-dragging .ers-hud-zoom-shell,
+body.ers-layout-dragging .ers-layout-banner-root {
+  cursor: grabbing !important;
+}
+
+/* Grab hand on headers (CEF often ignores Tailwind cursor-grab on nested text/icons). */
+body.ers-layout-mode [data-ers-drag-handle],
+body.ers-layout-mode [data-ers-drag-handle] * {
+  cursor: -webkit-grab !important;
+  cursor: grab !important;
+}
+
+body.ers-layout-mode [data-layout-banner-drag] {
+  cursor: -webkit-grab !important;
+  cursor: grab !important;
+}
+
+body.ers-layout-mode [data-layout-banner-drag]:active,
+.is-dragging-banner .ers-layout-banner-drag {
+  cursor: -webkit-grabbing !important;
+  cursor: grabbing !important;
+}
+
+body.ers-layout-mode [data-ers-drag-handle]:active {
+  cursor: -webkit-grabbing !important;
+  cursor: grabbing !important;
+}
+
+body.ers-layout-mode [data-ers-drag-handle]:active * {
+  cursor: -webkit-grabbing !important;
+  cursor: grabbing !important;
+}
+
+body.ers-layout-mode [data-ers-drag-handle],
+body.ers-layout-mode [data-layout-banner-drag] {
+  touch-action: none;
+}
+
+/* Hover affordance — where the grab cursor applies */
+body.ers-layout-mode [data-ers-drag-handle] {
+  transition:
+    filter 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+body.ers-layout-mode [data-ers-drag-handle]:hover {
+  filter: brightness(1.07);
+  box-shadow: inset 0 0 0 1px rgba(var(--mdt-primary-rgb), 0.28);
+}
+
+body.ers-layout-mode [data-ers-drag-handle]:hover .ers-drag-bar {
+  border-bottom-color: rgba(var(--mdt-primary-rgb), 0.45);
+}
+
+body.ers-layout-mode .ers-drag-handle-badge {
+  display: flex !important;
+}
+
+.ers-drag-handle-badge {
+  display: none;
+}
+
+/* backdrop-filter unsupported in FiveM CEF — causes opaque black rects; use bg-opacity on panels instead */
+
+/* HUD: viewport-fit on #ers-hud-logical; user `--ers-panel-scale` resizes each `.ers-panel-scale-inner` via `zoom` (layout reflow).
+   Do not use transform:scale here — it paints larger/smaller without matching layout boxes ↔ drag clamps invent dead bands. */
+
+.ers-panel-scale-inner {
+  zoom: var(--ers-panel-scale, 1);
+  background: transparent;
+}
+
+/* Logical 1920×1080 stage: scaled to viewport via shell transform only. */
+.ers-hud-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Logical HUD box: CSS width/height are fallbacks; ers_hud_stage.js sets inline canvas size (ultrawide W > 1920).
+   overflow: visible — #ers-hud-logical transform(fit) plus panel zoom and card shadows can paint past the inner layout
+   edge; hiding here clipped ultrawide. Viewport clip stays on .ers-hud-stage. */
+.ers-hud-zoom-shell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  width: 1920px;
+  height: 1080px;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* Layout mode: shell receives hits in "empty" stage gaps; children still use their own pointer-events. */
+body.ers-layout-mode .ers-hud-zoom-shell {
+  pointer-events: auto;
+}
+
+.ers-hud-logical {
+  pointer-events: none;
+  box-sizing: border-box;
+  overflow: visible;
+  /* Crisper type inside transform-scaled shell (CEF); avoid extra compositing tricks elsewhere */
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.ers-hud-logical > [id$='-container'] {
+  position: absolute;
+  pointer-events: none;
+}
+
+/* Layout mode: bring hovered HUD root above siblings (containers use pointer-events:none; :has detects inner hover). */
+body.ers-layout-mode #ers-hud-logical > [id$='-container']:has(:hover) {
+  z-index: 520 !important;
+}
+
+/* De-emphasise non-hovered HUD anchors in layout mode — focus/hover restores full opacity */
+body.ers-layout-mode #ers-hud-logical > [id$='-container'] {
+  opacity: 0.42;
+  transition: opacity 0.18s ease;
+}
+
+body.ers-layout-mode #ers-hud-logical > [id$='-container']:has(:hover),
+body.ers-layout-mode #ers-hud-logical > [id$='-container']:has(:focus-within) {
+  opacity: 1;
+}
+
+#ers-hud-resize-grip {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: nwse-resize;
+  color: rgba(148, 163, 184, 0.6);
+  opacity: 0.65;
+  z-index: 100040;
+  user-select: none;
+  border-radius: 8px;
+  pointer-events: auto;
+  transition:
+    opacity 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+body.ers-layout-mode #ers-hud-resize-grip {
+  display: flex;
+}
+
+#ers-hud-resize-grip:hover,
+body.ers-hud-resizing #ers-hud-resize-grip {
+  opacity: 1;
+  color: var(--mdt-primary-light, #60a5fa);
+  background: rgba(var(--mdt-primary-rgb), 0.08);
+}
+
+#ers-hud-resize-grip i {
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/*
+ * HUD chrome aligns with Night Shifts MDT (notes window + dispatch overlays):
+ * gradients, borders, and glow resolve through --mdt-* tokens so the theme picker matches MDT NUI.
+ */
+.ers-drag-bar {
+  background: linear-gradient(
+    180deg,
+    rgba(var(--mdt-bg-darker-rgb), 0.98) 0%,
+    rgba(var(--mdt-bg-dark-rgb), 0.92) 100%
+  );
+  border-bottom: 1px solid var(--mdt-notes-window-border-header);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Primary floating panel — same language as .mdt-tooltip / hotline call cards */
+.ers-hud-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid var(--mdt-notes-window-border);
+  background: linear-gradient(
+    148deg,
+    rgba(var(--mdt-bg-dark-rgb), 0.97) 0%,
+    rgba(var(--mdt-bg-card-rgb), 0.93) 48%,
+    rgba(var(--mdt-bg-dark-rgb), 0.96) 100%
+  );
+  box-shadow: 0 14px 44px var(--mdt-notes-shadow-main), 0 0 26px var(--mdt-notes-glow);
+  color: var(--mdt-text-secondary);
+}
+
+/* Service accent stripe (incoming call HUD) — PD / EMS / fire / tow cues like MDT filters */
+.ers-hud-card--rail-police {
+  border-left: 4px solid var(--mdt-dept-type-police);
+}
+.ers-hud-card--rail-ems {
+  border-left: 4px solid var(--mdt-dept-type-ambulance);
+}
+.ers-hud-card--rail-fire {
+  border-left: 4px solid var(--mdt-dept-type-fire);
+}
+.ers-hud-card--rail-tow {
+  border-left: 4px solid var(--mdt-dept-type-tow);
+}
+.ers-hud-card--rail-primary {
+  border-left: 4px solid var(--mdt-primary);
+}
+
+/* Thin border on every edge — hints + emergency-call card (no accent rail) */
+.ers-hud-card.ers-hud-card--no-rail {
+  border-left: 1px solid var(--mdt-notes-window-border);
+}
+
+/*
+ * Briefing ↔ task list cross-fade transition.
+ * Applied to the inner .ers-hud-card only — the outer container keeps drag
+ * positioning + `--ers-panel-scale` (`zoom`), so ERSDrag clamps stay valid.
+ * `transform` paints into a compositing layer and does not move layout boxes.
+ */
+@keyframes ersHudCardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes ersHudCardExit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.97);
+  }
+}
+
+.ers-hud-card.ers-hud-card--enter {
+  animation: ersHudCardEnter 0.22s cubic-bezier(0.21, 1, 0.36, 1) both;
+  transform-origin: top center;
+  will-change: opacity, transform;
+}
+
+.ers-hud-card.ers-hud-card--exit {
+  animation: ersHudCardExit 0.18s cubic-bezier(0.7, 0, 0.84, 0) both;
+  transform-origin: top center;
+  pointer-events: none;
+  will-change: opacity, transform;
+}
+
+.ers-hud-pill {
+  border-radius: 9999px;
+  border: 1px solid var(--mdt-border-primary);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.92);
+  box-shadow: 0 6px 22px rgba(0, 0, 0, 0.38), 0 0 16px var(--mdt-primary-10);
+}
+
+.ers-hud-body {
+  background: var(--mdt-notes-inset);
+}
+
+.ers-hud-inset-panel,
+.ers-ph-inset {
+  border-radius: 0.45rem;
+  background: var(--mdt-notes-content-bg);
+  border: 1px solid var(--mdt-notes-content-border);
+}
+
+.ers-hud-card .ers-hud-inset-panel {
+  padding: 0.5rem 0.6rem !important;
+}
+
+.ers-hud-card__footer,
+.ers-hud-footer-muted {
+  background: rgba(var(--mdt-bg-dark-rgb), 0.5);
+  border-top: 1px solid var(--mdt-notes-window-border-header);
+  color: var(--mdt-notes-text-muted);
+}
+
+.ers-hud-chip {
+  display: inline-block;
+  padding: 0.125rem 0.45rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  background: var(--mdt-primary-15);
+  border: 1px solid var(--mdt-primary-33);
+  color: var(--mdt-primary-lightest);
+}
+
+.ers-hud-kbd-mini {
+  display: inline-block;
+  padding: 0.08rem 0.35rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.88);
+  border: 1px solid var(--mdt-border-focus);
+  color: var(--mdt-primary-light);
+}
+
+.ers-hud-task-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.65rem;
+  flex-wrap: nowrap;
+  padding: 0.42rem 0.55rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.45rem;
+  background: rgba(var(--mdt-bg-card-rgb), 0.58);
+  border: 1px solid var(--mdt-border-default);
+  font-size: 0.75rem;
+}
+
+.ers-hud-section-heading {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: var(--mdt-primary-light);
+}
+
+.ers-hud-action-bar {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.42);
+  border-top: 1px solid var(--mdt-notes-window-border-header);
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+/* Countdown / status: may ellipsize; pill buttons stay full size (no toolbar “resize” from flex shrink). */
+.ers-hud-action-bar > div:first-child {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.ers-hud-action-bar > div:last-child {
+  flex: 0 0 auto;
+}
+
+.ers-hud-btn-pill {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.125rem;
+  padding: 0 0.2rem;
+  border-radius: 0.375rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    transform 0.08s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.ers-hud-btn-pill:focus,
+.ers-hud-btn-pill:focus-visible {
+  outline: none !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 0 0 1px rgba(var(--mdt-primary-rgb), 0.35);
+}
+
+.ers-hud-btn-pill:active {
+  transform: translateY(0.5px);
+}
+
+.ers-hud-btn-pill--primary,
+.ers-hud-btn-pill--yes {
+  background: rgba(var(--mdt-primary-rgb), 0.92);
+  border-color: var(--mdt-primary-60);
+  color: var(--mdt-text-primary);
+}
+
+.ers-hud-btn-pill--primary:hover,
+.ers-hud-btn-pill--yes:hover {
+  background: rgba(var(--mdt-primary-rgb), 1);
+  border-color: var(--mdt-primary-light);
+}
+
+.ers-hud-btn-pill--outline,
+.ers-hud-btn-pill--no {
+  background: transparent;
+  border-color: var(--mdt-border-default);
+  color: var(--mdt-text-secondary);
+}
+
+.ers-hud-btn-pill--outline:hover,
+.ers-hud-btn-pill--no:hover {
+  border-color: var(--mdt-primary-40);
+  color: var(--mdt-text-primary);
+  background: rgba(var(--mdt-primary-rgb), 0.08);
+}
+
+/* Legacy: --yes / --no are aliases for --primary / --outline */
+
+/* Confirm complete callout modal — Night Shifts MDT / HUD language */
+.are-you-sure-overlay-root {
+  z-index: 100060 !important;
+  pointer-events: auto;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  background: rgba(var(--mdt-bg-darker-rgb), 0.68);
+}
+
+.ers-mdt-callout-modal {
+  pointer-events: auto;
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.5),
+    0 0 28px rgba(var(--mdt-primary-rgb), 0.12);
+}
+
+.ers-mdt-callout-modal__close {
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mdt-border-default);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.55);
+  color: var(--mdt-notes-text-muted);
+  line-height: 1;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease;
+}
+
+/* `&times;` glyphs often sit off-centre in CEF; FA icon centres reliably in the fixed square */
+.ers-mdt-callout-modal__close .fas.fa-times {
+  font-size: 0.75rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.ers-mdt-callout-modal__close:hover {
+  color: var(--mdt-text-primary);
+  border-color: var(--mdt-primary-40);
+  background: rgba(var(--mdt-primary-rgb), 0.12);
+}
+
+.ers-mdt-callout-modal__head {
+  border-color: var(--mdt-notes-window-border-header);
+  background: linear-gradient(
+    180deg,
+    rgba(var(--mdt-bg-darker-rgb), 0.98) 0%,
+    rgba(var(--mdt-bg-dark-rgb), 0.93) 100%
+  );
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+}
+
+.ers-mdt-callout-modal__foot {
+  border-color: var(--mdt-notes-window-border-header);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.52);
+  border-top-style: solid;
+  border-top-width: 1px;
+}
+
+.ers-mdt-modal-footer-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.45rem 1rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    color 0.12s ease,
+    transform 0.08s ease;
+}
+
+.ers-mdt-modal-footer-btn:focus,
+.ers-mdt-modal-footer-btn:focus-visible {
+  outline: none !important;
+}
+
+.ers-mdt-modal-footer-btn:active {
+  transform: translateY(0.5px);
+}
+
+/* Keep callout alive */
+.ers-mdt-modal-footer-btn--secondary {
+  color: var(--mdt-text-secondary);
+  background: var(--btn-purple-bg);
+  border-color: var(--btn-purple-border);
+}
+
+.ers-mdt-modal-footer-btn--secondary:hover {
+  color: var(--mdt-text-primary);
+  background: var(--btn-purple-hover-bg);
+  border-color: var(--btn-purple-border);
+}
+
+/* End callout (destructive confirmation) */
+.ers-mdt-modal-footer-btn--danger {
+  color: var(--btn-red-text);
+  background: var(--btn-red-bg);
+  border-color: var(--btn-red-border);
+}
+
+.ers-mdt-modal-footer-btn--danger:hover {
+  background: var(--btn-red-hover-bg);
+  border-color: var(--btn-red-border);
+}
+
+.ers-mdt-modal-footer-btn--outline {
+  color: var(--mdt-text-secondary);
+  background: transparent;
+  border-color: var(--mdt-border-default);
+}
+
+.ers-mdt-modal-footer-btn--outline:hover {
+  color: var(--mdt-text-primary);
+  border-color: var(--mdt-primary-40);
+  background: rgba(var(--mdt-primary-rgb), 0.08);
+}
+
+.ers-mdt-modal-footer-btn--primary {
+  color: var(--mdt-text-primary);
+  background: rgba(var(--mdt-primary-rgb), 0.88);
+  border-color: var(--mdt-primary-50);
+}
+
+.ers-mdt-modal-footer-btn--primary:hover {
+  background: rgba(var(--mdt-primary-rgb), 0.98);
+  border-color: var(--mdt-primary-light);
+}
+
+.ers-hud-section-stack > div:not(:last-child) {
+  border-bottom: 1px solid var(--mdt-border-default);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.ers-hud-row-divide {
+  border-bottom: 1px solid var(--mdt-border-default);
+}
+
+.ers-hud-track-strip {
+  box-sizing: border-box;
+  flex: 0 0 auto;
+}
+
+.ers-hud-track-btn {
+  flex-shrink: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  cursor: pointer;
+  padding: 0.35rem 0.85rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--mdt-primary-50);
+  background: rgba(var(--mdt-primary-rgb), 0.88);
+  color: var(--mdt-text-primary);
+  font-family: inherit;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.ers-hud-track-btn:hover {
+  background: rgba(var(--mdt-primary-rgb), 1);
+  border-color: var(--mdt-primary-light);
+}
+
+/** Fallback if separate track markup is still mounted */
+.ers-hud-track-bar {
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.72);
+  border: 1px solid var(--mdt-notes-window-border-header);
+  box-sizing: border-box;
+}
+
+.ers-hud-track-bar > #track-text,
+.ers-hud-track-strip > #track-text {
+  flex: 1 1 0%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ers-hud-meta-list {
+  font-size: 0.75rem;
+  display: grid;
+  gap: 0.28rem;
+}
+
+.ers-hud-meta-list__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.12rem 0;
+}
+
+.ers-hud-quote-block {
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.85rem;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.55);
+  border: 1px solid var(--mdt-border-primary);
+  border-left-width: 2px;
+  border-left-color: var(--mdt-primary);
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0.85rem;
+}
+
+.ers-hud-quote-block .ers-hud-quote-icon {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--mdt-primary-light);
+  opacity: 0.78;
+}
+
+.ers-hud-quote-block .ers-hud-quote-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1.55;
+  color: var(--mdt-text-secondary);
+}
+
+/* Transparent roots: avoid Bootstrap/Tailwind “full-width block” quirks in CEF; children stay clickable */
+#hint-prompt-container,
+#callout-prompt-container,
+#dispatch-message-prompt-container,
+#ped-interaction-id-card-container,
+#vehicle-info-container,
+#ped-interaction-inventory-container,
+#ped-interaction-module-container {
+  pointer-events: none;
+}
+
+#hint-prompt-container > .ers-panel-scale-inner,
+#callout-prompt-container > .ers-panel-scale-inner,
+#dispatch-message-prompt-container > .ers-panel-scale-inner,
+#callout-interface-container > .ers-panel-scale-inner,
+#callout-pre-interface-container > .ers-panel-scale-inner,
+#ped-interaction-id-card-container > .ers-panel-scale-inner,
+#ped-interaction-id-card-container > #ped-interaction-id-card,
+#vehicle-info-container > .ers-panel-scale-inner,
+#vehicle-info-container > #vehicle-info,
+#ped-interaction-inventory-container > .ers-panel-scale-inner,
+#ped-interaction-inventory-container > #ped-interaction-inventory,
+#ped-interaction-module-container > .ers-panel-scale-inner,
+#ped-interaction-module-container > #ped-interaction-module {
+  pointer-events: auto;
+}
+
+/*
+ * Ped interaction card: drag bar + sheet. Action rows scroll; footer (End / Exit / Custody) stays visible.
+ * MDT-aligned scrollbar mirrors night_shifts_mdt `.scrollbar-thin` using ERS `:root` tokens.
+ */
+#ped-interaction-module-container .ers-hud-card.ers-ped-interaction-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: min(72vh, 34rem);
+}
+
+#ped-interaction-module-container .ers-hud-card.ers-ped-interaction-card > .ers-drag-bar {
+  flex-shrink: 0;
+}
+
+#ped-interaction-module-container .ers-hud-body.ers-ped-interaction-sheet {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions.ers-scrollbar-mdt {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mdt-border-primary) var(--mdt-bg-dark);
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions.ers-scrollbar-mdt::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions.ers-scrollbar-mdt::-webkit-scrollbar-track {
+  background: var(--mdt-bg-dark);
+  border-radius: 3px;
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions.ers-scrollbar-mdt::-webkit-scrollbar-thumb {
+  background: var(--mdt-border-primary);
+  border-radius: 3px;
+}
+
+#ped-interaction-module-container .ers-ped-interaction-actions.ers-scrollbar-mdt::-webkit-scrollbar-thumb:hover {
+  background: var(--mdt-border-focus);
+  box-shadow: var(--mdt-glow-primary);
+}
+
+#ped-interaction-module-container .ers-ped-interaction-footer {
+  flex-shrink: 0;
+}
+
+/* Visible state must follow stylesheet (#dispatch-message-prompt-container uses flex). Hidden via class — not jQuery .hide()/.show() (those set inline display:block and break stacking). */
+#hint-prompt-container.ers-hud-container--hidden,
+#dispatch-message-prompt-container.ers-hud-container--hidden {
+  display: none !important;
+}
+/* Let Tailwind cards own chrome; strip legacy panel fill on HUD roots */
+#callout-interface-container:has(.ers-panel-scale-inner),
+#callout-pre-interface-container:has(.ers-panel-scale-inner) {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+}
+
+/*
+ * Layout-mode control capsule: floats above gameplay; draggable + position persisted.
+ */
+.ers-layout-banner-root {
+  background: transparent;
+}
+
+.ers-layout-banner-inner {
+  border-radius: 9999px;
+  border: 1px solid var(--mdt-notes-window-border);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.94);
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.32),
+    0 14px 40px rgba(0, 0, 0, 0.45),
+    0 0 24px var(--mdt-notes-glow);
+  animation: ers-layout-banner-pop 0.28s ease-out;
+}
+
+@keyframes ers-layout-banner-pop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.is-dragging-banner .ers-layout-banner-inner {
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.3),
+    0 22px 50px rgba(0, 0, 0, 0.5),
+    inset 0 0 0 1px rgba(51, 65, 85, 0.45);
+}
+
+.ers-layout-banner-drag {
+  cursor: grab;
+}
+
+.ers-layout-banner-drag:active,
+.is-dragging-banner .ers-layout-banner-drag {
+  cursor: grabbing;
+}
+
+.ers-layout-banner-drag:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Preview cards in layout mode — same surface stack as live .ers-hud-card */
+.ers-ph-surface {
+  outline: none !important;
+}
+
+.ers-ph-kbd {
+  border: 1px solid var(--mdt-notes-content-border);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.75);
+  color: var(--mdt-primary-light);
+}
+
+.ers-ph-foot {
+  border-top: 1px solid var(--mdt-notes-window-border-header);
+  color: var(--mdt-notes-text-muted);
+}
+
+.ers-ph-faux-btn {
+  border: 1px solid var(--mdt-border-default);
+  background: rgba(var(--mdt-bg-card-rgb), 0.72);
+}
+
+.ers-ph-faux-y {
+  border-color: var(--btn-green-border) !important;
+  background: var(--btn-green-bg);
+  color: var(--btn-green-text);
+}
+
+.ers-ph-faux-x {
+  border-color: var(--btn-red-border) !important;
+  background: var(--btn-red-bg);
+  color: var(--btn-red-text);
+}
+
+.is-dragging-banner,
+.is-dragging-banner * {
+  user-select: none !important;
+}
+
+#ers-layout-banner .ers-layout-banner-btn {
+  appearance: none;
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  padding: 0.375rem 0.625rem;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  cursor: pointer;
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+}
+
+#ers-layout-banner .ers-layout-banner-btn--muted {
+  color: var(--mdt-text-secondary);
+  background: var(--btn-purple-bg);
+  border-color: var(--btn-purple-border);
+}
+
+#ers-layout-banner .ers-layout-banner-btn--muted:hover {
+  background: var(--btn-purple-hover-bg);
+  border-color: var(--btn-purple-border);
+  color: var(--mdt-text-primary);
+}
+
+#ers-layout-banner .ers-layout-banner-btn--primary {
+  color: var(--btn-green-text);
+  background: var(--btn-green-bg);
+  border-color: var(--btn-green-border);
+}
+
+#ers-layout-banner .ers-layout-banner-btn--primary:hover {
+  background: var(--btn-green-hover-bg);
+  border-color: var(--btn-green-border);
+}
+
+#ers-layout-banner button:focus,
+#ers-layout-banner button:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* HUD layout alignment guides (viewport / stage / logical canvas) — theme tokens, user-facing */
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds {
+  border-width: 2px;
+  border-style: dashed;
+  border-radius: 3px;
+  background: transparent;
+  opacity: 0.92;
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds--viewport {
+  border-color: rgba(var(--mdt-primary-rgb), 0.42);
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds--stage {
+  border-color: var(--mdt-primary-light, #60a5fa);
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds-label {
+  position: absolute;
+  left: 4px;
+  top: 3px;
+  z-index: 2;
+  font-size: 11px;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: rgba(248, 250, 252, 0.95);
+  text-shadow:
+    0 0 8px rgba(0, 0, 0, 0.92),
+    0 1px 2px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  max-width: min(96vw, 420px);
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds--drag-slab {
+  border-color: rgba(251, 191, 36, 0.92);
+  border-width: 3px;
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-bounds--safe {
+  border-color: rgba(52, 211, 153, 0.88);
+}
+
+#ers-hud-debug-readout.ers-hud-debug-readout {
+  position: fixed;
+  left: 8px;
+  right: auto;
+  top: auto;
+  bottom: 8px;
+  max-width: min(98vw, 560px);
+  max-height: min(52vh, 420px);
+  overflow: auto;
+  margin: 0;
+  padding: 10px 12px;
+  z-index: 5;
+  box-sizing: border-box;
+  font-size: 11px;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  color: rgba(241, 245, 249, 0.98);
+  white-space: pre;
+  background: rgba(15, 23, 42, 0.91);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  border-radius: 8px;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.42),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-crosshair-line--v {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 100%;
+  border-left: 2px dashed rgba(var(--mdt-primary-rgb), 0.65);
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+}
+
+#ers-hud-stage-debug-overlay .ers-hud-debug-crosshair-line--h {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  border-top: 2px dashed rgba(var(--mdt-primary-rgb), 0.65);
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.45));
+}
+
+/* Logical HUD grid overlay (aligned to #ers-hud-logical). Snaps panels to multiples of ERSHudStage grid step while dragging when enabled. */
+#ers-hud-layout-grid-layer.ers-hud-layout-grid-layer {
+  position: fixed;
+  box-sizing: border-box;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.42;
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent calc(var(--ers-layout-grid-step, 96px) - 1px),
+      rgba(var(--mdt-primary-rgb), 0.22) calc(var(--ers-layout-grid-step, 96px) - 1px),
+      rgba(var(--mdt-primary-rgb), 0.22) var(--ers-layout-grid-step, 96px)
+    ),
+    repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(var(--ers-layout-grid-step, 96px) - 1px),
+      rgba(var(--mdt-primary-rgb), 0.22) calc(var(--ers-layout-grid-step, 96px) - 1px),
+      rgba(var(--mdt-primary-rgb), 0.22) var(--ers-layout-grid-step, 96px)
+    );
+}
+/* Collapsed callout briefing / tracker — compact strip inside panel (fadeIn leaves outer display:block) */
+#minimized-indicator.ers-callout-collapsed-chip {
+  position: fixed;
+  left: var(--ers-hud-edge-inset, 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100060;
+  display: none;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: max-content;
+  max-width: min(88vw, 14rem);
+  border: none;
+  background: transparent;
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.16s ease;
+}
+
+#minimized-indicator.ers-callout-collapsed-chip:focus-visible {
+  outline: 2px solid var(--mdt-primary-light);
+  outline-offset: 3px;
+  border-radius: 0.35rem;
+}
+
+#minimized-indicator.ers-callout-collapsed-chip:hover {
+  transform: translateY(-50%) translateX(2px);
+}
+
+#minimized-indicator.ers-callout-collapsed-chip:active {
+  transform: translateY(-50%) translateX(0);
+}
+
+.ers-callout-collapsed-chip__panel {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.45rem;
+  box-sizing: border-box;
+  max-width: inherit;
+  margin: 0;
+  padding: 0.35rem 0.55rem 0.35rem 0.45rem;
+  border-radius: 0.45rem;
+  border: 1px solid rgba(var(--mdt-primary-rgb), 0.28);
+  border-left: 3px solid var(--mdt-primary);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.92);
+  box-shadow:
+    0 6px 18px rgba(0, 0, 0, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  color: var(--mdt-text-primary);
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+#minimized-indicator.ers-callout-collapsed-chip:hover .ers-callout-collapsed-chip__panel {
+  border-color: rgba(var(--mdt-primary-rgb), 0.45);
+  box-shadow:
+    0 8px 22px rgba(0, 0, 0, 0.42),
+    0 0 0 1px rgba(var(--mdt-primary-rgb), 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.ers-callout-collapsed-chip__icon {
+  flex: 0 0 auto;
+  font-size: 0.8125rem;
+  line-height: 1;
+  color: var(--mdt-primary-light);
+  opacity: 0.95;
+}
+
+.ers-callout-collapsed-chip__label {
+  flex: 0 1 auto;
+  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  color: var(--mdt-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ers-callout-collapsed-chip__chevron {
+  flex: 0 0 auto;
+  font-size: 0.5625rem;
+  line-height: 1;
+  color: var(--mdt-primary-light);
+  opacity: 0.55;
+  margin-left: -0.05rem;
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+#minimized-indicator.ers-callout-collapsed-chip:hover .ers-callout-collapsed-chip__chevron {
+  opacity: 0.95;
+  transform: translateX(2px);
+}
+
+#ers-layout-appearance-btn:hover,
+#ers-layout-appearance-btn:focus-visible {
+  color: var(--mdt-primary-light) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-outline,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-outline {
+  border: 1px solid var(--mdt-border-default) !important;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.42) !important;
+  color: var(--mdt-text-secondary) !important;
+  border-radius: 0.375rem;
+  transition: border-color 0.12s ease, background-color 0.12s ease, color 0.12s ease;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-outline:hover,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-outline:hover {
+  border-color: var(--mdt-primary-50) !important;
+  background: rgba(var(--mdt-primary-rgb), 0.12) !important;
+  color: var(--mdt-text-primary) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-outline:disabled,
+#ped-interaction-module .ers-ped-interact-btn-outline.ers-ped-interact-btn-outline--muted,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-outline:disabled,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-outline.ers-ped-interact-btn-outline--muted {
+  opacity: 0.45 !important;
+  filter: grayscale(0.3);
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  border-color: var(--mdt-border-default) !important;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.35) !important;
+  color: var(--mdt-text-muted) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-outline:disabled:hover,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-outline:disabled:hover {
+  border-color: var(--mdt-border-default) !important;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.35) !important;
+  color: var(--mdt-text-muted) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-primary,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-primary {
+  border: 1px solid var(--mdt-primary-50) !important;
+  background: rgba(var(--mdt-primary-rgb), 0.85) !important;
+  color: var(--mdt-text-primary) !important;
+  border-radius: 0.375rem;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-primary:hover,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-primary:hover {
+  background: rgba(var(--mdt-primary-rgb), 0.96) !important;
+  border-color: var(--mdt-primary-light) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-danger,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-danger {
+  border: 1px solid rgba(220, 53, 69, 0.55) !important;
+  background: rgba(220, 53, 69, 0.38) !important;
+  color: #fff !important;
+  border-radius: 0.375rem;
+  transition:
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-danger:hover,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-danger:hover {
+  border-color: rgba(248, 113, 113, 0.85) !important;
+  background: rgba(220, 53, 69, 0.55) !important;
+  color: #fff !important;
+}
+
+/* Send to custody unavailable (not near custody center) — checked before the menu opens */
+#ped-interaction-module .ers-ped-interact-btn-primary:disabled,
+#ped-interaction-module .ers-ped-interact-btn-primary.ers-ped-interact-btn-primary--muted,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-primary:disabled,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-primary.ers-ped-interact-btn-primary--muted {
+  opacity: 0.45 !important;
+  filter: grayscale(0.25);
+  cursor: not-allowed !important;
+  pointer-events: none !important;
+  border-color: var(--mdt-border-default) !important;
+  background: rgba(var(--mdt-bg-dark-rgb), 0.55) !important;
+  color: var(--mdt-text-muted) !important;
+}
+
+#ped-interaction-module .ers-ped-interact-btn-primary:disabled:hover,
+#ped-interaction-module-container .ers-hud-card .ers-ped-interact-btn-primary:disabled:hover {
+  background: rgba(var(--mdt-bg-dark-rgb), 0.55) !important;
+  border-color: var(--mdt-border-default) !important;
+}
+
+/*
+ * Compact ID / vehicle HUD cards — same surface stack as MDT panels (header lift + token borders).
+ */
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card + .ers-hud-mini-card:last-child {
+  margin-bottom: 0 !important;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card,
+#vehicle-info .ers-hud-mini-card,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card {
+  background: rgba(var(--mdt-bg-card-rgb), 0.94) !important;
+  border: 1px solid var(--mdt-notes-window-border-header) !important;
+  border-radius: 0.5rem;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.18) inset;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__header,
+#vehicle-info .ers-hud-mini-card__header,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__header {
+  background: rgba(var(--mdt-bg-elevated-rgb), 0.92) !important;
+  border-bottom: 1px solid var(--mdt-notes-window-border-header) !important;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__hdr-icon,
+#vehicle-info .ers-hud-mini-card__hdr-icon,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__hdr-icon {
+  color: var(--mdt-primary-light);
+  font-size: 0.95rem;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__title,
+#vehicle-info .ers-hud-mini-card__title,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__title {
+  color: var(--mdt-text-primary);
+  font-weight: 700;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__body,
+#vehicle-info .ers-hud-mini-card__body,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__body {
+  background: rgba(var(--mdt-bg-dark-rgb), 0.28);
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__row,
+#vehicle-info .ers-hud-mini-card__row,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__row {
+  border-color: var(--mdt-border-default) !important;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__label,
+#vehicle-info .ers-hud-mini-card__label,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__label {
+  color: var(--mdt-text-tertiary);
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__value,
+#vehicle-info .ers-hud-mini-card__value,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__value {
+  color: var(--mdt-text-primary);
+  text-align: right;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__kbd,
+#vehicle-info .ers-hud-mini-card__kbd,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__kbd {
+  border: 1px solid var(--mdt-notes-content-border);
+  background: rgba(var(--mdt-bg-dark-rgb), 0.75);
+  color: var(--mdt-primary-light);
+  padding: 1px 7px;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  font-family: inherit;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__hint,
+#vehicle-info .ers-hud-mini-card__hint,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__hint {
+  color: var(--mdt-text-muted);
+  font-size: 0.72rem;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__section-title,
+#vehicle-info .ers-hud-mini-card__section-title,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__section-title {
+  color: var(--mdt-text-secondary);
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__progress,
+#vehicle-info .ers-hud-mini-card__progress,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__progress {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__progress-bar,
+#ped-interaction-id-card .ers-hud-card .progress-bar,
+#vehicle-info .ers-hud-mini-card__progress-bar,
+#vehicle-info .ers-hud-card .progress-bar,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__progress-bar,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-card .progress-bar {
+  background-color: var(--mdt-primary) !important;
+}
+
+#ped-interaction-id-card .ers-hud-mini-card__loading-icon,
+#vehicle-info .ers-hud-mini-card__loading-icon,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card__loading-icon {
+  color: var(--mdt-primary-light);
+}
+
+#ped-interaction-id-card .ers-hud-mini-card .list-group-item.border-bottom,
+#vehicle-info .ers-hud-mini-card .list-group-item.border-bottom,
+#vehicle-info-container [data-ers-layout-placeholder='ers-vehicle-info'] .ers-hud-mini-card .list-group-item.border-bottom {
+  border-color: var(--mdt-border-default) !important;
+}

@@ -1,0 +1,176 @@
+-- ============================================================================
+--  SmartFires v2 ↔ ERS contract
+-- ============================================================================
+--  Single source of truth for every callout fire calculation in ERS.
+--  Server modules under `server/smartfires/v2/*.lua` populate the server-side
+--  fields. Client modules under `client/smartfires/v2/*.lua` populate the
+--  client-side fields. Both sides share this declaration so call-sites are stable.
+--
+--  Never read fire state from anywhere except `SFV2.GetCalloutScope` (server)
+--  or `SFV2.CountSceneNodes` (client). If something is missing from the scope,
+--  the bug is in `scope.lua` — fix it there rather than adding a workaround
+--  at the call-site.
+-- ============================================================================
+
+SFV2 = SFV2 or {}
+
+--- Internal-only Smart Fires trace toggle. Hardcoded; **do not** expose this
+--  to end users via `config/config.lua`.
+--
+--  Flip to `true` in source when actively debugging Smart Fires v2 logic
+--  (callout scope, NPC backup, teardown, HUD counts, vehicle-fire chase).
+--  Emits `[ERS-SF]` lines on both client (F8) and server consoles. Same
+--  output as enabling `Config.Debug = true`, but scoped to Smart Fires
+--  only — useful for narrow tracing without resmon impact from full debug.
+--
+--  End users: keep this `false`. For `[ERS-SF]` HUD tick traces, flip
+--  `INTERNAL_DEBUG_VERBOSE` to `true` in `shared/debug_helpers.lua`
+--  (requires `Config.Debug = true`).
+SFV2._INTERNAL_DEBUG = false
+
+--- Whether `[ERS-SF]` trace logging is enabled. True if the internal switch is
+--  flipped, or `INTERNAL_DEBUG_VERBOSE` is on in `shared/debug_helpers.lua`
+--  (not plain `Config.Debug` — that stays readable without HUD tick spam).
+---@return boolean
+function SFV2.IsDebug()
+    if SFV2._INTERNAL_DEBUG == true then return true end
+    return ERS_IsDebugVerbose and ERS_IsDebugVerbose() or false
+end
+
+--- True when the v2 incident API is active for this resource boot.
+--  Set by `server/smartfires/v2/bridge.lua` on server (when present),
+--  `client/smartfires/v2/bridge.lua` on client. Falls back to false on legacy
+--  v1/Lite paths.
+---@return boolean
+function SFV2.IsActive() return SFV2._active == true end
+
+--- Internal: bridge calls this once on startup to mark the v2 surface live.
+function SFV2._setActive(active)
+    SFV2._active = active == true
+end
+
+-- ============================================================================
+--  Server surface (populated by `server/smartfires/v2/*.lua`)
+-- ============================================================================
+--
+--  SFV2.SpawnFire(callout, coords, radius, fireType, opts) -> incidentId|nil
+--      Wraps SmartFires `CreateFire` (8th arg suppressExternalDispatch=true so ERS
+--      owns MDT/CAD). All fires use SmartFires' default
+--      behaviour, including native merge: spawns close enough to an existing
+--      incident are absorbed into it and the surviving host id is what the
+--      bridge tracks. Options:
+--          opts.interiorId (number, default 0 = auto-probe coords) - force a
+--                          specific interior id. Indoor placement is otherwise
+--                          auto-resolved by SmartFires when `fireType ==
+--                          'indoors'` or when the coords sit inside a probed
+--                          interior; only set this for rare custom-MLO
+--                          scenarios where the probe misses.
+--      Registers the spawn coords and id on the callout so scope/teardown can
+--      find them later. After a merge the surviving host id is resolved via
+--      `SFV2.ResolveCanonicalIncidentId` when HUD/NPC scope counts incidents,
+--      so a merged spawn never double-counts.
+--
+--  SFV2.SpawnSmoke(callout, coords, radius, smokeType) -> incidentId|nil
+--      Same contract for smoke (6th arg suppressExternalDispatch=true). Smoke has
+--      no merge semantics on SmartFires v2.
+--
+--  SFV2.AttachCallout(callout) -> ok
+--      Called once after callout build. Syncs registry from `callout.fireList`,
+--      resets HUD tracking, runs first scope refresh.
+--
+--  SFV2.Poll(callout) -> ok
+--      Called by the server 5s tick. Refreshes scope, appends new spread hosts,
+--      pushes HUD, and emits one visual reconcile if scope shrank since last
+--      tick.
+--
+--  SFV2.GetCalloutScope(callout) -> scope
+--      Returns the per-tick truth for one callout:
+--          scope.liveNodes    = array of GetAllFires rows (live == true) belonging to callout
+--          scope.spawnIds     = array of CreateFire ids (append-only registry)
+--          scope.hostIds      = array of distinct incident ids hosting live nodes
+--          scope.pendingSeeds = number of registered ids with no live node yet
+--          scope.vehicleFires = array of { vehNet, coords, ... } for any
+--                               SmartFires vehicle fire whose coords land
+--                               inside `radiusM`. Ambient discovery — callouts
+--                               do not need to register vehicle fires; any
+--                               wrecked car burning inside the scene radius
+--                               (regardless of who started the fire) gets
+--                               folded into the callout's task list, HUD count
+--                               and NPC backup tasks. Requires SmartFires
+--                               `GetActiveVehicleFires` export; empty when
+--                               that export is unavailable.
+--          scope.tick         = monotonic integer
+--      Cached per server tick to avoid repeated `GetAllFires()` scans.
+--
+--  SFV2.GetHudCounts(callout) -> current, baseline, pending
+--      Derived from scope only.
+--          current  = canonical active fronts (live hosts + still-active
+--                     pending spawn ids + ambient vehicle fires; matches
+--                     visible SmartFires blip count one-to-one)
+--          pending  = pendingSeeds (registered incidents not yet seeded;
+--                                   vehicle fires are never `pending`)
+--          baseline = monotonic peak of `current` across the merge-settle
+--                     window. Vehicle fires that enter scope after the window
+--                     still grow the baseline via the peak-tracking path.
+--      Vehicle fires never merge with other incidents — each `vehNet` is its
+--      own canonical front.
+--
+--  SFV2.ResolveCanonicalIncidentId(incidentId) -> resolvedId
+--      Resolves any (possibly merged) incident id to its surviving host id by
+--      calling SmartFires' `GetCanonicalIncidentId` export (with a safe
+--      fallback that returns the input when the export is missing). Used by
+--      HUD baseline dedupe; available to any module that needs to compare ids
+--      against a post-merge world.
+--
+--  SFV2.BuildNpcNodeTasks(callout) -> tasks[]
+--      One task per live flame node + one per ambient SmartFires vehicle fire
+--      in scope. Flame-node tasks carry incidentId/nth/hostKey for direct node
+--      removal. Vehicle-fire tasks use the synthetic key `veh:<vehNet>` with
+--      `isVehicleFire = true`; the client worker hoses them through
+--      `ApplyFireDamageAtCoords({ damageVehicles = true })` and never emits
+--      `:stopFire` (SmartFires self-completes when strength hits zero).
+--
+--  SFV2.OnNpcNodeKilled(callout, incidentId, nth) -> ok
+--      NPC reports a node was extinguished. Bridge applies damage / removes
+--      node and re-scopes. Returns true when the node is gone from scope.
+--
+--  SFV2.Teardown(callout, cancelSrc) -> ok
+--      Stop everything for this callout: every spawnId, every hostId in the
+--      latest scope, plus visual purge to all clients. Idempotent.
+--
+--  SFV2.ApplyDamageAtCoords(coords, radius, amount, opts) -> nodesHit
+--      Wraps SmartFires `ApplyFireDamageAtCoords` for NPC hose pulses.
+--
+-- ============================================================================
+--  Client surface (populated by `client/smartfires/v2/*.lua`)
+-- ============================================================================
+--
+--  SFV2.CountSceneNodes(callout) -> liveNodes, pendingIncidents
+--      Mirrors server scope using the new client `GetAllFires` row shape
+--      (`live`, `sourceIncidentId`). Used by NPC backup (per-node fighting).
+--
+--  SFV2.CountSceneIncidents(callout) -> liveIncidents, pendingIncidents
+--      Mirrors `SFV2.GetHudCounts` granularity. Used by client HUD completion
+--      check so the local fallback matches what the server pushes.
+--
+--  SFV2.PurgeCalloutVisuals(callout) -> ok
+--      Drives `fire:cl:stopBySource` for every registered spawnId. Safe to
+--      call repeatedly; used by teardown and reconcile.
+--
+--  SFV2.RegisterCalloutEvents()
+--      One-time net event registration on client; bridge calls this on boot.
+--
+-- ============================================================================
+--  Net events (added by the v2 patches; both sides handle them)
+-- ============================================================================
+--
+--  EventPrefix .. ':sfv2_calloutScope'   (server -> client)
+--      Payload: callout list with per-callout `sfScope` snapshot.
+--      Triggers when scope changes meaningfully (initial attach, shrink,
+--      teardown).
+--
+--  EventPrefix .. ':sfv2_purgeRequest'   (client -> server)
+--      Payload: array of spawnIds the client wants purged everywhere.
+--      Triggers when client detects nodes it cannot account for via scope.
+--
+-- ============================================================================

@@ -1,0 +1,1 @@
+window.addEventListener("message",e=>{let t=e.data;if("subtitles"==t.type){let l=t.display,i;DisplaySubtitles(l,t.text,t.duration)}});function DisplaySubtitles(e,t,l){let i=document.getElementById("subtitleContainer");i.style.display=e?"block":"none",i.innerText=t,i.style.whiteSpace="pre-wrap",i.style.textAlign="center",setTimeout(function(){i.style.display="none"},l)}
