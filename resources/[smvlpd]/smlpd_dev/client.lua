@@ -9,6 +9,8 @@ RegisterNetEvent("smvlpd_dev:spawnVehicle", function(modelName)
     end
 
     local model = GetHashKey(modelName)
+    print("[SPAWNPD] IsModelInCdimage:", IsModelInCdimage(model))
+    print("[SPAWNPD] IsModelValid:", IsModelValid(model))
 
     if not IsModelInCdimage(model) then
         TriggerEvent('chat:addMessage', {
@@ -23,6 +25,7 @@ RegisterNetEvent("smvlpd_dev:spawnVehicle", function(modelName)
     while not HasModelLoaded(model) do
         Wait(0)
     end
+    print("[SPAWNPD] HasModelLoaded:", HasModelLoaded(model))
 
     local ped = PlayerPedId()
     local coords = GetEntityCoords(ped)

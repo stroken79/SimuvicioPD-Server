@@ -123,19 +123,26 @@ end)
 lib.callback.register('smvlpd-ranks:server:getRank', function(source)
 
     local rankId = playerRanks[source] or 1
-
     local rank = getRank(rankId)
 
+    local characterId = activeCharacters[source]
+
+    local surname = ""
+
+    if characterId then
+        surname = MySQL.scalar.await(
+            "SELECT last_name FROM smvlpd_characters WHERE id = ?",
+            { characterId }
+        ) or ""
+    end
+    print("Apellido HUD:", surname)
+
     return {
-
         id = rankId,
-
         label = rank.label,
-
         uniform = Config.Uniforms[rankId],
-
-        image = rank.image
-
+        image = rank.image,
+        player = surname
     }
 
 end)
@@ -245,6 +252,8 @@ end)
 local function GetAllowedVehicles(source)
 
     local rankId = playerRanks[source] or 1
+
+    print("[RANKS] Vehículos rango "..rankId..": "..json.encode(Config.Vehicles[rankId]))
 
     return Config.Vehicles[rankId] or {}
 

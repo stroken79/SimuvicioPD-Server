@@ -8,14 +8,14 @@ Config.Vehicles = {
     -- Oficial P2
     [2] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala"
     },
 
     -- Oficial P3
     [3] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus"
@@ -24,7 +24,7 @@ Config.Vehicles = {
     -- Oficial Senior
     [4] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus",
@@ -35,7 +35,7 @@ Config.Vehicles = {
     -- Sargento I
     [5] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus",
@@ -49,7 +49,7 @@ Config.Vehicles = {
     -- Sargento II
     [6] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus",
@@ -63,7 +63,7 @@ Config.Vehicles = {
     -- Teniente I
     [7] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus",
@@ -78,7 +78,7 @@ Config.Vehicles = {
     -- Teniente II
     [8] = {
         "polvic",
-        "scout2020",
+        "nkscout2020",
         "impala",
         "charger",
         "taurus",

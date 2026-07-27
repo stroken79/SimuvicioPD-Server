@@ -186,11 +186,15 @@ RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
         })
         return
     end
+    local hash = GetHashKey(model)
+    RequestModel(hash)
 
-    lib.requestModel(model)
+    while not HasModelLoaded(hash) do
+        Wait(0)
+    end
 
     local vehicle = CreateVehicle(
-        joaat(model),
+        hash,
         spawn.x,
         spawn.y,
         spawn.z,
@@ -211,7 +215,7 @@ RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
     SetVehicleOnGroundProperly(vehicle)
     SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
     SetVehicleEngineOn(vehicle, true, true, false)
-    SetModelAsNoLongerNeeded(joaat(model))
+    SetModelAsNoLongerNeeded(hash)
 end)
 
 RegisterNetEvent('smvlpd-garage:client:openGarage', function()

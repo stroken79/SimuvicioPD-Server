@@ -9,9 +9,9 @@ local function updateHud(rank)
 
     SendNUIMessage({
         action = "update",
-        player = GetPlayerName(PlayerId()),
         rank = rank.label,
-        image = rank.image
+        image = rank.image,
+        player = rank.player
     })
 
 end

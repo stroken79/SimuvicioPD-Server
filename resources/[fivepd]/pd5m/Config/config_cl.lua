@@ -18,7 +18,7 @@ ActivateWeaponMarkers = true -- activates the armory.
 ActivateEvidenceMarkers = true -- activates the evidence markers. Should stay activated.
 ActivateHelpMarkers = true -- activates the help markers.
 ActivateRepairMarkers = true
-ActivateDeleteMarkers = true -- activates Car Impound / Deletion Markers
+ActivateDeleteMarkers = false
 ActivateTPMarkers = true -- activates Teleportation Markers (alternative way to use the tp-command only in stations)
 
 -- service variables

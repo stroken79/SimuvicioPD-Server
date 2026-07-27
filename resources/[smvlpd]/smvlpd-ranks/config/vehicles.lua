@@ -4,13 +4,13 @@ Config.Vehicles = {
 
     [2] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9"
     },
 
     [3] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4"
@@ -18,7 +18,7 @@ Config.Vehicles = {
 
     [4] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -28,7 +28,7 @@ Config.Vehicles = {
 
     [5] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -40,7 +40,7 @@ Config.Vehicles = {
 
     [6] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -52,7 +52,7 @@ Config.Vehicles = {
 
     [7] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -65,7 +65,7 @@ Config.Vehicles = {
 
     [8] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -78,7 +78,7 @@ Config.Vehicles = {
 
     [9] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -91,7 +91,7 @@ Config.Vehicles = {
 
     [10] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -104,7 +104,7 @@ Config.Vehicles = {
 
     [11] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -118,7 +118,7 @@ Config.Vehicles = {
 
     [12] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -132,7 +132,7 @@ Config.Vehicles = {
 
     [13] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
@@ -146,7 +146,7 @@ Config.Vehicles = {
 
     [14] = {
         "pd8",
-        "scout2020",
+        "nkscout2020",
         "pd9",
         "pd",
         "pd4",
