@@ -55,3 +55,50 @@ end
     })
 
 end)
+RegisterCommand("coords", function()
+    local ped = PlayerPedId()
+    local coords = GetEntityCoords(ped)
+    local heading = GetEntityHeading(ped)
+
+    print(("vec3(%.2f, %.2f, %.2f)"):format(
+        coords.x, coords.y, coords.z
+    ))
+
+    print(("vec4(%.2f, %.2f, %.2f, %.2f)"):format(
+        coords.x, coords.y, coords.z, heading
+    ))
+end, false)
+RegisterCommand("dv", function()
+
+    local ped = PlayerPedId()
+
+    if IsPedInAnyVehicle(ped, false) then
+
+        local vehicle = GetVehiclePedIsIn(ped, false)
+
+        SetEntityAsMissionEntity(vehicle, true, true)
+        DeleteVehicle(vehicle)
+
+        return
+
+    end
+
+    local coords = GetEntityCoords(ped)
+
+    local vehicle = GetClosestVehicle(
+        coords.x,
+        coords.y,
+        coords.z,
+        5.0,
+        0,
+        71
+    )
+
+    if vehicle ~= 0 then
+
+        SetEntityAsMissionEntity(vehicle, true, true)
+        DeleteVehicle(vehicle)
+
+    end
+
+end, false)

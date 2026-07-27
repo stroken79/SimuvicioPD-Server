@@ -1,0 +1,287 @@
+local function openGarage(garageId)
+
+    local vehicles = lib.callback.await('smvlpd-garage:server:getVehicles', false)
+
+    if not vehicles or #vehicles == 0 then
+        lib.notify({
+            title = 'Garaje',
+            description = 'No tienes vehículos disponibles.',
+            type = 'error'
+        })
+        return
+    end
+
+    local options = {}
+
+    for _, vehicle in ipairs(vehicles) do
+
+        options[#options + 1] = {
+
+            title = vehicle.label,
+            description = vehicle.model,
+            icon = 'car',
+
+            onSelect = function()
+
+                TriggerServerEvent(
+                    'smvlpd-garage:server:spawnVehicle',
+                    vehicle.model,
+                    garageId
+                )
+
+            end
+
+        }
+
+    end
+
+    lib.registerContext({
+
+        id = 'smvlpd_garage',
+
+        title = 'Garaje policial',
+
+        options = options
+
+    })
+
+    lib.showContext('smvlpd_garage')
+    lib.hideTextUI()
+
+end
+local textVisible = false
+
+CreateThread(function()
+
+    while true do
+
+        local sleep = 1000
+        local ped = PlayerPedId()
+        local coords = GetEntityCoords(ped)
+
+        for garageId, garage in pairs(Config.Garages) do
+
+            local distance = #(coords - garage.menu)
+
+            if distance < Config.DrawDistance then
+
+                sleep = 0
+
+                DrawMarker(
+                    Config.Marker.type,
+                    garage.menu.x,
+                    garage.menu.y,
+                    garage.menu.z + 0.05,
+                    0.0, 0.0, 0.0,
+                    0.0, 0.0, 0.0,
+                    Config.Marker.size.x,
+                    Config.Marker.size.y,
+                    Config.Marker.size.z,
+                    Config.Marker.color.r,
+                    Config.Marker.color.g,
+                    Config.Marker.color.b,
+                    Config.Marker.color.a,
+                    false,
+                    true,
+                    2,
+                    false,
+                    nil,
+                    nil,
+                    false
+                )
+
+if distance < 1.5 then
+
+    if not textVisible then
+        lib.showTextUI('[E] Abrir garaje')
+        textVisible = true
+    end
+
+    if IsControlJustReleased(0, 38) then
+        lib.hideTextUI()
+        textVisible = false
+        openGarage(garageId)
+    end
+
+elseif textVisible then
+
+    lib.hideTextUI()
+    textVisible = false
+
+end
+    
+
+            end
+            if IsPedInAnyVehicle(ped, false) then
+
+    for _, store in ipairs(garage.stores) do
+
+        local storeDistance = #(coords - store)
+
+        if storeDistance < 5.0 then
+
+            DrawMarker(
+                Config.Marker.type,
+                store.x,
+                store.y,
+                store.z + 0.05,
+                0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0,
+                Config.Marker.size.x,
+                Config.Marker.size.y,
+                Config.Marker.size.z,
+                255,
+                60,
+                60,
+                180,
+                false,
+                true,
+                2,
+                false,
+                nil,
+                nil,
+                false
+            )
+
+if storeDistance < 2.5 then
+
+    if not textVisible then
+        lib.showTextUI('[E] Guardar vehículo')
+        textVisible = true
+    end
+
+    if IsControlJustReleased(0, 38) then
+
+        local vehicle = GetVehiclePedIsIn(ped, false)
+
+        if vehicle ~= 0 then
+
+            NetworkRequestControlOfEntity(vehicle)
+
+            local timeout = 0
+            while not NetworkHasControlOfEntity(vehicle) and timeout < 50 do
+                Wait(10)
+                NetworkRequestControlOfEntity(vehicle)
+                timeout = timeout + 1
+            end
+
+            SetEntityAsMissionEntity(vehicle, true, true)
+            DeleteVehicle(vehicle)
+
+            if DoesEntityExist(vehicle) then
+                DeleteEntity(vehicle)
+            end
+
+            lib.hideTextUI()
+            textVisible = false
+
+            lib.notify({
+                title = 'Garaje',
+                description = 'Vehículo guardado correctamente.',
+                type = 'success'
+            })
+        end
+
+    end
+
+elseif textVisible then
+
+    lib.hideTextUI()
+    textVisible = false
+
+end
+
+        end
+
+    end
+
+end
+
+        end
+
+        Wait(sleep)
+
+    end
+
+end)
+
+
+RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
+
+    local garage = Config.Garages[garageId]
+
+    if not garage then
+        return
+    end
+
+    local spawn = nil
+
+for _, point in ipairs(garage.spawns) do
+
+    if not IsAnyVehicleNearPoint(point.x, point.y, point.z, 3.0) then
+        spawn = point
+        break
+    end
+
+end
+
+if not spawn then
+
+    lib.notify({
+        title = 'Garaje',
+        description = 'Todos los puntos de salida están ocupados.',
+        type = 'error'
+    })
+
+    return
+
+end
+
+lib.requestModel(model)
+
+local vehicle = CreateVehicle(
+
+    joaat(model),
+
+    spawn.x,
+    spawn.y,
+    spawn.z,
+    spawn.w,
+
+    true,
+    false
+
+)
+
+    if vehicle == 0 then
+
+        lib.notify({
+
+            title = 'Garaje',
+
+            description = 'No se ha podido crear el vehículo.',
+
+            type = 'error'
+
+        })
+
+        return
+
+    end
+
+    SetVehicleOnGroundProperly(vehicle)
+
+    SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
+
+    SetVehicleEngineOn(vehicle, true, true, false)
+
+    SetModelAsNoLongerNeeded(joaat(model))
+
+end)
+
+
+RegisterNetEvent('smvlpd-garage:client:openGarage', function()
+
+    openGarage('MissionRow')
+
+end)
