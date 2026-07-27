@@ -8,9 +8,9 @@ lib.callback.register('smvlpd-garage:server:getVehicles', function(source)
 
     for _, model in ipairs(models) do
         vehicles[#vehicles + 1] = {
-            model = model,
-            label = model
-        }
+    model = model,
+    label = Config.VehicleLabels[model] or model
+}
     end
 
     return vehicles

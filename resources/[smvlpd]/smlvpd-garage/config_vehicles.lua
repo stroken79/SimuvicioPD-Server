@@ -96,3 +96,17 @@ Config.Vehicles = {
     }
 
 }
+Config.VehicleLabels = {
+    
+    pd3 = "Dodge Ram",
+    pd4 = "Ford Taurus",
+    pd5 = "Chevrolet Tahoe",
+    pd6 = "Chevrolet Silverado",
+    pd8 = "Crown Victoria",
+    pd9 = "Chevrolet Impala",
+    pd10 = "Ford Explorer Blanco",
+    nkscout2020 = "Vapid Scout",
+    pd = "Dodge Charger",
+    police4 = "Crown Victoria Camuflado",
+    ndds63sivil = "Mercedes s63",
+}
