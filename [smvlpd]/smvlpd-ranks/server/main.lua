@@ -228,7 +228,24 @@ RegisterNetEvent('smvlpd-ranks:server:requestLoadout', function()
     )
 
 end)
+RegisterNetEvent('smvlpd-ranks:server:requestAmmo', function()
 
+    local source = source
+
+    local rankId = playerRanks[source] or 1
+    local rank = getRank(rankId)
+
+    if rank.administrative then
+        rank = getRank(11)
+    end
+
+    TriggerClientEvent(
+        'smvlpd-ranks:client:receiveAmmo',
+        source,
+        rank.weapons
+    )
+
+end)
 
 RegisterNetEvent('smvlpd-ranks:server:requestManagement', function()
     local source = source

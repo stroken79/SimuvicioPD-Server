@@ -25,17 +25,31 @@ CreateThread(function()
                 )
 
                 if distance < 1.5 then
-                    lib.showTextUI('[E] Abrir Armería')
 
-                    if IsControlJustReleased(0, 38) then
-    print("ANTES:", armoryOpen)
+    lib.showTextUI('[E] Abrir Armería')
 
+    if IsControlJustReleased(0, 38) then
+        
+
+        if not exports['pd5m']:IsOnDuty() then
+
+            lib.notify({
+                title = 'Armería',
+                description = 'Debes estar de servicio para acceder a la armería.',
+                type = 'error'
+            })
+
+        else
+
+            if not armoryOpen then
     armoryOpen = true
+    lib.hideTextUI()
+    OpenArmory()
+end
 
-    print("DESPUES:", armoryOpen)
-                        lib.hideTextUI()
-                        OpenArmory()
-                    end
+        end
+
+    end
                 else
                     lib.hideTextUI()
                 end
@@ -65,35 +79,32 @@ function OpenArmory()
     end
 },
             {
-                title = '🦺 Recoger chaleco',
-                onSelect = function()
-                    lib.notify({
-                        title = 'Armería',
-                        description = 'Próximamente',
-                        type = 'inform'
-                    })
-                end
-            },
+    title = '🦺 Recoger chaleco',
+    onSelect = function()
+
+        armoryOpen = false
+        GiveArmour()
+
+    end
+},
             {
-                title = '🔫 Recoger munición',
-                onSelect = function()
-                    lib.notify({
-                        title = 'Armería',
-                        description = 'Próximamente',
-                        type = 'inform'
-                    })
-                end
-            },
+    title = '🔫 Recoger munición',
+    onSelect = function()
+
+        armoryOpen = false
+        GiveAmmo()
+
+    end
+},
             {
-                title = '📤 Devolver equipamiento',
-                onSelect = function()
-                    lib.notify({
-                        title = 'Armería',
-                        description = 'Próximamente',
-                        type = 'inform'
-                    })
-                end
-            }
+    title = '📤 Devolver equipamiento',
+    onSelect = function()
+
+        armoryOpen = false
+        ReturnEquipment()
+
+    end
+}
         }
     })
 
@@ -122,6 +133,36 @@ function GiveStandardEquipment()
 
     TriggerServerEvent('smvlpd-ranks:server:requestLoadout')
 
-    print("armoryOpen =", armoryOpen)
+
+
+end
+function GiveArmour()
+
+    SetPedArmour(PlayerPedId(), 100)
+
+    lib.notify({
+        title = 'Armería',
+        description = 'Chaleco entregado.',
+        type = 'success'
+    })
+
+end
+function GiveAmmo()
+
+    TriggerServerEvent('smvlpd-ranks:server:requestAmmo')
+
+end
+function ReturnEquipment()
+
+    local ped = PlayerPedId()
+
+    RemoveAllPedWeapons(ped, true)
+    SetPedArmour(ped, 0)
+
+    lib.notify({
+        title = 'Armería',
+        description = 'Equipamiento devuelto.',
+        type = 'success'
+    })
 
 end

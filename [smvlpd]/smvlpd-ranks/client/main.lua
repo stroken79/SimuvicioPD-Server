@@ -78,7 +78,23 @@ RegisterNetEvent('smvlpd-ranks:client:receiveLoadout', function(weapons)
     notify('Equipamiento reglamentario entregado.', 'success')
 
 end)
+RegisterNetEvent('smvlpd-ranks:client:receiveAmmo', function(weapons)
 
+    local ped = PlayerPedId()
+
+    for _, weapon in ipairs(weapons) do
+
+        AddAmmoToPed(
+            ped,
+            joaat(weapon.name),
+            weapon.ammo or 0
+        )
+
+    end
+
+    notify('Munición repuesta.', 'success')
+
+end)
 RegisterNetEvent('smvlpd-ranks:client:rankUpdated', function(rankId, rankLabel)
 
     local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
