@@ -1,10 +1,42 @@
 Config = {}
 
 Config.Armories = {
+
     {
-        label = "Armería Central",
+        label = "Mission Row",
         coords = vec3(452.28, -980.03, 30.69)
+    },
+
+    {
+        label = "Del Perro",
+        coords = vec3(-1623.47, -1027.75, 13.15)
+    },
+
+    {
+        label = "Rockford Hills",
+        coords = vec3(-542.24, -133.49, 38.5)
+    },
+
+    {
+        label = "Vespucci",
+        coords = vec3(-1109.29, -843.63, 19.3)
+    },
+
+    {
+        label = "Vespucci Beach",
+        coords = vec3(-1318.52, -1529.23, 4.42)
+    },
+
+    {
+        label = "Vinewood",
+        coords = vec3(619.78, 17.13, 87.8)
+    },
+
+    {
+        label = "La Mesa",
+        coords = vec3(858.52, -1321.72, 28.14)
     }
+
 }
 
 Config.Loadouts = {

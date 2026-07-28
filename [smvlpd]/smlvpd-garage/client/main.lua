@@ -221,29 +221,37 @@ RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
     end
 
     local vehicle = CreateVehicle(
-        hash,
-        spawn.x,
-        spawn.y,
-        spawn.z,
-        spawn.w,
-        true,
-        false
-    )
+    hash,
+    spawn.x,
+    spawn.y,
+    spawn.z,
+    spawn.w,
+    true,
+    false
+)
 
-    if vehicle == 0 then
-        lib.notify({
-            title = 'Garaje',
-            description = 'No se ha podido crear el vehículo.',
-            type = 'error'
-        })
-        return
+if vehicle == 0 then
+    lib.notify({
+        title = 'Garaje',
+        description = 'No se ha podido crear el vehículo.',
+        type = 'error'
+    })
+    return
+end
+
+
+for i = 0, 20 do
+    if DoesExtraExist(vehicle, i) then
+        SetVehicleExtra(vehicle, i, false)
     end
+end
 
-    applyDefaultVehicleVariation(vehicle)
-    SetVehicleOnGroundProperly(vehicle)
-    SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
-    SetVehicleEngineOn(vehicle, true, true, false)
-    SetModelAsNoLongerNeeded(hash)
+applyDefaultVehicleVariation(vehicle)
+SetVehicleOnGroundProperly(vehicle)
+SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
+SetVehicleEngineOn(vehicle, true, true, false)
+SetModelAsNoLongerNeeded(hash)
+
 end)
 
 RegisterNetEvent('smvlpd-garage:client:openGarage', function()

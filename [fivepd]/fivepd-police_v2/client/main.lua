@@ -37,15 +37,30 @@ end)
 local isOnDuty = false
 -- Punto de entrada/salida de servicio policial
 CreateThread(function()
-    local dutyPos = vector3(441.29, -975.70, 30.69)
+    local dutyPoints = {
+    vector3(441.29, -975.70, 30.69), -- Mission Row
+    vector3(-1631.85, -1015.71, 13.13), -- del Perro
+    vector3(-561.96, -131.12, 38.43), -- Rockford Hills
+    vector3(-1107.02, -845.88, 19.32), --vespucci
+    vector3(-1314.12, -1526.99, 4.42), -- vespucci beach
+    vector3(638.26, 1.83, 82.79), -- winewood
+    vector3(827.45, -1289.95, 28.24) -- la mesa
+
+}
 
     while true do
         local sleep = 1000
         local ped = PlayerPedId()
         local pos = GetEntityCoords(ped)
-        local distance = #(pos - dutyPos)
+        for _, dutyPos in ipairs(dutyPoints) do
 
-        if distance < 20.0 then
+    local distance = GetDistanceBetweenCoords(
+    pos.x, pos.y, pos.z,
+    dutyPos.x, dutyPos.y, dutyPos.z,
+    true
+)
+
+    if distance < 20.0 then
             sleep = 0
 
             DrawMarker(
@@ -80,13 +95,14 @@ CreateThread(function()
         AddTextComponentString("~r~Has salido de servicio")
         DrawNotification(false, false)
 
-        print("^1[fivepd-police] FUERA DE SERVICIO^7")
+                print("^1[fivepd-police] FUERA DE SERVICIO^7")
     end
 end
             end
         end
+    end
 
-        Wait(sleep)
+    Wait(sleep)
     end
 end)
 CreateThread(function()
