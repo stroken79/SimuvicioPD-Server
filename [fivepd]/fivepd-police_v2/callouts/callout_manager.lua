@@ -192,6 +192,7 @@ local function Finish(message)
 
     finishing = true
     Notify("~b~CENTRAL: ~g~Aviso finalizado.~n~~w~" .. message)
+    TriggerServerEvent('smvlpd-ranks:server:calloutCompleted')
 
     if supportRequestId then
         TriggerServerEvent("fivepd-police:supportFinish", supportRequestId, message)
@@ -484,6 +485,7 @@ CreateThread(function()
 
         if active and not accepted and IsControlJustReleased(0, ACCEPT_KEY) then
             accepted = true
+            TriggerServerEvent('smvlpd-ranks:server:calloutStarted', current.title)
 
             Notify(current.accept)
 

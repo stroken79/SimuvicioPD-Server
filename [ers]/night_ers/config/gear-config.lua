@@ -105,9 +105,9 @@ Config.GearData = {
     ]]
 
     -- Enable or disable the option to obtain gear via ERS.
-    Enabled = true,
-    EnableGiveWeapons = true,                   -- Enable or disable giving weapons to the player.
-    EnableSetClothing = true,                   -- Enable or disable setting clothes to the player. Setting both to false will result into the NPC being useless, maybe good for decoration :)
+    Enabled = false,                             -- La armería de ERS queda desactivada: se usa smvlpd-ranks/smlvpd-armory.
+    EnableGiveWeapons = false,
+    EnableSetClothing = false,
     ForceMPPedWhenPlayerIsNotAnMPPed = true,    -- Set the player to a default MP-Ped when they are not an MP-Ped.
     UseMarkers = false,                         -- Set to true to use markers instead of peds, in case you have an anti cheat or want to use markers.
     MarkerData = {

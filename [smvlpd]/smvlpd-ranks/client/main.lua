@@ -7,11 +7,17 @@ local function updateHud(rank)
 
     currentRank = rank
 
+    local pointData = lib.callback.await('smvlpd-ranks:server:getPoints', false)
+
     SendNUIMessage({
         action = "update",
         rank = rank.label,
         image = rank.image,
-        player = rank.player
+        player = rank.player,
+
+        points = pointData and pointData.points or 0,
+        nextRank = pointData and pointData.nextRank and pointData.nextRank.label or "Rango máximo",
+        pointsLeft = pointData and pointData.nextRank and pointData.nextRank.remaining or 0
     })
 
 end
@@ -171,16 +177,70 @@ RegisterCommand('rango', function() TriggerEvent('smvlpd-ranks:client:showRank')
 
 
 RegisterNetEvent('smvlpd-ranks:client:pointsAdded', function(amount, total, reason)
+
     notify(('+%s puntos | %s | Total: %s'):format(amount, reason or 'Servicio policial', total), 'success')
+
+    local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+
+    if rank then
+        updateHud(rank)
+    end
+
 end)
 
 RegisterNetEvent('smvlpd-ranks:client:promoted', function(rankId, rankLabel, total)
+
     lib.alertDialog({
         header = 'ASCENSO',
         content = ('Has ascendido a **%s**.\n\nPuntos acumulados: **%s**'):format(rankLabel, total),
         centered = true,
         cancel = false
     })
+
+    local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+
+    if rank then
+        updateHud(rank)
+    end
+
+end)
+
+RegisterNetEvent('smvlpd-ranks:client:serviceSummary', function(total, entries)
+    if total <= 0 then return end
+
+    local lines = {}
+    for _, entry in ipairs(entries) do
+        lines[#lines + 1] = ('+%s — %s'):format(entry.amount, entry.reason)
+    end
+
+    lib.alertDialog({
+        header = 'RESUMEN DEL SERVICIO',
+        content = ('Puntos obtenidos: **%s**\n\n%s'):format(total, table.concat(lines, '\n')),
+        centered = true,
+        cancel = false
+    })
+end)
+
+local function awardCalloutAction(actionId)
+    TriggerServerEvent('smvlpd-ranks:server:awardCalloutAction', actionId)
+end
+
+-- PD5M emite estos eventos cuando el agente usa las acciones de su menú.
+-- El servidor ignora repeticiones y cualquier acción sin un aviso aceptado.
+AddEventHandler('pd5m:int:arrestped', function() awardCalloutAction('arrest') end)
+AddEventHandler('pd5m:int:fineped', function() awardCalloutAction('citation') end)
+AddEventHandler('pd5m:int:breathalyzer', function() awardCalloutAction('breathalyzer') end)
+AddEventHandler('pd5m:int:drugtest', function() awardCalloutAction('drugTest') end)
+AddEventHandler('pd5m:int:search', function() awardCalloutAction('searchPerson') end)
+AddEventHandler('pd5m:int:runid', function() awardCalloutAction('documents') end)
+AddEventHandler('pd5m:int:runplate', function() awardCalloutAction('searchVehicle') end)
+AddEventHandler('pd5m:int:InformPedInvestigation', function() awardCalloutAction('investigation') end)
+AddEventHandler('pd5m:tow:flatbedpickup', function() awardCalloutAction('tow') end)
+AddEventHandler('pd5m:int:confiscateitems', function() awardCalloutAction('minorAction') end)
+AddEventHandler('pd5m:setDuty', function(isOnDuty)
+    if not isOnDuty then
+        TriggerServerEvent('smvlpd-ranks:server:requestServiceSummary')
+    end
 end)
 
 RegisterCommand('puntos', function()

@@ -265,9 +265,16 @@ end
 -- @param isOnShift boolean Whether the user is now on shift or off shift.
 -- @param serviceType string The service type of the shift (police, fire, ambulance, tow).
 RegisterServerEvent("ErsIntegration::OnToggleShift")
-AddEventHandler("ErsIntegration::OnToggleShift", function(source, isOnShift, serviceType)
-    -- Add your custom shift toggle logic here
-    -- print(source, isOnShift, serviceType)
+AddEventHandler("ErsIntegration::OnToggleShift", function(reportedSource, isOnShift, serviceType)
+    local playerSource = source
+
+    -- ERS es la unica autoridad para el turno. PD5M recibe el estado para que
+    -- los avisos, garajes y armerias propias sigan comprobando el servicio.
+    if isOnShift == true and serviceType == 'police' then
+        TriggerClientEvent('pd5m:setDuty', playerSource, true)
+    elseif isOnShift == false then
+        TriggerClientEvent('pd5m:setDuty', playerSource, false)
+    end
 end)
 
 --- Handles first-time NPC interaction events.
@@ -363,8 +370,8 @@ end)
 RegisterServerEvent("ErsIntegration::OnAcceptedCalloutOffer")
 AddEventHandler("ErsIntegration::OnAcceptedCalloutOffer", function(calloutData)
     local src = source
-    -- Add your custom callout accepted logic here
-    -- print(src, calloutData)
+    if GetResourceState('smvlpd-ranks') ~= 'started' or type(calloutData) ~= 'table' then return end
+    exports['smvlpd-ranks']:BeginExternalPoliceCallout(src, calloutData.calloutId)
 end)
 
 --- Handles when a callout is arrived at.
@@ -389,8 +396,10 @@ end)
 RegisterServerEvent("ErsIntegration::OnCalloutCompletedSuccesfully")
 AddEventHandler("ErsIntegration::OnCalloutCompletedSuccesfully", function(calloutData)
     local src = source
-    -- Add your custom callout completed successfully logic here
-    -- print(src, calloutData)
+    if GetResourceState('smvlpd-ranks') ~= 'started' then return end
+
+    calloutData = type(calloutData) == 'table' and calloutData or {}
+    exports['smvlpd-ranks']:AwardExternalPoliceCallout(src, calloutData.calloutId, calloutData.CalloutName)
 end)
 
 --- Handles when a pullover is initiated.

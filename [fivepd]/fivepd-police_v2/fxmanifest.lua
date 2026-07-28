@@ -1,6 +1,8 @@
 fx_version 'cerulean'
 game 'gta5'
 
+dependency 'smvlpd-ranks'
+
 ui_page 'html/index.html'
 
 files {

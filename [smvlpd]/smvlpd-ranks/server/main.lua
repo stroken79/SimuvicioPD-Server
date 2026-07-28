@@ -1,6 +1,9 @@
 local activeCharacters = {}
 local playerRanks = {}
 local playerPoints = {}
+local activeCallouts = {}
+local activeExternalCallouts = {}
+local serviceSummaries = {}
 
 local function getRank(rankId)
     return Config.Ranks[tonumber(rankId) or 1] or Config.Ranks[1]
@@ -178,6 +181,12 @@ local function addPoints(source, amount, reason)
     playerPoints[source] = newPoints
     Player(source).state:set('smvlpdPolicePoints', newPoints, true)
 
+    local summary = serviceSummaries[source]
+    if summary then
+        summary.total = summary.total + amount
+        summary.entries[#summary.entries + 1] = { amount = amount, reason = reason or 'Servicio policial' }
+    end
+
     TriggerClientEvent('smvlpd-ranks:client:pointsAdded', source, amount, newPoints, reason or 'Servicio policial')
 
     -- Los rangos administrativos nunca son modificados por puntos.
@@ -192,6 +201,70 @@ local function addPoints(source, amount, reason)
 end
 
 exports('AddPolicePoints', addPoints)
+
+-- API exclusiva de servidor para los recursos de avisos externos (como ERS).
+local function awardExternalCallout(source, calloutId, calloutName)
+    if not activeExternalCallouts[source] then
+        return false, 'El jugador no tiene un aviso ERS activo.'
+    end
+
+    activeExternalCallouts[source] = nil
+
+    local rewardId = Config.ERSCalloutDifficulties[tostring(calloutId or '')] or 'calloutNormal'
+    local amount = Config.PointRewards[rewardId]
+
+    return addPoints(
+        source,
+        amount,
+        'Aviso ERS completado: ' .. tostring(calloutName or 'Aviso policial')
+    )
+end
+
+exports('AwardExternalPoliceCallout', awardExternalCallout)
+
+exports('BeginExternalPoliceCallout', function(source)
+    if not activeCharacters[source] then return false end
+
+    activeExternalCallouts[source] = true
+    serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
+
+    return true
+end)
+
+RegisterNetEvent('smvlpd-ranks:server:calloutStarted', function(title)
+    if not activeCharacters[source] then return end
+    activeCallouts[source] = { title = tostring(title or 'Aviso policial'), claimed = {} }
+    serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
+end)
+
+RegisterNetEvent('smvlpd-ranks:server:awardCalloutAction', function(actionId)
+    local callout = activeCallouts[source]
+    local reward = Config.PointRewards[actionId]
+    if not callout or callout.claimed[actionId] or not reward then return end
+
+    callout.claimed[actionId] = true
+    local labels = {
+        arrest = 'Arresto', citation = 'Multa', breathalyzer = 'Alcoholimetria', drugTest = 'Prueba de drogas', tow = 'Grua',
+        searchPerson = 'Registro de persona', searchVehicle = 'Registro de vehiculo', documents = 'Documentacion',
+        investigation = 'Investigacion', minorAction = 'Otra accion'
+    }
+    addPoints(source, reward, labels[actionId] or 'Accion policial')
+end)
+
+RegisterNetEvent('smvlpd-ranks:server:calloutCompleted', function()
+    local callout = activeCallouts[source]
+    if not callout then return end
+
+    local rewardId = Config.CalloutDifficulties[callout.title] or 'calloutNormal'
+    addPoints(source, Config.PointRewards[rewardId], 'Aviso completado: ' .. callout.title)
+    activeCallouts[source] = nil
+end)
+
+RegisterNetEvent('smvlpd-ranks:server:requestServiceSummary', function()
+    local summary = serviceSummaries[source] or { total = 0, entries = {} }
+    TriggerClientEvent('smvlpd-ranks:client:serviceSummary', source, summary.total, summary.entries)
+    serviceSummaries[source] = { total = 0, entries = {} }
+end)
 
 RegisterNetEvent('smvlpd-ranks:server:requestWeapon', function(weaponName)
     local source = source
@@ -301,6 +374,9 @@ AddEventHandler('playerDropped', function()
     activeCharacters[source] = nil
     playerRanks[source] = nil
     playerPoints[source] = nil
+    activeCallouts[source] = nil
+    activeExternalCallouts[source] = nil
+    serviceSummaries[source] = nil
 end)
 AddEventHandler('onResourceStart', function(resource)
     if resource ~= GetCurrentResourceName() then return end
@@ -319,3 +395,26 @@ AddEventHandler('onResourceStart', function(resource)
 
     end
 end)
+RegisterCommand('darpuntos', function(source, args)
+
+    if source ~= 0 then
+        return
+    end
+
+    local id = tonumber(args[1])
+    local puntos = tonumber(args[2])
+
+    if not id or not puntos then
+        print("Uso: darpuntos <id> <puntos>")
+        return
+    end
+
+    local ok, err = addPoints(id, puntos, "Prueba")
+
+    if ok then
+        print(("Se han añadido %s puntos al jugador %s."):format(puntos, id))
+    else
+        print(err)
+    end
+
+end, true)

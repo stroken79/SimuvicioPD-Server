@@ -37,3 +37,9 @@ El rango 14 (Chief of Police / Jefe de Policia) puede usar `/gestionrangos` auto
 - Los rangos 12-14 son administrativos y nunca cambian automaticamente por puntos.
 - Export de servidor `AddPolicePoints(source, amount, reason)` preparado para conectar callouts y acciones en la siguiente fase.
 - Baremo de avisos y acciones complementarias centralizado en `config.lua`.
+
+## Puntuacion de avisos
+- Cada aviso completado recibe los puntos de su dificultad: muy sencillo (50), sencillo (75), normal (100), complejo (150) o alto riesgo (200).
+- Las acciones complementarias se puntúan una sola vez por aviso y sus importes se ajustan en `Config.PointRewards` dentro de `config.lua`.
+- Al salir de servicio aparece un resumen con todos los puntos obtenidos durante ese turno.
+- Los avisos completados correctamente de `night_ers` también conceden puntos; se clasifican por identificador en `Config.ERSCalloutDifficulties`.

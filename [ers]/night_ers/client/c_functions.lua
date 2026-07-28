@@ -629,3 +629,8 @@ function OnSendDispatchMessage(message)
     }
     TriggerServerEvent(Config.EventPrefix..":sendDiscordEmbedMessage", messageData)
 end
+server_exports {
+    'BeginExternalPoliceCallout',
+    'AwardExternalPoliceCallout',
+    'AddPolicePoints'
+}

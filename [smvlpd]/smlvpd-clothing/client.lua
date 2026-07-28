@@ -89,8 +89,21 @@ for _, locker in ipairs(Config.Lockers) do
             lib.showTextUI('[E] Vestuario')
 
             if IsControlJustReleased(0, 38) then
-                OpenLocker()
-            end
+
+    local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+    local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
+
+    if not onDuty or service ~= "police" then
+        lib.notify({
+            description = "Debes estar de servicio para usar el vestuario.",
+            type = "error"
+        })
+        return
+    end
+
+    OpenLocker()
+
+end
 
         else
             lib.hideTextUI()

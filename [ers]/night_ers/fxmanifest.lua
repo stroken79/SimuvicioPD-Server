@@ -7,6 +7,8 @@ description 'Emergency Response Simulator'
 version '1.8.15'
 lua54 'yes'
 
+dependency 'smvlpd-ranks'
+
 shared_scripts {
     'shared/ers_server_globals.lua',
     'shared/debug_helpers.lua',

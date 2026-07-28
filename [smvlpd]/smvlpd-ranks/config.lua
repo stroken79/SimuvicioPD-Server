@@ -10,7 +10,7 @@ Config.Uniforms = {
     [1] = 'Novato - manga larga sin galones',
     [2] = 'Oficial P2 - manga corta',
     [3] = 'Oficial P3 - manga corta',
-    [4] = 'Oficial P3+1 / Senior - manga corta',
+    [4] = 'Senior - manga corta',
     [5] = 'Sargento I - manga corta',
     [6] = 'Sargento II - manga corta',
     [7] = 'Teniente I - manga larga',
@@ -56,6 +56,40 @@ Config.PointRewards = {
     minorAction = 5,
 }
 
+-- Los avisos no incluidos se consideran de dificultad normal.
+Config.CalloutDifficulties = {
+    ['Vehiculo abandonado'] = 'calloutVeryEasy',
+    ['Vehiculo muy pequeno'] = 'calloutVeryEasy',
+    ['Conductor demasiado lento'] = 'calloutEasy',
+    ['Vehiculo sobredimensionado'] = 'calloutEasy',
+    ['Venta de drogas en la playa'] = 'calloutComplex',
+    ['Secuestro'] = 'calloutComplex',
+    ['Secuestro en furgoneta'] = 'calloutComplex',
+    ['Tirador activo en el muelle'] = 'calloutHighRisk',
+    ['Persecucion de sospechosos armados'] = 'calloutHighRisk',
+    ['Tiradores con armas pesadas'] = 'calloutHighRisk',
+    ['Secta con rehenes'] = 'calloutHighRisk',
+}
+
+-- Clasificación de los avisos de night_ers por su identificador interno.
+-- Cualquier aviso de ERS no incluido se valora como normal (100 puntos).
+Config.ERSCalloutDifficulties = {
+    abandoned_vehicle = 'calloutVeryEasy',
+    animal_on_road = 'calloutVeryEasy',
+    taxi_fare_dodger = 'calloutEasy',
+    drunk_ped = 'calloutEasy',
+    traffic_incident = 'calloutNormal',
+    domestic_dispute = 'calloutNormal',
+    vehicle_theft = 'calloutComplex',
+    drug_deal = 'calloutComplex',
+    shop_robbery = 'calloutComplex',
+    armed_robbery = 'calloutHighRisk',
+    shots_fired = 'calloutHighRisk',
+    moneytruck_raid = 'calloutHighRisk',
+    prisoner_escape = 'calloutHighRisk',
+    riot = 'calloutHighRisk',
+}
+
 Config.Ranks = {
     [1] = {
         label = 'Novato',
@@ -87,7 +121,7 @@ Config.Ranks = {
     },
 
     [4] = {
-        label = 'Oficial P3+1 / Senior',
+        label = 'Senior',
         image = 'senior.png',
         weapons = {
             { name = 'WEAPON_PISTOL', ammo = 72, components = { 'COMPONENT_AT_PI_FLSH' } },

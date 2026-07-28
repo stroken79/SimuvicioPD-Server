@@ -123,3 +123,24 @@ body{
     }
 
 }
+#playerPoints,
+#nextRank,
+#pointsLeft{
+
+    margin-top:8px;
+
+    font-size:14px;
+
+    color:#d0d0d0;
+
+    text-align:center;
+
+}
+
+#nextRank{
+
+    color:#ffffff;
+
+    font-weight:bold;
+
+}

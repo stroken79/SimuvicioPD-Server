@@ -1,5 +1,10 @@
 local function IsPoliceOnDuty()
-    return exports['pd5m']:IsOnDuty()
+
+    local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+    local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
+
+    return onDuty and service == "police"
+
 end
 local activeTextUI
 

@@ -31,23 +31,26 @@ CreateThread(function()
     if IsControlJustReleased(0, 38) then
         
 
-        if not exports['pd5m']:IsOnDuty() then
+       local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
 
-            lib.notify({
-                title = 'Armería',
-                description = 'Debes estar de servicio para acceder a la armería.',
-                type = 'error'
-            })
+if not onDuty or service ~= "police" then
 
-        else
+    lib.notify({
+        title = "Armería",
+        description = "Debes estar de servicio para acceder a la armería.",
+        type = "error"
+    })
 
-            if not armoryOpen then
-    armoryOpen = true
-    lib.hideTextUI()
-    OpenArmory()
+else
+
+    if not armoryOpen then
+        armoryOpen = true
+        lib.hideTextUI()
+        OpenArmory()
+    end
+
 end
-
-        end
 
     end
                 else
