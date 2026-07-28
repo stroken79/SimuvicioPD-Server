@@ -229,6 +229,25 @@ local uniforms = {
         SetPedCollectionComponentVariation(ped, 10, "mp_m_emergency", 3, 5, 0) -- galones Jefe
     end
 }
+function ApplyUniform(name)
+
+    local fn = uniforms[string.lower(name)]
+
+    if not fn then
+        return false
+    end
+
+    local ped = PlayerPedId()
+
+    if not DoesEntityExist(ped) then
+        return false
+    end
+
+    fn(ped)
+
+    return true
+end
+exports("ApplyUniform", ApplyUniform)
 
 
 

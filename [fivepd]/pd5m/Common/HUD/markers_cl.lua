@@ -72,11 +72,12 @@ CreateThread(function()
 				table.insert(list_show_arrest_coords, coord)
 			end
 		end
-		for i, coord in ipairs(list_cloth_coords) do
-			if Vdist2(plc.x, plc.y, plc.z, coord.x, coord.y, coord.z) < range then
-				table.insert(list_show_cloth_coords, coord)
-			end
-		end
+		-- Desactivado punto vestuario pd5m
+        -- for i, coord in ipairs(list_cloth_coords) do
+        --     if Vdist2(plc.x, plc.y, plc.z, coord.x, coord.y, coord.z) < range then
+        --         table.insert(list_show_cloth_coords, coord)
+        --     end
+        -- end
 		for i, coord in ipairs(list_heal_coords) do
 			if Vdist2(plc.x, plc.y, plc.z, coord.x, coord.y, coord.z) < range then
 				table.insert(list_show_heal_coords, coord)
@@ -217,7 +218,7 @@ clothlocation = nil
 clothpolice = nil
 
 
-if ActivateClothMarkers then
+if false then
 	local policeindex = nil
 	local ListWarMenuCloth = {}
 	local RankList = {'Sin rango'}

@@ -13,13 +13,13 @@ CreateThread(function()
                 sleep = 0
 
                 DrawMarker(
-                    2,
+                    21,
                     armory.coords.x,
                     armory.coords.y,
                     armory.coords.z + 0.1,
                     0.0,0.0,0.0,
                     0.0,0.0,0.0,
-                    0.25,0.25,0.25,
+                    0.40,0.40,0.40,
                     0,100,255,150,
                     false,true,2,false,nil,nil,false
                 )
