@@ -12,3 +12,4 @@ cache/
 # Sistema
 Thumbs.db
 .DS_Store
+\[local\]/.gitkeep

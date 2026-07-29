@@ -1,0 +1,125 @@
+body{
+    margin:0;
+    overflow:hidden;
+    background:transparent;
+    font-family:Segoe UI,Arial,sans-serif;
+}
+
+#hud{
+
+    position:absolute;
+
+    top:60px;
+    right:25px;
+
+    width:180px;
+
+    background:rgba(18,18,18,.78);
+
+    border-radius:16px;
+
+    overflow:hidden;
+
+    color:white;
+
+    box-shadow:0 12px 35px rgba(0,0,0,.45);
+
+}
+
+#header{
+
+    height:60px;
+
+    background:linear-gradient(90deg,#0a3c70,#14579f);
+
+    display:flex;
+
+    align-items:center;
+
+    padding-left:15px;
+
+    font-size:20px;
+
+    font-weight:600;
+
+    letter-spacing:1px;
+
+}
+
+#logo{
+
+    width:46px;
+
+    margin-right:14px;
+
+}
+
+#content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    padding:18px;
+
+}
+
+#rankImage{
+
+    width:135px;
+
+    height:55px;
+
+    object-fit:contain;
+
+    margin-bottom:12px;
+
+}
+
+#rankName{
+
+    font-size:19px;
+
+    font-weight:bold;
+
+    text-align:center;
+
+    text-transform:uppercase;
+
+}
+
+#playerName{
+
+    margin-top:10px;
+
+    font-size:15px;
+
+    color:#d0d0d0;
+
+}
+
+.show{
+
+    animation:showHUD .35s ease;
+
+}
+
+@keyframes showHUD{
+
+    from{
+
+        opacity:0;
+        transform:translateX(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateX(0);
+
+    }
+
+}
