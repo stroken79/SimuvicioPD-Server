@@ -13,3 +13,5 @@ cache/
 Thumbs.db
 .DS_Store
 \[local\]/.gitkeep
+server.cfg.bak
+server - copia.cfg
