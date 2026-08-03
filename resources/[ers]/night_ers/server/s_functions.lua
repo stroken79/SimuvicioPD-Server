@@ -387,8 +387,8 @@ end)
 RegisterServerEvent("ErsIntegration::OnEndedACallout")
 AddEventHandler("ErsIntegration::OnEndedACallout", function()
     local src = source
-    -- Add your custom callout ended logic here
-    -- print(src)
+    if GetResourceState('smvlpd-ranks') ~= 'started' then return end
+    exports['smvlpd-ranks']:CancelExternalPoliceCallout(src)
 end)
 
 --- Handles when a callout is completed successfully.

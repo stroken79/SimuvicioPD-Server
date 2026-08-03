@@ -1,4 +1,4 @@
-Config.Callouts[#Config.Callouts+1] = {
+Config.Callouts["animal_dog_attack"] = {
 
     Enabled = true,
     Priority = 1,

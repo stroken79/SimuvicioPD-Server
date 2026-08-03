@@ -1,6 +1,6 @@
 Config = {}
 
-Config.MaxCharacters = 1 -- El esquema permite varios; aumentar cuando el selector tenga slots visibles.
+Config.MaxCharacters = 3 -- El esquema permite varios; aumentar cuando el selector tenga slots visibles.
 Config.CreatorCoords = vector4(402.86, -996.93, -99.00, 180.0)
 Config.DefaultSpawn = vector4(441.18, -981.95, 30.69, 90.0)
 Config.SaveInterval = 120000
