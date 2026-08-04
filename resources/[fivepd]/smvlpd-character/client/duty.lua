@@ -11,8 +11,14 @@ CreateThread(function()
         if success then
 
             if onDuty and not wasOnDuty then
-                wasOnDuty = true
-                TriggerEvent('smvlpd:duty:onDuty')
+
+    wasOnDuty = true
+
+    local service = exports['night_ers']:getPlayerActiveServiceType()
+
+    if service == "police" then
+        TriggerEvent('smvlpd:duty:onDuty')
+    end
 
             elseif not onDuty and wasOnDuty then
                 wasOnDuty = false

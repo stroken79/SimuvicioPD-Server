@@ -59,3 +59,11 @@ RegisterCommand("smvlpdmenu", function()
 end)
 
 RegisterKeyMapping("smvlpdmenu", "Abrir menú SimuvicioPD", "keyboard", "F10")
+
+RegisterNetEvent('smvlpd:duty:offDuty', function()
+
+    TriggerEvent('smvlpd-socio:remove')
+
+    buddySpawned = false
+
+end)
