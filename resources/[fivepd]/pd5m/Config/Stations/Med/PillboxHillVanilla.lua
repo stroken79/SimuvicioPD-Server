@@ -6,7 +6,7 @@ MedPillbox = {
     {x=322.72, y=-586.26, z=90.62, sprite=61, colour=1, alpha=255, name='Hospital'},
   },
   tps = {
-    {x=389.04, y=-572.68, z=28.72, handle='PillboxMed'},
+    {x=293.44, y=-604.63, z=43.32, handle='PillboxMed'},
   },
   markers = {
     cloth = {
@@ -23,14 +23,14 @@ MedPillbox = {
     heal = {
       {x=356.03, y=-596.58, z=28.28, handle = 'PillboxMed'},
       {x=360.81, y=-585.23, z=28.33, handle = 'PillboxMed'},
-      {x=298.0, y=-584.36, z=42.76, handle = 'PillboxMed'},
+      {x=333.68, y=-579.48, z=43.32, handle = 'PillboxMed'},
     },
     help = {
 
     },
     tp = {
-      {x=312.27, y=-553.48, z=28.88, handle = 'PillboxMed'},
-    },
+    {x=293.44, y=-604.63, z=43.32, handle='PillboxMed'},
+},
     weap = {
       {x=314.76, y=-540.22, z=28.74, handle='PillboxMed'},
     },
