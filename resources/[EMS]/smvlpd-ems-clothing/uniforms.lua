@@ -8,6 +8,7 @@ EMSUniforms = {
 
             components = {
 
+                [11] = {590,6},    -- Chaqueta
                 [3] = {1,0},      -- Brazos
                 [4] = {129,0},    -- Pantalón
                 [5] = {150,0},    -- Bolsa
@@ -19,15 +20,9 @@ EMSUniforms = {
 
             },
 
-            collections = {
+            
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 590,
-                    texture = 6
-                }
 
-            }
 
         },
 

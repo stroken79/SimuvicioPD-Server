@@ -1,3 +1,4 @@
+local lockerTextVisible = false
 local function OpenGarage()
 
     lib.registerContext({
@@ -54,15 +55,25 @@ CreateThread(function()
 
             if self.currentDistance < Config.InteractionDistance then
 
-                lib.showTextUI(Config.Text.Locker)
+    if not lockerTextVisible then
+        lockerTextVisible = true
+        lib.showTextUI(Config.Text.Locker, {
+    position = "left-center"
+})
+    end
 
-                if IsControlJustReleased(0, 38) then
-                    -- Aquí irá el menú del vestuario
-                end
+    if IsControlJustReleased(0, 38) then
+        exports["smvlpd-ems-clothing"]:OpenEMSLocker()
+    end
 
-            else
-                lib.hideTextUI()
-            end
+else
+
+    if lockerTextVisible then
+        lockerTextVisible = false
+        lib.hideTextUI()
+    end
+
+end
 
         end
 

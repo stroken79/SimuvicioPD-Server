@@ -59,8 +59,8 @@ Config.LockerLocations = {
 
     {
         name = "Pillbox Medical Center",
-        coords = vec3(335.08, -570.52, 43.32),
-        heading = 252.52
+        coords = vec3(334.2864, -570.2007, 43.3174),
+        heading = 241.6516
     },
 
     {

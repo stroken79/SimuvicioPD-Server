@@ -16,15 +16,15 @@ local function isManager(source)
     -- Mantiene el permiso ACE como acceso administrativo de emergencia.
     if IsPlayerAceAllowed(source, Config.ManagementAce) then return true end
 
-    -- El Jefe de Policia (rango 14) tiene control total de la gestion de rangos.
-    return tonumber(playerRanks[source]) == 14
+    -- El Director General (rango 12) tiene control total de la gestión de rangos EMS.
+    return tonumber(playerRanks[source]) == 12
 end
 
 
 local function getAutomaticRank(points)
     points = tonumber(points) or 0
     local result = 1
-    for rankId = 1, 11 do
+    for rankId = 1, 9 do
         if points >= (Config.RankPoints[rankId] or 0) then
             result = rankId
         else
@@ -37,14 +37,18 @@ end
 local function getNextRankInfo(rankId, points)
     rankId = tonumber(rankId) or 1
     points = tonumber(points) or 0
-    if rankId >= 12 then
-        return nil
+
+    -- Los rangos administrativos no ascienden por puntos.
+    if rankId >= 10 then
+        return {
+            max = true,
+            administrative = true
+        }
     end
-    if rankId >= 11 then
-        return { max = true }
-    end
+
     local nextId = rankId + 1
     local required = Config.RankPoints[nextId]
+
     return {
         id = nextId,
         label = getRank(nextId).label,
@@ -57,38 +61,38 @@ local function setPlayerRank(source, characterId, rankId, assignedBy)
     rankId = tonumber(rankId)
     if not Config.Ranks[rankId] then return false, 'Rango no valido.' end
 
-    MySQL.insert.await([[INSERT INTO smvlpd_police_ranks (character_id, rank_id, assigned_by)
+    MySQL.insert.await([[INSERT INTO smvlpd_ems_ranks (character_id, rank_id, assigned_by)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE rank_id = VALUES(rank_id), assigned_by = VALUES(assigned_by), updated_at = CURRENT_TIMESTAMP]], {
         characterId, rankId, assignedBy
     })
 
     playerRanks[source] = rankId
-    Player(source).state:set('smvlpdPoliceRank', rankId, true)
-    TriggerClientEvent('smvlpd-ranks:client:rankUpdated', source, rankId, getRank(rankId).label)
+    Player(source).state:set('smvlpdEMSRank', rankId, true)
+    TriggerClientEvent('smvlpd-ems-ranks:client:rankUpdated', source, rankId, getRank(rankId).label)
     return true
 end
 
 MySQL.ready(function()
-    MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_police_ranks (
+    MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_ems_ranks (
         character_id INT UNSIGNED NOT NULL,
         rank_id TINYINT UNSIGNED NOT NULL DEFAULT 1,
         assigned_by VARCHAR(80) NULL,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (character_id),
-        CONSTRAINT fk_smvlpd_police_rank_character FOREIGN KEY (character_id)
+        CONSTRAINT fk_smvlpd_ems_rank_character FOREIGN KEY (character_id)
             REFERENCES smvlpd_characters(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4]])
-    MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_police_points (
+    MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_ems_points (
         character_id INT UNSIGNED NOT NULL,
         points INT UNSIGNED NOT NULL DEFAULT 0,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (character_id),
-        CONSTRAINT fk_smvlpd_police_points_character FOREIGN KEY (character_id)
+        CONSTRAINT fk_smvlpd_ems_points_character FOREIGN KEY (character_id)
             REFERENCES smvlpd_characters(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4]])
 
-    print('[smvlpd-ranks] Sistema de rangos y puntos listo.')
+    print('[smvlpd-ems-ranks] Sistema de rangos EMS iniciado.')
 end)
 
 local function loadCharacter(playerSource, characterId)
@@ -102,28 +106,28 @@ local function loadCharacter(playerSource, characterId)
 
     activeCharacters[playerSource] = characterId
 
-    MySQL.insert.await('INSERT IGNORE INTO smvlpd_police_points (character_id, points) VALUES (?, 0)', { characterId })
+    MySQL.insert.await('INSERT IGNORE INTO smvlpd_ems_points (character_id, points) VALUES (?, 0)', { characterId })
 
-    local points = tonumber(MySQL.scalar.await('SELECT points FROM smvlpd_police_points WHERE character_id = ?', { characterId })) or 0
+    local points = tonumber(MySQL.scalar.await('SELECT points FROM smvlpd_ems_points WHERE character_id = ?', { characterId })) or 0
     playerPoints[playerSource] = points
-    Player(playerSource).state:set('smvlpdPolicePoints', points, true)
+    Player(playerSource).state:set('smvlpdEMSPoints', points, true)
 
-    local rankId = tonumber(MySQL.scalar.await('SELECT rank_id FROM smvlpd_police_ranks WHERE character_id = ?', { characterId })) or 1
+    local rankId = tonumber(MySQL.scalar.await('SELECT rank_id FROM smvlpd_ems_ranks WHERE character_id = ?', { characterId })) or 1
 
-    if not MySQL.scalar.await('SELECT 1 FROM smvlpd_police_ranks WHERE character_id = ?', { characterId }) then
+    if not MySQL.scalar.await('SELECT 1 FROM smvlpd_ems_ranks WHERE character_id = ?', { characterId }) then
         setPlayerRank(playerSource, characterId, 1, 'system')
     else
         playerRanks[playerSource] = rankId
-        Player(playerSource).state:set('smvlpdPoliceRank', rankId, true)
-        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label)
+        Player(playerSource).state:set('smvlpdEMSRank', rankId, true)
+        TriggerClientEvent('smvlpd-ems-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label)
     end
 end
 
-RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
+RegisterNetEvent('smvlpd-ems-ranks:server:characterLoaded', function(characterId)
     loadCharacter(source, characterId)
 end)
 
-lib.callback.register('smvlpd-ranks:server:getRank', function(source)
+lib.callback.register('smvlpd-ems-ranks:server:getRank', function(source)
 
     local rankId = playerRanks[source] or 1
     local rank = getRank(rankId)
@@ -151,7 +155,7 @@ lib.callback.register('smvlpd-ranks:server:getRank', function(source)
 end)
 
 
-lib.callback.register('smvlpd-ranks:server:getPoints', function(source)
+lib.callback.register('smvlpd-ems-ranks:server:getPoints', function(source)
     local rankId = playerRanks[source] or 1
     local points = playerPoints[source] or 0
     local rank = getRank(rankId)
@@ -159,7 +163,7 @@ lib.callback.register('smvlpd-ranks:server:getPoints', function(source)
         points = points,
         rankId = rankId,
         rankLabel = rank.label,
-        administrative = rankId >= 12,
+        administrative = rankId >= 10,
         nextRank = getNextRankInfo(rankId, points)
     }
 end)
@@ -177,30 +181,30 @@ local function addPoints(source, amount, reason)
     local oldRank = playerRanks[source] or 1
     local newPoints = (playerPoints[source] or 0) + amount
 
-    MySQL.update.await('UPDATE smvlpd_police_points SET points = ? WHERE character_id = ?', { newPoints, characterId })
+    MySQL.update.await('UPDATE smvlpd_ems_points SET points = ? WHERE character_id = ?', { newPoints, characterId })
     playerPoints[source] = newPoints
-    Player(source).state:set('smvlpdPolicePoints', newPoints, true)
+    Player(source).state:set('smvlpdEMSPoints', newPoints, true)
 
     local summary = serviceSummaries[source]
     if summary then
         summary.total = summary.total + amount
-        summary.entries[#summary.entries + 1] = { amount = amount, reason = reason or 'Servicio policial' }
+        summary.entries[#summary.entries + 1] = { amount = amount, reason = reason or 'Servicio EMS' }
     end
 
-    TriggerClientEvent('smvlpd-ranks:client:pointsAdded', source, amount, newPoints, reason or 'Servicio policial')
+    TriggerClientEvent('smvlpd-ems-ranks:client:pointsAdded', source, amount, newPoints, reason or 'Servicio EMS')
 
     -- Los rangos administrativos nunca son modificados por puntos.
-    if oldRank <= 11 then
+    if oldRank <= 9 then
         local newRank = getAutomaticRank(newPoints)
         if newRank > oldRank then
             setPlayerRank(source, characterId, newRank, 'automatic_points')
-            TriggerClientEvent('smvlpd-ranks:client:promoted', source, newRank, getRank(newRank).label, newPoints)
+            TriggerClientEvent('smvlpd-ems-ranks:client:promoted', source, newRank, getRank(newRank).label, newPoints)
         end
     end
     return true
 end
 
-exports('AddPolicePoints', addPoints)
+exports('AddEMSPoints', addPoints)
 
 -- API exclusiva de servidor para los recursos de avisos externos (como ERS).
 local function awardExternalCallout(source, calloutId, calloutName)
@@ -214,15 +218,15 @@ local function awardExternalCallout(source, calloutId, calloutName)
     local amount = Config.PointRewards[rewardId]
 
     return addPoints(
-        source,
-        amount,
-        'Aviso ERS completado: ' .. tostring(calloutName or 'Aviso policial')
-    )
+    source,
+    amount,
+    'Servicio EMS completado: ' .. tostring(calloutName or 'Aviso EMS')
+)
 end
 
-exports('AwardExternalPoliceCallout', awardExternalCallout)
+exports('AwardExternalEMSCallout', awardExternalCallout)
 
-exports('BeginExternalPoliceCallout', function(source)
+exports('BeginExternalEMSCallout', function(source)
     if not activeCharacters[source] then return false end
 
     activeExternalCallouts[source] = true
@@ -231,13 +235,13 @@ exports('BeginExternalPoliceCallout', function(source)
     return true
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:calloutStarted', function(title)
+RegisterNetEvent('smvlpd-ems-ranks:server:calloutStarted', function(title)
     if not activeCharacters[source] then return end
-    activeCallouts[source] = { title = tostring(title or 'Aviso policial'), claimed = {} }
+    activeCallouts[source] = { title = tostring(title or 'Aviso EMS'), claimed = {} }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:awardCalloutAction', function(actionId)
+RegisterNetEvent('smvlpd-ems-ranks:server:awardCalloutAction', function(actionId)
     local callout = activeCallouts[source]
     local reward = Config.PointRewards[actionId]
     if not callout or callout.claimed[actionId] or not reward then return end
@@ -248,10 +252,10 @@ RegisterNetEvent('smvlpd-ranks:server:awardCalloutAction', function(actionId)
         searchPerson = 'Registro de persona', searchVehicle = 'Registro de vehiculo', documents = 'Documentacion',
         investigation = 'Investigacion', minorAction = 'Otra accion'
     }
-    addPoints(source, reward, labels[actionId] or 'Accion policial')
+    addPoints(source, reward, labels[actionId] or 'Intervención EMS')
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:calloutCompleted', function()
+RegisterNetEvent('smvlpd-ems-ranks:server:calloutCompleted', function()
     local callout = activeCallouts[source]
     if not callout then return end
 
@@ -260,13 +264,13 @@ RegisterNetEvent('smvlpd-ranks:server:calloutCompleted', function()
     activeCallouts[source] = nil
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:requestServiceSummary', function()
+RegisterNetEvent('smvlpd-ems-ranks:server:requestServiceSummary', function()
     local summary = serviceSummaries[source] or { total = 0, entries = {} }
-    TriggerClientEvent('smvlpd-ranks:client:serviceSummary', source, summary.total, summary.entries)
+    TriggerClientEvent('smvlpd-ems-ranks:client:serviceSummary', source, summary.total, summary.entries)
     serviceSummaries[source] = { total = 0, entries = {} }
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:requestWeapon', function(weaponName)
+RegisterNetEvent('smvlpd-ems-ranks:server:requestWeapon', function(weaponName)
     local source = source
     local rankId = playerRanks[source] or 1
     local rank = getRank(rankId)
@@ -276,14 +280,14 @@ RegisterNetEvent('smvlpd-ranks:server:requestWeapon', function(weaponName)
 
     for _, weapon in ipairs(rank.weapons) do
         if weapon.name == weaponName then
-            TriggerClientEvent('smvlpd-ranks:client:receiveWeapon', source, weapon)
+            TriggerClientEvent('smvlpd-ems-ranks:client:receiveWeapon', source, weapon)
             return
         end
     end
 
-    print(('[smvlpd-ranks] %s intento retirar un arma no autorizada.'):format(GetPlayerName(source) or source))
+    print(('[smvlpd-ems-ranks] %s intento retirar un arma no autorizada.'):format(GetPlayerName(source) or source))
 end)
-RegisterNetEvent('smvlpd-ranks:server:requestLoadout', function()
+RegisterNetEvent('smvlpd-ems-ranks:server:requestLoadout', function()
 
     local source = source
 
@@ -295,13 +299,13 @@ RegisterNetEvent('smvlpd-ranks:server:requestLoadout', function()
     end
 
     TriggerClientEvent(
-        'smvlpd-ranks:client:receiveLoadout',
+        'smvlpd-ems-ranks:client:receiveLoadout',
         source,
         rank.weapons
     )
 
 end)
-RegisterNetEvent('smvlpd-ranks:server:requestAmmo', function()
+RegisterNetEvent('smvlpd-ems-ranks:server:requestAmmo', function()
 
     local source = source
 
@@ -313,14 +317,14 @@ RegisterNetEvent('smvlpd-ranks:server:requestAmmo', function()
     end
 
     TriggerClientEvent(
-        'smvlpd-ranks:client:receiveAmmo',
+        'smvlpd-ems-ranks:client:receiveAmmo',
         source,
         rank.weapons
     )
 
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:requestManagement', function()
+RegisterNetEvent('smvlpd-ems-ranks:server:requestManagement', function()
     local source = source
     if not isManager(source) then
         return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = 'No tienes permiso para gestionar rangos.' })
@@ -339,10 +343,10 @@ RegisterNetEvent('smvlpd-ranks:server:requestManagement', function()
             }
         end
     end
-    TriggerClientEvent('smvlpd-ranks:client:openManagement', source, players)
+    TriggerClientEvent('smvlpd-ems-ranks:client:openManagement', source, players)
 end)
 
-RegisterNetEvent('smvlpd-ranks:server:setRank', function(targetId, rankId)
+RegisterNetEvent('smvlpd-ems-ranks:server:setRank', function(targetId, rankId)
     local source = source
     if not isManager(source) then
         return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = 'No tienes permiso para gestionar rangos.' })

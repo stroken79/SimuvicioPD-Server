@@ -1,123 +1,126 @@
-local onDuty = false
+local RankToUniform = {
+    [1] = "cadete",
+    [2] = "emt",
+    [3] = "aemt",
+    [4] = "paramedico",
+    [5] = "paramedico_senior",
+    [6] = "medico",
+    [7] = "cirujano",
+    [8] = "especialista",
+    [9] = "supervisor",
+    [10] = "director_adjunto",
+    [11] = "director_ems",
+    [12] = "director_general"
+}
 
-CreateThread(function()
+local function ApplyUniform(rank)
 
-    for _, locker in pairs(Config.LockerLocations) do
+    local ped = PlayerPedId()
 
-        exports.ox_target:addSphereZone({
-            coords = locker.coords,
-            radius = 1.5,
-            debug = false,
-            options = {
-                {
-                    name = "ems_locker",
-                    icon = Config.TargetIcon,
-                    label = Config.TargetLabel,
-                    onSelect = function()
-                        OpenEMSLocker()
-                    end
-                }
-            }
-        })
+    local gender = "male"
 
+    if IsPedModel(ped, `mp_f_freemode_01`) then
+        gender = "female"
     end
 
-end)
+    local uniformName = RankToUniform[rank] or rank
+    local uniform = EMSUniforms[uniformName]
+
+    if not uniform then
+        print("^1[EMS]^7 Uniforme no encontrado: " .. tostring(rank))
+        return
+    end
+
+    uniform = uniform[gender]
+
+    if not uniform then
+        print("^1[EMS]^7 No existe uniforme para " .. gender)
+        return
+    end
+
+    if uniform.components then
+        for component, data in pairs(uniform.components) do
+            SetPedComponentVariation(
+                ped,
+                component,
+                data[1],
+                data[2],
+                0
+            )
+        end
+    end
+
+    if uniform.collections then
+        for component, data in pairs(uniform.collections) do
+            SetPedCollectionComponentVariation(
+                ped,
+                component,
+                data.collection,
+                data.drawable,
+                data.texture,
+                0
+            )
+        end
+    end
+
+end
 
 function OpenEMSLocker()
 
+    local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+    local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
+
+    if not onDuty or service ~= "ambulance" then
+        lib.notify({
+            description = "Debes estar de servicio como EMS.",
+            type = "error"
+        })
+        return
+    end
+
     lib.registerContext({
-        id = 'ems_locker_menu',
+        id = "ems_locker_menu",
         title = Config.MenuTitle,
         options = {
 
             {
-                title = "🚑 Entrar de servicio",
-                description = "Ponerse el uniforme correspondiente.",
+                title = "👕 Uniforme reglamentario",
+                description = "Equipar el uniforme correspondiente a tu rango.",
+                icon = "shirt",
                 onSelect = function()
 
-                    EnterDuty()
+                    local rank = exports["smvlpd-ems-ranks"]:GetPlayerEMSRank()
+
+                    if not rank then
+                        lib.notify({
+                            description = "No se pudo obtener tu rango.",
+                            type = "error"
+                        })
+                        return
+                    end
+
+                    ApplyUniform(rank.id)
+
+                    lib.notify({
+                        description = "Uniforme aplicado.",
+                        type = "success"
+                    })
 
                 end
             },
 
             {
-                title = "👕 Cambiar uniforme",
-                description = "Volver a aplicar el uniforme.",
-                onSelect = function()
-
-                    ChangeUniform()
-
-                end
-            },
-
-            {
-                title = "👤 Volver a civil",
-                description = "Quitarse el uniforme.",
-                onSelect = function()
-
-                    ExitDuty()
-
-                end
+                title = "👤 Ropa de civil",
+                description = "Disponible próximamente",
+                icon = "user",
+                disabled = true
             }
 
         }
     })
 
-    lib.showContext('ems_locker_menu')
+    lib.showContext("ems_locker_menu")
 
 end
 
-function EnterDuty()
-
-    if onDuty then
-        lib.notify({
-            title = "EMS",
-            description = "Ya estás de servicio.",
-            type = "error"
-        })
-        TriggerServerEvent("smvlpd-ems:server:setDuty", true)
-        return
-    end
-
-    onDuty = true
-
-    lib.notify({
-        title = "EMS",
-        description = "Has entrado de servicio.",
-        type = "success"
-    })
-
-    -- Aquí cargaremos el uniforme
-
-end
-
-function ChangeUniform()
-
-    if not onDuty then
-        return
-    end
-
-    -- Aquí volveremos a aplicar el uniforme
-
-end
-
-function ExitDuty()
-
-    if not onDuty then
-        return
-    end
-
-    onDuty = false
-
-    lib.notify({
-        title = "EMS",
-        description = "Has salido de servicio.",
-        type = "inform"
-    })
-    TriggerServerEvent("smvlpd-ems:server:setDuty", false)
-
-    -- Aquí recuperaremos la ropa civil
-
-end
-
+exports("OpenEMSLocker", OpenEMSLocker)
