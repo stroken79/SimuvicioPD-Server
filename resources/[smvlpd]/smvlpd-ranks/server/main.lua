@@ -32,8 +32,17 @@ local function getNightErsService(source)
     return nil
 end
 
-local function getRank(rankId)
-    return Config.Ranks[tonumber(rankId) or 1] or Config.Ranks[1]
+local function getServiceRanks(serviceType)
+    return (Config.ServiceRanks and Config.ServiceRanks[serviceType]) or Config.Ranks or {}
+end
+
+local function getServiceRankPoints(serviceType)
+    return (Config.ServiceRankPoints and Config.ServiceRankPoints[serviceType]) or Config.RankPoints or { [1] = 0 }
+end
+
+local function getRank(rankId, serviceType)
+    local ranks = getServiceRanks(serviceType)
+    return ranks[tonumber(rankId) or 1] or ranks[1]
 end
 
 local function isManager(source)
@@ -43,16 +52,18 @@ local function isManager(source)
     -- Mantiene el permiso ACE como acceso administrativo de emergencia.
     if IsPlayerAceAllowed(source, Config.ManagementAce) then return true end
 
-    -- El Jefe de Policia (rango 14) tiene control total de la gestion de rangos.
-    return tonumber(playerRanks[source]) == 14
+    local serviceType = activeServices[source]
+    local rank = getRank(playerRanks[source], serviceType)
+    return rank and rank.administrative == true
 end
 
 
-local function getAutomaticRank(points)
+local function getAutomaticRank(points, serviceType)
     points = tonumber(points) or 0
     local result = 1
-    for rankId = 1, 11 do
-        if points >= (Config.RankPoints[rankId] or 0) then
+    local rankPoints = getServiceRankPoints(serviceType)
+    for rankId = 1, #rankPoints do
+        if points >= (rankPoints[rankId] or 0) then
             result = rankId
         else
             break
@@ -61,20 +72,18 @@ local function getAutomaticRank(points)
     return result
 end
 
-local function getNextRankInfo(rankId, points)
+local function getNextRankInfo(rankId, points, serviceType)
     rankId = tonumber(rankId) or 1
     points = tonumber(points) or 0
-    if rankId >= 12 then
-        return nil
-    end
-    if rankId >= 11 then
+    local rankPoints = getServiceRankPoints(serviceType)
+    if not rankPoints[rankId + 1] then
         return { max = true }
     end
     local nextId = rankId + 1
-    local required = Config.RankPoints[nextId]
+    local required = rankPoints[nextId]
     return {
         id = nextId,
-        label = getRank(nextId).label,
+        label = getRank(nextId, serviceType).label,
         required = required,
         remaining = math.max(0, required - points)
     }
@@ -82,10 +91,9 @@ end
 
 local function setPlayerRank(source, characterId, rankId, assignedBy)
     rankId = tonumber(rankId)
-    if not Config.Ranks[rankId] then return false, 'Rango no valido.' end
-
     local serviceType = activeServices[source]
     if not supportedServices[serviceType] then return false, 'No hay un servicio activo.' end
+    if not getServiceRanks(serviceType)[rankId] then return false, 'Rango no valido para este servicio.' end
 
     MySQL.insert.await([[INSERT INTO smvlpd_police_ranks (character_id, service_type, rank_id, assigned_by)
         VALUES (?, ?, ?, ?)
@@ -95,7 +103,7 @@ local function setPlayerRank(source, characterId, rankId, assignedBy)
 
     playerRanks[source] = rankId
     Player(source).state:set('smvlpdPoliceRank', rankId, true)
-    TriggerClientEvent('smvlpd-ranks:client:rankUpdated', source, rankId, getRank(rankId).label)
+    TriggerClientEvent('smvlpd-ranks:client:rankUpdated', source, rankId, getRank(rankId, serviceType).label, serviceType)
     return true
 end
 
@@ -145,6 +153,24 @@ MySQL.ready(function()
         AND CONSTRAINT_NAME = 'PRIMARY' AND COLUMN_NAME = 'service_type']])) or 0
     if pointsServiceInPrimary == 0 then
         MySQL.query.await('ALTER TABLE smvlpd_police_points DROP PRIMARY KEY, ADD PRIMARY KEY (character_id, service_type)')
+    end
+
+    -- Importa una sola vez los datos del antiguo recurso smvlpd-ems-ranks.
+    -- INSERT IGNORE conserva cualquier progreso de ambulance ya existente aqui.
+    local oldEmsRanks = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_ems_ranks']])) or 0
+    if oldEmsRanks > 0 then
+        MySQL.query.await([[INSERT IGNORE INTO smvlpd_police_ranks
+            (character_id, service_type, rank_id, assigned_by, updated_at)
+            SELECT character_id, 'ambulance', rank_id, assigned_by, updated_at FROM smvlpd_ems_ranks]])
+    end
+
+    local oldEmsPoints = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.TABLES
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_ems_points']])) or 0
+    if oldEmsPoints > 0 then
+        MySQL.query.await([[INSERT IGNORE INTO smvlpd_police_points
+            (character_id, service_type, points, updated_at)
+            SELECT character_id, 'ambulance', points, updated_at FROM smvlpd_ems_points]])
     end
 
     print('[smvlpd-ranks] Sistema de rangos y puntos por servicio listo.')
@@ -202,7 +228,7 @@ local function loadServiceProgress(playerSource, characterId, serviceType)
     else
         playerRanks[playerSource] = rankId
         Player(playerSource).state:set('smvlpdPoliceRank', rankId, true)
-        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label, serviceType)
+        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId, serviceType).label, serviceType)
     end
 
     TriggerClientEvent('smvlpd-ranks:client:serviceChanged', playerSource, serviceType)
@@ -238,6 +264,23 @@ RegisterNetEvent('ErsIntegration::OnToggleShift', function(reportedSource, isOnS
     end
 end)
 
+RegisterNetEvent('smvlpd-ranks:server:syncClientService', function(serviceType)
+    local playerSource = source
+    local characterId = activeCharacters[playerSource]
+    if not characterId then return end
+
+    if supportedServices[serviceType] then
+        if activeServices[playerSource] ~= serviceType then
+            loadServiceProgress(playerSource, characterId, serviceType)
+        else
+            -- Fuerza de nuevo el HUD si el evento inicial se perdio.
+            TriggerClientEvent('smvlpd-ranks:client:serviceChanged', playerSource, serviceType)
+        end
+    elseif activeServices[playerSource] then
+        clearActiveProgress(playerSource)
+    end
+end)
+
 CreateThread(function()
     while true do
         Wait(1000)
@@ -266,7 +309,7 @@ lib.callback.register('smvlpd-ranks:server:getRank', function(source)
     if not serviceType then return nil end
 
     local rankId = playerRanks[source] or 1
-    local rank = getRank(rankId)
+    local rank = getRank(rankId, serviceType)
 
     local characterId = activeCharacters[source]
 
@@ -281,7 +324,7 @@ lib.callback.register('smvlpd-ranks:server:getRank', function(source)
     return {
         id = rankId,
         label = rank.label,
-        uniform = Config.Uniforms[rankId],
+        uniform = ((Config.ServiceUniforms and Config.ServiceUniforms[serviceType]) or Config.Uniforms or {})[rankId],
         image = rank.image,
         player = surname,
         service = serviceType
@@ -295,13 +338,13 @@ lib.callback.register('smvlpd-ranks:server:getPoints', function(source)
     if not serviceType then return nil end
     local rankId = playerRanks[source] or 1
     local points = playerPoints[source] or 0
-    local rank = getRank(rankId)
+    local rank = getRank(rankId, serviceType)
     return {
         points = points,
         rankId = rankId,
         rankLabel = rank.label,
-        administrative = rankId >= 12,
-        nextRank = getNextRankInfo(rankId, points),
+        administrative = rank.administrative == true,
+        nextRank = getNextRankInfo(rankId, points, serviceType),
         service = serviceType
     }
 end)
@@ -336,17 +379,18 @@ local function addPoints(source, amount, reason)
     TriggerClientEvent('smvlpd-ranks:client:pointsAdded', source, amount, newPoints, reason or 'Servicio policial')
 
     -- Los rangos administrativos nunca son modificados por puntos.
-    if oldRank <= 11 then
-        local newRank = getAutomaticRank(newPoints)
+    if not getRank(oldRank, serviceType).administrative then
+        local newRank = getAutomaticRank(newPoints, serviceType)
         if newRank > oldRank then
             setPlayerRank(source, characterId, newRank, 'automatic_points')
-            TriggerClientEvent('smvlpd-ranks:client:promoted', source, newRank, getRank(newRank).label, newPoints)
+            TriggerClientEvent('smvlpd-ranks:client:promoted', source, newRank, getRank(newRank, serviceType).label, newPoints)
         end
     end
     return true
 end
 
 exports('AddPolicePoints', addPoints)
+exports('AddEMSPoints', addPoints)
 
 -- API exclusiva de servidor para los recursos de avisos externos (como ERS).
 local function awardExternalCallout(source, calloutId, calloutName)
@@ -367,6 +411,7 @@ local function awardExternalCallout(source, calloutId, calloutName)
 end
 
 exports('AwardExternalPoliceCallout', awardExternalCallout)
+exports('AwardExternalEMSCallout', awardExternalCallout)
 
 exports('BeginExternalPoliceCallout', function(source)
     if not activeCharacters[source] then return false end
@@ -377,7 +422,19 @@ exports('BeginExternalPoliceCallout', function(source)
     return true
 end)
 
+exports('BeginExternalEMSCallout', function(source)
+    if not activeCharacters[source] or activeServices[source] ~= 'ambulance' then return false end
+    activeExternalCallouts[source] = { lastAwardAt = {} }
+    serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
+    return true
+end)
+
 exports('CancelExternalPoliceCallout', function(source)
+    activeExternalCallouts[tonumber(source)] = nil
+    return true
+end)
+
+exports('CancelExternalEMSCallout', function(source)
     activeExternalCallouts[tonumber(source)] = nil
     return true
 end)
@@ -425,8 +482,9 @@ end)
 
 RegisterNetEvent('smvlpd-ranks:server:requestWeapon', function(weaponName)
     local source = source
+    local serviceType = activeServices[source]
     local rankId = playerRanks[source] or 1
-    local rank = getRank(rankId)
+    local rank = getRank(rankId, serviceType)
     if rank.administrative then
         return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = 'Los rangos administrativos no tienen armeria propia.' })
     end
@@ -443,12 +501,12 @@ end)
 RegisterNetEvent('smvlpd-ranks:server:requestLoadout', function()
 
     local source = source
-
+    local serviceType = activeServices[source]
     local rankId = playerRanks[source] or 1
-    local rank = getRank(rankId)
+    local rank = getRank(rankId, serviceType)
 
     if rank.administrative then
-        rank = getRank(11)
+        rank = getRank(getAutomaticRank(math.huge, serviceType), serviceType)
     end
 
     TriggerClientEvent(
@@ -461,12 +519,12 @@ end)
 RegisterNetEvent('smvlpd-ranks:server:requestAmmo', function()
 
     local source = source
-
+    local serviceType = activeServices[source]
     local rankId = playerRanks[source] or 1
-    local rank = getRank(rankId)
+    local rank = getRank(rankId, serviceType)
 
     if rank.administrative then
-        rank = getRank(11)
+        rank = getRank(getAutomaticRank(math.huge, serviceType), serviceType)
     end
 
     TriggerClientEvent(
@@ -484,15 +542,17 @@ RegisterNetEvent('smvlpd-ranks:server:requestManagement', function()
     end
 
     local players = {}
+    local managerService = activeServices[source]
     for _, playerId in ipairs(GetPlayers()) do
         playerId = tonumber(playerId)
-        if activeCharacters[playerId] then
+        if activeCharacters[playerId] and activeServices[playerId] == managerService then
             local rankId = playerRanks[playerId] or 1
             players[#players + 1] = {
                 serverId = playerId,
                 name = GetPlayerName(playerId) or ('ID %s'):format(playerId),
                 rankId = rankId,
-                rankLabel = getRank(rankId).label,
+                rankLabel = getRank(rankId, managerService).label,
+                service = managerService,
             }
         end
     end
@@ -518,10 +578,13 @@ end)
 local function GetAllowedVehicles(source)
 
     local rankId = playerRanks[source] or 1
+    local serviceType = activeServices[source]
+    local vehiclesByService = Config.ServiceVehicles and Config.ServiceVehicles[serviceType]
+    local vehicles = vehiclesByService or Config.Vehicles
 
-    print("[RANKS] Vehículos rango "..rankId..": "..json.encode(Config.Vehicles[rankId]))
+    print("[RANKS] Vehiculos rango "..rankId..": "..json.encode(vehicles[rankId]))
 
-    return Config.Vehicles[rankId] or {}
+    return vehicles[rankId] or {}
 
 end
 
@@ -576,3 +639,72 @@ RegisterCommand('darpuntos', function(source, args)
     end
 
 end, true)
+
+local function adminRankMessage(source, message, messageType)
+    if source == 0 then
+        print(('[smvlpd-ranks] %s'):format(message))
+    else
+        TriggerClientEvent('ox_lib:notify', source, {
+            type = messageType or 'inform',
+            description = message
+        })
+    end
+end
+
+local function changeRankByOne(source, args, direction)
+    if not isManager(source) then
+        return adminRankMessage(source, 'No tienes permiso para modificar rangos.', 'error')
+    end
+
+    local targetId = tonumber(args[1])
+    if not targetId then
+        local command = direction > 0 and 'subirrango' or 'bajarrango'
+        return adminRankMessage(source, ('Uso: /%s <id>'):format(command), 'error')
+    end
+
+    local characterId = activeCharacters[targetId]
+    local serviceType = activeServices[targetId]
+    if not characterId or not supportedServices[serviceType] then
+        return adminRankMessage(source, 'El jugador debe tener un personaje y estar de servicio.', 'error')
+    end
+
+    local ranks = getServiceRanks(serviceType)
+    local oldRankId = tonumber(playerRanks[targetId]) or 1
+    local newRankId = oldRankId + direction
+
+    if not ranks[newRankId] then
+        local limit = direction > 0 and 'maximo' or 'minimo'
+        return adminRankMessage(source, ('El jugador ya esta en el rango %s de %s.'):format(
+            limit, (Config.ServiceLabels and Config.ServiceLabels[serviceType]) or serviceType
+        ), 'error')
+    end
+
+    local assignedBy = source == 0 and 'console'
+        or (GetPlayerIdentifierByType(source, 'license') or ('server:%s'):format(source))
+    local ok, err = setPlayerRank(targetId, characterId, newRankId, assignedBy)
+    if not ok then
+        return adminRankMessage(source, err or 'No se pudo modificar el rango.', 'error')
+    end
+
+    local action = direction > 0 and 'subido' or 'bajado'
+    local rankLabel = getRank(newRankId, serviceType).label
+    adminRankMessage(source, ('Has %s a %s al rango %s (%s).'):format(
+        action, GetPlayerName(targetId) or ('ID %s'):format(targetId), rankLabel,
+        (Config.ServiceLabels and Config.ServiceLabels[serviceType]) or serviceType
+    ), 'success')
+
+    TriggerClientEvent('ox_lib:notify', targetId, {
+        type = direction > 0 and 'success' or 'inform',
+        description = ('Tu nuevo rango de %s es %s.'):format(
+            (Config.ServiceLabels and Config.ServiceLabels[serviceType]) or serviceType, rankLabel
+        )
+    })
+end
+
+RegisterCommand('subirrango', function(source, args)
+    changeRankByOne(source, args, 1)
+end, false)
+
+RegisterCommand('bajarrango', function(source, args)
+    changeRankByOne(source, args, -1)
+end, false)

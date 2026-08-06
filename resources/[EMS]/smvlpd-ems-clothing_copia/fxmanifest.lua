@@ -25,5 +25,5 @@ server_scripts {
 dependencies {
     'ox_lib',
     'ox_target',
-    'smvlpd-ranks'
+    'smvlpd-ems-ranks'
 }

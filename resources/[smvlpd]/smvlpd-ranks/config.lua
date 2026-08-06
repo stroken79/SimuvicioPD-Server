@@ -331,3 +331,41 @@ Config.Ranks = {
         administrative = true
     },
 }
+
+-- Configuracion unificada: cada servicio conserva su propia escala de rangos.
+-- Config.Ranks sigue siendo la escala policial para mantener compatibilidad.
+Config.ServiceRanks = {
+    police = Config.Ranks,
+    ambulance = {
+        [1] = { label = 'Cadete EMS', image = 'cadete.png', weapons = {} },
+        [2] = { label = 'EMT', image = 'EMT.png', weapons = {} },
+        [3] = { label = 'AEMT', image = 'AEMT.png', weapons = {} },
+        [4] = { label = 'Paramedico', image = 'Paramédico.png', weapons = {} },
+        [5] = { label = 'Paramedico Senior', image = 'Paramédico Sénior.png', weapons = {} },
+        [6] = { label = 'Medico', image = 'Médico.png', weapons = {} },
+        [7] = { label = 'Cirujano', image = 'Cirujano.png', weapons = {} },
+        [8] = { label = 'Especialista', image = 'Especialista.png', weapons = {} },
+        [9] = { label = 'Supervisor', image = 'Supervisor.png', weapons = {} },
+        [10] = { label = 'Director Adjunto', image = 'Director Adjunto.png', weapons = {}, administrative = true },
+        [11] = { label = 'Director EMS', image = 'Director EMS.png', weapons = {}, administrative = true },
+        [12] = { label = 'Director General', image = 'Director General.png', weapons = {}, administrative = true },
+    },
+}
+
+Config.ServiceRankPoints = {
+    police = Config.RankPoints,
+    ambulance = {
+        [1] = 0, [2] = 2500, [3] = 7500, [4] = 15000, [5] = 30000,
+        [6] = 50000, [7] = 80000, [8] = 120000, [9] = 175000,
+    },
+}
+
+Config.ServiceUniforms = {
+    police = Config.Uniforms,
+    ambulance = {
+        [1] = 'Cadete', [2] = 'EMT', [3] = 'AEMT', [4] = 'Paramedico',
+        [5] = 'Paramedico Senior', [6] = 'Medico', [7] = 'Cirujano',
+        [8] = 'Especialista', [9] = 'Supervisor', [10] = 'Director Adjunto',
+        [11] = 'Director EMS', [12] = 'Director General',
+    },
+}

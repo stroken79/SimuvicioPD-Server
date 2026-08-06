@@ -89,7 +89,7 @@ function OpenEMSLocker()
                 icon = "shirt",
                 onSelect = function()
 
-                    local rank = exports["smvlpd-ranks"]:GetPlayerEMSRank()
+                    local rank = exports["smvlpd-ems-ranks"]:GetPlayerEMSRank()
 
                     if not rank then
                         lib.notify({

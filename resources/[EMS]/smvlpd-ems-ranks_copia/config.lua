@@ -10,9 +10,9 @@ Config.Uniforms = {
     [1] = 'Cadete',
     [2] = 'EMT',
     [3] = 'AEMT',
-    [4] = 'Paramedico',
-    [5] = 'Paramedico Senior',
-    [6] = 'Medico',
+    [4] = 'Paramédico',
+    [5] = 'Paramédico Senior',
+    [6] = 'Médico',
     [7] = 'Cirujano',
     [8] = 'Especialista',
     [9] = 'Supervisor',
@@ -91,7 +91,7 @@ Config.ERSCalloutDifficulties = {
 
 Config.Ranks = {
     [1] = {
-        label = 'Cadete',
+        label = 'Prueba EMS',
         image = 'cadete.png',
         weapons = {}
     },
@@ -112,20 +112,20 @@ Config.Ranks = {
     },
 
     [4] = {
-        label = 'Paramedico',
-        image = 'Paramedico.png',
+        label = 'Paramédico',
+        image = 'Paramédico.png',
         weapons = {}
     },
 
     [5] = {
-        label = 'Paramedico Senior',
-        image = 'Paramedico Senior.png',
+        label = 'Paramédico Senior',
+        image = 'Paramédico Senior.png',
         weapons = {}
     },
 
     [6] = {
-        label = 'Medico',
-        image = 'Medico.png',
+        label = 'Médico',
+        image = 'Médico.png',
         weapons = {}
     },
 

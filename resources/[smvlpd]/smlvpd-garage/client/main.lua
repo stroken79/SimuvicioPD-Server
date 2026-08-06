@@ -194,7 +194,7 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId)
+RegisterNetEvent('smvlpd-garage:client:spawnVehicle', function(model, garageId, livery)
     local garage = Config.Garages[garageId]
 
     if not garage then
@@ -251,7 +251,16 @@ for i = 0, 20 do
     end
 end
 
-applyDefaultVehicleVariation(vehicle)
+if livery ~= nil then
+    SetVehicleModKit(vehicle, 0)
+    if GetVehicleLiveryCount(vehicle) > 0 then
+        SetVehicleLivery(vehicle, tonumber(livery) or 0)
+    elseif GetNumVehicleMods(vehicle, 48) > 0 then
+        SetVehicleMod(vehicle, 48, tonumber(livery) or 0, false)
+    end
+else
+    applyDefaultVehicleVariation(vehicle)
+end
 SetVehicleOnGroundProperly(vehicle)
 SetPedIntoVehicle(PlayerPedId(), vehicle, -1)
 SetVehicleEngineOn(vehicle, true, true, false)

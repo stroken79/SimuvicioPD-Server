@@ -1,5 +1,38 @@
+local function SpawnVehicle(model, livery, garage)
+
+    local spawn = garage.spawn
+
+    local hash = joaat(model)
+
+    RequestModel(hash)
+
+    while not HasModelLoaded(hash) do
+        Wait(0)
+    end
+
+    local vehicle = CreateVehicle(
+        hash,
+        spawn.x,
+        spawn.y,
+        spawn.z,
+        spawn.w,
+        true,
+        false
+    )
+
+    SetVehicleOnGroundProperly(vehicle)
+
+    if livery ~= nil then
+        SetVehicleLivery(vehicle, livery)
+    end
+
+    TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -1)
+
+    SetModelAsNoLongerNeeded(hash)
+
+end
 local lockerTextVisible = false
-local function OpenGarage()
+local function OpenGarage(garage)
 
     lib.registerContext({
         id = "smvlpd_ems_garage",
@@ -10,8 +43,8 @@ local function OpenGarage()
         description = "Sacar una ambulancia",
         icon = "truck-medical",
         onSelect = function()
-            -- Aquí aparecerá la ambulancia
-        end
+    SpawnVehicle("ambulance", nil, garage)
+end
     }
 }
     })
@@ -86,6 +119,81 @@ CreateThread(function()
     for _, garage in pairs(Config.GarageLocations) do
 
         local point = lib.points.new({
+            coords = garage.store,
+            distance = 30
+        })
+
+        function point:nearby()
+
+            DrawMarker(
+                Config.GarageMarker.Type,
+                self.coords.x,
+                self.coords.y,
+                self.coords.z + 0.10,
+                0.0, 0.0, 0.0,
+                0.0, 0.0, 0.0,
+                Config.GarageMarker.Scale.x,
+                Config.GarageMarker.Scale.y,
+                Config.GarageMarker.Scale.z,
+                Config.GarageMarker.Color.r,
+                Config.GarageMarker.Color.g,
+                Config.GarageMarker.Color.b,
+                Config.GarageMarker.Color.a,
+                false,
+                true,
+                2,
+                false,
+                nil,
+                nil,
+                false
+            )
+
+            if self.currentDistance < 3.0 then
+
+                lib.showTextUI("[E] Guardar vehículo")
+
+                if IsControlJustReleased(0, 38) then
+
+                    local ped = PlayerPedId()
+                    local veh = GetVehiclePedIsIn(ped, false)
+
+                    if veh ~= 0 then
+
+                        SetEntityAsMissionEntity(veh, true, true)
+
+TaskLeaveVehicle(ped, veh, 16)
+
+Wait(500)
+
+DeleteVehicle(veh)
+                    else
+
+                        lib.notify({
+                            type = "error",
+                            description = "No estás dentro de ningún vehículo."
+                        })
+
+                    end
+
+                end
+
+            else
+
+                lib.hideTextUI()
+
+            end
+
+        end
+
+    end
+
+end)
+
+CreateThread(function()
+
+    for _, garage in pairs(Config.GarageLocations) do
+
+        local point = lib.points.new({
             coords = garage.marker,
             distance = 50
         })
@@ -120,7 +228,7 @@ CreateThread(function()
                 lib.showTextUI(Config.Text.Garage)
 
                 if IsControlJustReleased(0, 38) then
-                   OpenGarage()
+                   OpenGarage(garage)
                 end
 
             else

@@ -13,6 +13,15 @@ Los puntos y rangos se guardan de forma independiente para:
 
 Al cambiar de servicio se cargan automaticamente el rango y la puntuacion correspondientes. Los datos anteriores a la version 1.1.0 se conservan como progreso de `police`.
 
+## Fusion con EMS
+
+Este recurso sustituye tambien a `smvlpd-ems-ranks`. Al iniciarse importa los
+rangos y puntos existentes de `smvlpd_ems_ranks` y `smvlpd_ems_points` como
+progreso del servicio `ambulance`, sin sobrescribir datos ya migrados.
+
+No inicies `smvlpd-ems-ranks` junto a este recurso. El vestuario EMS utiliza
+ahora el export compatible `GetPlayerEMSRank` de `smvlpd-ranks`.
+
 ## Instalacion
 
 `server.cfg` ya debe cargar primero `oxmysql`, `ox_lib` y `smvlpd-character`, y despues `smvlpd-ranks`.
@@ -31,6 +40,8 @@ Usa `status` en la consola para comprobar que el recurso este iniciado.
 - `/rango`: muestra el rango y uniforme asociado.
 - `/armeria`: abre la armeria limitada por el rango actual.
 - `/gestionrangos`: panel de administracion de rangos; requiere el permiso ACE anterior.
+- `/subirrango <id>`: sube un nivel al jugador en su trabajo activo; requiere permiso de gestion.
+- `/bajarrango <id>`: baja un nivel al jugador en su trabajo activo; requiere permiso de gestion.
 
 ## Uniformes EUP
 

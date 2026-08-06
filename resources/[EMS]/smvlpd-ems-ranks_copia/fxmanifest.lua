@@ -2,10 +2,9 @@ fx_version 'cerulean'
 game 'gta5'
 lua54 'yes'
 
-name 'smvlpd-ranks'
+name 'smvlpd-ems-ranks'
 author 'SMVLPD'
-description 'Rangos y puntos persistentes por servicio para Night ERS'
-version '1.1.0'
+description 'Rangos EMS persistentes y equipamiento por rango'
 
 dependencies {
     'oxmysql',
@@ -39,7 +38,5 @@ files {
     'html/index.html',
     'html/style.css',
     'html/script.js',
-    'html/img/*.png',
-    'html/img/police/*.png',
-    'html/img/ambulance/*.png'
+    'html/img/*.png'
 }

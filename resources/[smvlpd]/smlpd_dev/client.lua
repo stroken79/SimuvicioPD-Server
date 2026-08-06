@@ -105,3 +105,25 @@ RegisterCommand("dv", function()
     end
 
 end, false)
+
+RegisterCommand("livery", function(_, args)
+    local ped = PlayerPedId()
+    local veh = GetVehiclePedIsIn(ped, false)
+
+    if veh == 0 then
+        print("^1No estás dentro de un vehículo.^0")
+        return
+    end
+
+    if args[1] then
+        local id = tonumber(args[1])
+
+        if id then
+            SetVehicleLivery(veh, id)
+            print(("Livery cambiada a %s"):format(id))
+        end
+    else
+        print(("Livery actual: %s"):format(GetVehicleLivery(veh)))
+        print(("Número de liveries: %s"):format(GetVehicleLiveryCount(veh)))
+    end
+end)

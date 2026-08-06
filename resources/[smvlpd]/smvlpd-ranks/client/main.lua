@@ -5,6 +5,38 @@ local currentRank = {
 
 local currentService
 
+-- Night ERS mantiene el servicio activo en el cliente. Sincronizarlo tambien
+-- desde aqui evita que el HUD quede oculto al cambiar entre trabajos.
+CreateThread(function()
+    local lastOnShift = nil
+    local lastService = nil
+
+    while true do
+        Wait(750)
+
+        if GetResourceState('night_ers') == 'started' then
+            local ok, onShift, serviceType = pcall(function()
+                return exports['night_ers']:getIsPlayerOnShift(),
+                    exports['night_ers']:getPlayerActiveServiceType()
+            end)
+
+            if ok then
+                local supported = serviceType == 'police'
+                    or serviceType == 'ambulance'
+                    or serviceType == 'fire'
+                    or serviceType == 'tow'
+                local activeService = onShift and supported and serviceType or nil
+
+                if onShift ~= lastOnShift or activeService ~= lastService then
+                    lastOnShift = onShift
+                    lastService = activeService
+                    TriggerServerEvent('smvlpd-ranks:server:syncClientService', activeService)
+                end
+            end
+        end
+    end
+end)
+
 local function updateHud(rank)
 
     currentRank = rank
@@ -13,7 +45,8 @@ local function updateHud(rank)
 
     SendNUIMessage({
         action = "update",
-        service = Config.ServiceLabels[rank.service] or rank.service or 'Servicio',
+        service = (Config.ServiceLabels and Config.ServiceLabels[rank.service]) or rank.service or 'Servicio',
+        serviceType = rank.service,
         rank = rank.label,
         image = rank.image,
         player = rank.player,
@@ -50,7 +83,8 @@ local function openArmory()
     if not rank then return notify('No se ha cargado tu rango todavia.', 'error') end
 
     local options = {}
-    local rankData = Config.Ranks[rank.id]
+    local serviceRanks = (Config.ServiceRanks and Config.ServiceRanks[rank.service]) or Config.Ranks or {}
+    local rankData = serviceRanks[rank.id]
     if rankData.administrative then return notify('Tu rango administrativo no tiene armeria propia.', 'error') end
 
     for _, weapon in ipairs(rankData.weapons) do
@@ -156,7 +190,8 @@ end)
 
 RegisterNetEvent('smvlpd-ranks:client:chooseRank', function(player)
     local options = {}
-    for rankId, rank in ipairs(Config.Ranks) do
+    local serviceRanks = (Config.ServiceRanks and Config.ServiceRanks[player.service or currentService]) or Config.Ranks or {}
+    for rankId, rank in ipairs(serviceRanks) do
         options[#options + 1] = {
             title = rank.label,
             description = rankId == player.rankId and 'Rango actual' or nil,
@@ -284,6 +319,7 @@ function GetPlayerPoliceRank()
 end
 
 exports('GetPlayerPoliceRank', GetPlayerPoliceRank)
+exports('GetPlayerEMSRank', GetPlayerPoliceRank)
 
 exports('HasWeaponAccess', ExportHasWeaponAccess)
 exports('HasVehicleAccess', ExportHasVehicleAccess)

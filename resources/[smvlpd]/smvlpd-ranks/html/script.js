@@ -1,5 +1,7 @@
 const hud = document.getElementById("hud");
 const rankImage = document.getElementById("rankImage");
+const logo = document.getElementById("logo");
+const headerTitle = document.getElementById("headerTitle");
 const serviceName = document.getElementById("serviceName");
 const rankName = document.getElementById("rankName");
 const playerName = document.getElementById("playerName");
@@ -19,6 +21,9 @@ window.addEventListener("message", function (event) {
     if (data.action !== "update") return;
 
     serviceName.innerText = data.service;
+    const serviceFolder = data.serviceType === "ambulance" ? "ambulance" : "police";
+    logo.src = "img/" + serviceFolder + "/logo.png";
+    headerTitle.innerText = serviceFolder === "ambulance" ? "SIMUVICIO EMS" : "SIMUVICIO PD";
     rankName.innerText = data.rank;
     playerName.innerText = data.player;
     playerPoints.innerText = "⭐ Puntos: " + data.points;
@@ -26,7 +31,7 @@ nextRank.innerText = "⬆ Siguiente rango: " + data.nextRank;
 pointsLeft.innerText = "📌 Faltan: " + data.pointsLeft + " puntos";
 
     if (data.image) {
-        rankImage.src = "img/" + data.image;
+        rankImage.src = "img/" + serviceFolder + "/" + data.image;
         rankImage.style.display = "block";
     } else {
         rankImage.style.display = "none";
