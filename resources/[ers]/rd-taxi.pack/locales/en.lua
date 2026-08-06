@@ -7,40 +7,40 @@
 
 Locale = {
     -- Help text shown at taxi stops
-    HELP_PRESS_TO_OPEN   = "Press ~INPUT_CONTEXT~ to view available taxis",
-    HELP_ON_COOLDOWN     = "~r~You are on cooldown. Time remaining: %ss",
+    HELP_PRESS_TO_OPEN   = "Pulsa ~INPUT_CONTEXT~ para ver los taxis disponibles",
+HELP_ON_COOLDOWN     = "~r~Debes esperar. Tiempo restante: %ss",
 
-    -- Calling / reserving
-    TAXI_RESERVED        = "Taxi reserved! Wait at the taxi stop for your taxi to arrive.",
-    TAXI_EN_ROUTE        = "Your taxi is on the way!",
+-- Solicitud / reserva
+TAXI_RESERVED        = "Taxi reservado! Espera en la parada hasta que llegue.",
+TAXI_EN_ROUTE        = "Tu taxi esta de camino!",
 
-    -- Arrival notifications
-    TAXI_READY_NEARBY    = "Your taxi is ready! Stand near the back door and press ~g~G~w~ to enter.",
-    TAXI_ARRIVED         = "Your taxi has arrived! Stand near the back door and press ~g~G~w~ to enter.",
+-- Avisos de llegada
+TAXI_READY_NEARBY    = "Tu taxi esta listo! Acercate a la puerta trasera y pulsa ~g~G~w~ para entrar.",
+TAXI_ARRIVED         = "Tu taxi ha llegado! Acercate a la puerta trasera y pulsa ~g~G~w~ para entrar.",
 
-    -- Inside taxi
-    WELCOME_SET_WAYPOINT = "Welcome! Open your map (ESC or M) and set a waypoint to your destination.",
-    DESTINATION_CONFIRMED = "Destination confirmed. Enjoy your ride!",
-    DESTINATION_CANCELLED = "Destination cancelled. Set a new waypoint when ready.",
-    DOORS_LOCKED_FOR_RIDE = "Doors locked for your safety. Relax and enjoy the ride!",
+-- Dentro del taxi
+WELCOME_SET_WAYPOINT = "Bienvenido! Abre el mapa (ESC o M) y marca un punto de destino.",
+DESTINATION_CONFIRMED = "Destino confirmado. Disfruta del viaje!",
+DESTINATION_CANCELLED = "Destino cancelado. Marca un nuevo destino cuando estes listo.",
+DOORS_LOCKED_FOR_RIDE = "Las puertas estan cerradas por tu seguridad. Relajate y disfruta del viaje!",
 
-    -- Arrival at destination
-    ARRIVED_EXIT_VEHICLE = "You have arrived! Exit the vehicle when ready.",
-    EXIT_REMINDER        = "~g~You have arrived at your destination. Exit the vehicle.",
-    EXIT_URGENT          = "~r~Please exit the taxi! Time remaining: %ss",
+-- Llegada al destino
+ARRIVED_EXIT_VEHICLE = "Has llegado! Sal del vehiculo cuando estes listo.",
+EXIT_REMINDER        = "~g~Has llegado a tu destino. Sal del vehiculo.",
+EXIT_URGENT          = "~r~Sal del taxi, por favor! Tiempo restante: %ss",
 
-    -- Timeouts / kicks
-    WAYPOINT_TIMEOUT     = "You took too long to select a destination!",
-    EXIT_TIMEOUT         = "You took too long to exit!",
-    KICKED_COOLDOWN      = "You have been removed from the taxi. Cooldown: 10 minutes.",
+-- Tiempos agotados / expulsiones
+WAYPOINT_TIMEOUT     = "Has tardado demasiado en seleccionar un destino!",
+EXIT_TIMEOUT         = "Has tardado demasiado en salir!",
+KICKED_COOLDOWN      = "Has sido expulsado del taxi. Tiempo de espera: 10 minutos.",
 
-    -- Payment
-    PAYMENT_SUCCESS      = "Paid $%s for the ride.",
-    PAYMENT_FAIL         = "Insufficient funds! You need $%s.",
-    PAYMENT_FAIL_KICKED  = "Insufficient funds! Kicked from taxi.",
+-- Pago
+PAYMENT_SUCCESS      = "Has pagado $%s por el viaje.",
+PAYMENT_FAIL         = "Fondos insuficientes! Necesitas $%s.",
+PAYMENT_FAIL_KICKED  = "Fondos insuficientes! Has sido expulsado del taxi.",
 
-    -- Reserved taxi demand
-    DEMAND_TIMEOUT       = "The reserved taxi left before you could enter.",
+-- Tiempo limite del taxi reservado
+DEMAND_TIMEOUT       = "El taxi reservado se marcho antes de que pudieras entrar.",
 }
 
 -- Helper – printf-style string formatting using Locale keys

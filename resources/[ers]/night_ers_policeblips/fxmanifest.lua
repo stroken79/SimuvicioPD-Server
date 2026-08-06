@@ -2,8 +2,8 @@ fx_version 'cerulean'
 game 'gta5'
 
 author 'Sergi'
-description 'Blips de policias de servicio y solicitudes de ayuda para night_ers'
-version '1.0.0'
+description 'Blips de unidades de servicio y solicitudes de ayuda para night_ers'
+version '1.1.0'
 
 lua54 'yes'
 

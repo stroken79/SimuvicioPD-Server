@@ -268,8 +268,11 @@ RegisterServerEvent("ErsIntegration::OnToggleShift")
 AddEventHandler("ErsIntegration::OnToggleShift", function(reportedSource, isOnShift, serviceType)
     local playerSource = source
 
-    -- ERS es la unica autoridad para el turno. PD5M recibe el estado para que
-    -- los avisos, garajes y armerias propias sigan comprobando el servicio.
+    print(("[ERS] OnToggleShift -> onShift=%s service=%s"):format(
+        tostring(isOnShift),
+        tostring(serviceType)
+    ))
+
     if isOnShift == true and serviceType == 'police' then
         TriggerClientEvent('pd5m:setDuty', playerSource, true)
     elseif isOnShift == false then

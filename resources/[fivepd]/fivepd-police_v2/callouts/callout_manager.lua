@@ -21,6 +21,21 @@ end
 
 local registered = {}
 local onDuty = false
+local function IsPoliceServiceActive()
+    local ok1, onShift = pcall(function()
+        return exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+    end)
+
+    if not ok1 or not onShift then
+        return false
+    end
+
+    local ok2, service = pcall(function()
+        return exports["night_ers"]:getPlayerActiveServiceType()
+    end)
+
+    return ok2 and service == "police"
+end
 local active = false
 local accepted = false
 local spawned = false
@@ -270,7 +285,7 @@ local function StartRandomCallout(forced)
         return false
     end
 
-    if REQUIRE_DUTY and not onDuty then
+    if REQUIRE_DUTY and not IsPoliceServiceActive() then
         if forced then
             Notify("~r~Debes estar de servicio para recibir avisos.")
         end
@@ -405,7 +420,7 @@ AddEventHandler("fivepd-police:supportOffer", function(request, owner)
         return
     end
 
-    if REQUIRE_DUTY and not onDuty then
+    if REQUIRE_DUTY and not IsPoliceServiceActive() then
         return
     end
 
@@ -467,10 +482,10 @@ CreateThread(function()
     math.randomseed(GetGameTimer())
 
     while true do
-        if (not REQUIRE_DUTY or onDuty) and not active and not supportActive then
+        if (not REQUIRE_DUTY or IsPoliceServiceActive()) and not active and not supportActive then
             Wait(math.random(AUTO_MIN_MS, AUTO_MAX_MS))
 
-            if (not REQUIRE_DUTY or onDuty) and not active and not supportActive then
+            if (not REQUIRE_DUTY or IsPoliceServiceActive()) and not active and not supportActive then
                 StartRandomCallout(false)
             end
         else

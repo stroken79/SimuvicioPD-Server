@@ -22,6 +22,19 @@ local function clearUnitBlips()
     end
 end
 
+local function applyUnitBlipStyle(blip, unit)
+    local style = Config.ServiceBlips[unit.service] or Config.ServiceBlips.police
+
+    SetBlipSprite(blip, style.sprite)
+    SetBlipColour(blip, style.colour)
+    SetBlipScale(blip, style.scale)
+    SetBlipAsShortRange(blip, false)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentSubstringPlayerName(('%s - %s'):format(style.name, unit.name))
+    EndTextCommandSetBlipName(blip)
+end
+
 local function createUnitBlip(unit)
     local player = GetPlayerFromServerId(unit.source)
     local blip
@@ -33,14 +46,7 @@ local function createUnitBlip(unit)
         blip = AddBlipForCoord(unit.coords.x, unit.coords.y, unit.coords.z)
     end
 
-    SetBlipSprite(blip, Config.PoliceBlip.sprite)
-    SetBlipColour(blip, Config.PoliceBlip.colour)
-    SetBlipScale(blip, Config.PoliceBlip.scale)
-    SetBlipAsShortRange(blip, false)
-
-    BeginTextCommandSetBlipName('STRING')
-    AddTextComponentSubstringPlayerName(('%s - %s'):format(Config.PoliceBlip.name, unit.name))
-    EndTextCommandSetBlipName(blip)
+    applyUnitBlipStyle(blip, unit)
 
     return blip
 end
@@ -67,6 +73,8 @@ RegisterNetEvent('night_ers_policeblips:updateUnits', function(units)
             elseif not shouldUseEntity then
                 SetBlipCoords(blip, unit.coords.x, unit.coords.y, unit.coords.z)
             end
+
+            applyUnitBlipStyle(blip, unit)
         end
     end
 
@@ -209,11 +217,11 @@ RegisterCommand('night_ers_reject_help', function()
     TriggerServerEvent('night_ers_policeblips:respondHelp', requestId, false)
 end, false)
 
-RegisterKeyMapping('night_ers_accept_help', 'Aceptar solicitud de ayuda policial', 'keyboard', Config.Help.acceptKey)
-RegisterKeyMapping('night_ers_reject_help', 'Rechazar solicitud de ayuda policial', 'keyboard', Config.Help.rejectKey)
+RegisterKeyMapping('night_ers_accept_help', 'Aceptar solicitud de ayuda de una unidad', 'keyboard', Config.Help.acceptKey)
+RegisterKeyMapping('night_ers_reject_help', 'Rechazar solicitud de ayuda de una unidad', 'keyboard', Config.Help.rejectKey)
 
 CreateThread(function()
-    TriggerEvent('chat:addSuggestion', '/' .. Config.Help.command, 'Solicita ayuda a todas las patrullas de policia en servicio.')
+    TriggerEvent('chat:addSuggestion', '/' .. Config.Help.command, 'Solicita ayuda a las unidades de tu mismo servicio.')
 end)
 
 AddEventHandler('onResourceStop', function(resourceName)

@@ -1,9 +1,11 @@
 local QBCore = nil
 local ESX    = nil
 
-if Config.Framework == "qbcore" then
+if Config.PaymentEnabled and Config.Framework == "qbcore" then
+    assert(GetResourceState("qb-core") == "started", "[RD-Taxi] qb-core debe iniciarse antes de rd-taxi.pack")
     QBCore = exports['qb-core']:GetCoreObject()
-elseif Config.Framework == "esx" then
+elseif Config.PaymentEnabled and Config.Framework == "esx" then
+    assert(GetResourceState("es_extended") == "started", "[RD-Taxi] es_extended debe estar instalado e iniciarse antes de rd-taxi.pack")
     ESX = exports["es_extended"]:getSharedObject()
 end
 
@@ -11,8 +13,9 @@ local activeTaxis   = {}
 local reservedTaxis = {}  
 local demandedTaxis = {}  
 
-if Config.Framework == "qbcore" then
+if Config.PaymentEnabled and Config.Framework == "qbcore" then
     QBCore.Functions.CreateCallback('rd-taxi:server:processPayment', function(source, cb, amount)
+        amount = Config.TaxiFare
         local Player = QBCore.Functions.GetPlayer(source)
         if not Player then cb(false, "Player not found") return end
 
@@ -31,8 +34,9 @@ if Config.Framework == "qbcore" then
     end)
 end
 
-if Config.Framework == "esx" then
+if Config.PaymentEnabled and Config.Framework == "esx" then
     ESX.RegisterServerCallback('rd-taxi:server:processPayment', function(source, cb, amount)
+        amount = Config.TaxiFare
         local xPlayer = ESX.GetPlayerFromId(source)
         if not xPlayer then cb(false, "Player not found") return end
 
@@ -125,7 +129,8 @@ end)
 
 RegisterServerEvent('rd-taxi:server:taxiSpawned')
 AddEventHandler('rd-taxi:server:taxiSpawned', function(taxiId, vehNetId, pedNetId)
-    if activeTaxis[taxiId] then
+    if activeTaxis[taxiId] and type(vehNetId) == "number" and vehNetId > 0
+        and type(pedNetId) == "number" and pedNetId > 0 then
         activeTaxis[taxiId].vehicle = vehNetId
         activeTaxis[taxiId].ped     = pedNetId
     end
@@ -199,7 +204,7 @@ AddEventHandler('rd-taxi:server:notifyTaxi', function(taxiId, notifyType)
     end
 
     
-    if not taxi.vehicle then
+    if type(taxi.vehicle) ~= "number" or taxi.vehicle <= 0 then
         TriggerClientEvent('chat:addMessage', src, {
             color = {255, 80, 80},
             args  = {"Taxi Service", "This taxi is not ready yet. Please wait a moment."}

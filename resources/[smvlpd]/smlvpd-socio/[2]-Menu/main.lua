@@ -27,8 +27,11 @@ Citizen.CreateThread(function()
                 WarMenu.Display()
             --Spawning
             elseif WarMenu.IsMenuOpened('BuddyMenu:Spawning') then 
-                if WarMenu.Button('Spawn Buddy ('..ScriptUniform..')') then 
-                    PoliceBuddy_Spawn(ScriptUniform)
+                local serviceType = GetBuddyService()
+                local uniform = GetBuddyUniform(serviceType)
+                local buddyLabel = serviceType == 'ambulance' and 'Crear enfermera' or 'Crear companero'
+                if WarMenu.Button(buddyLabel..' ('..uniform..')') then 
+                    PoliceBuddy_Spawn(uniform, serviceType)
                 end
                 WarMenu.Display()
             --Actions

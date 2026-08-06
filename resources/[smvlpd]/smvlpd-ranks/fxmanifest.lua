@@ -4,8 +4,8 @@ lua54 'yes'
 
 name 'smvlpd-ranks'
 author 'SMVLPD'
-description 'Rangos policiales persistentes y armeria por rango para PD5M'
-version '1.0.0'
+description 'Rangos y puntos persistentes por servicio para Night ERS'
+version '1.1.0'
 
 dependencies {
     'oxmysql',

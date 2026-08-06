@@ -1,8 +1,8 @@
 fx_version 'bodacious'
 games {'gta5'}
 author 'CHPOfficer20'
-description 'A basic AI Interaction Script that is used for assisting real police.'
-version '0.0.1'
+description 'Companero IA para policia y ambulancia integrado con Night ERS.'
+version '0.1.0'
 client_scripts {
     'config.lua',
     '[1]-Modules/mfunctions.lua',

@@ -12,9 +12,13 @@ local QBCore           = nil
 local ESX              = nil
 
 Citizen.CreateThread(function()
+    if not Config.PaymentEnabled then return end
+
     if Config.Framework == "qbcore" then
+        assert(GetResourceState("qb-core") == "started", "[RD-Taxi] qb-core debe iniciarse antes de rd-taxi.pack")
         QBCore = exports['qb-core']:GetCoreObject()
     elseif Config.Framework == "esx" then
+        assert(GetResourceState("es_extended") == "started", "[RD-Taxi] es_extended debe estar instalado e iniciarse antes de rd-taxi.pack")
         ESX = exports["es_extended"]:getSharedObject()
     end
 end)
@@ -126,12 +130,26 @@ Citizen.CreateThread(function()
                             if taxiIdFromPlate and taxiIdFromPlate == currentTaxiId then
                                 
                                 SetVehicleDoorsLocked(vehicle, 1)
+                                SetVehicleDoorsLockedForAllPlayers(vehicle, false)
                                 SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
                                 for i = 0, 5 do
                                     SetVehicleIndividualDoorsLocked(vehicle, i, 0)
                                 end
 
                                 TaskEnterVehicle(playerPed, vehicle, 10000, 1, 1.5, 1, 0)
+
+                                -- OneSync can retain the initial global lock locally.
+                                -- If normal entry fails, place the passenger in back.
+                                Citizen.SetTimeout(2500, function()
+                                    if currentTaxiId == taxiIdFromPlate
+                                        and DoesEntityExist(vehicle)
+                                        and not IsPedInVehicle(playerPed, vehicle, false) then
+                                        SetVehicleDoorsLocked(vehicle, 1)
+                                        SetVehicleDoorsLockedForAllPlayers(vehicle, false)
+                                        SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
+                                        TaskWarpPedIntoVehicle(playerPed, vehicle, 1)
+                                    end
+                                end)
 
                                 TriggerEvent('chat:addMessage', {
                                     color = {138, 43, 226},
@@ -276,8 +294,25 @@ AddEventHandler('rd-taxi:client:spawnTaxi', function(taxiId, driver, spawn)
         end)
 
         
-        local vehNetId = NetworkGetNetworkIdFromEntity(vehicle)
-        local pedNetId = NetworkGetNetworkIdFromEntity(ped)
+        -- Wait for valid OneSync IDs; ID 0 produces "no object by ID 0".
+        local vehNetId = 0
+        local pedNetId = 0
+        for _ = 1, 50 do
+            vehNetId = NetworkGetNetworkIdFromEntity(vehicle)
+            pedNetId = NetworkGetNetworkIdFromEntity(ped)
+            if vehNetId > 0 and pedNetId > 0 then break end
+            Citizen.Wait(100)
+        end
+
+        if vehNetId <= 0 or pedNetId <= 0 then
+            print("[RD-Taxi] ERROR: failed to register taxi network entities " .. taxiId)
+            DeleteEntity(ped)
+            DeleteEntity(vehicle)
+            return
+        end
+
+        SetNetworkIdCanMigrate(vehNetId, true)
+        SetNetworkIdCanMigrate(pedNetId, true)
 
         TriggerServerEvent('rd-taxi:server:taxiSpawned', taxiId, vehNetId, pedNetId)
 
@@ -373,6 +408,7 @@ function UnlockTaxiForPassenger(vehicle, taxiId, vehicleNetId, targetPlayerId)
     
     SetVehicleDoorsLocked(vehicle, 1)
     SetVehicleDoorsLockedForAllPlayers(vehicle, false)
+    SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
     SetVehicleIndividualDoorsLocked(vehicle, 2, 0)  
     SetVehicleIndividualDoorsLocked(vehicle, 3, 0)  
 
@@ -727,6 +763,7 @@ end)
 
 RegisterNetEvent('rd-taxi:client:demandedTaxiReady')
 AddEventHandler('rd-taxi:client:demandedTaxiReady', function(taxiId, vehicleNetId)
+    if type(vehicleNetId) ~= "number" or vehicleNetId <= 0 then return end
     local vehicle = NetworkGetEntityFromNetworkId(vehicleNetId)
     if not DoesEntityExist(vehicle) then return end
 
@@ -736,6 +773,7 @@ AddEventHandler('rd-taxi:client:demandedTaxiReady', function(taxiId, vehicleNetI
 
     
     SetVehicleDoorsLocked(vehicle, 1)
+    SetVehicleDoorsLockedForAllPlayers(vehicle, false)
     SetVehicleDoorsLockedForPlayer(vehicle, PlayerId(), false)
     SetVehicleIndividualDoorsLocked(vehicle, 2, 0)
     SetVehicleIndividualDoorsLocked(vehicle, 3, 0)
@@ -898,7 +936,11 @@ RegisterNUICallback('getPlayerAndVehicleCoords', function(data, cb)
     local playerPed    = PlayerPedId()
     local playerCoords = GetEntityCoords(playerPed)
 
-    local vehicle      = NetworkGetEntityFromNetworkId(data.vehicleNetId)
+    local netId = tonumber(data.vehicleNetId) or 0
+    local vehicle = 0
+    if netId > 0 then
+        vehicle = NetworkGetEntityFromNetworkId(netId)
+    end
     local vehicleCoords = vector3(0, 0, 0)
     if DoesEntityExist(vehicle) then
         vehicleCoords = GetEntityCoords(vehicle)
@@ -1005,6 +1047,7 @@ end
 function CreateTaxiTrackingBlip(taxiId, vehicleNetId, taxiName, color)
     RemoveTaxiTrackingBlip(taxiId)
 
+    if type(vehicleNetId) ~= "number" or vehicleNetId <= 0 then return end
     local vehicle = NetworkGetEntityFromNetworkId(vehicleNetId)
     if not DoesEntityExist(vehicle) then return end
 

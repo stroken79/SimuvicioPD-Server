@@ -4,6 +4,13 @@ Config = {}
 -- Consulta README.md para asignarlo a los administradores del servidor.
 Config.ManagementAce = 'smvlpd.ranks.manage'
 
+Config.ServiceLabels = {
+    police = 'Policia',
+    ambulance = 'Ambulancia',
+    fire = 'Bomberos',
+    tow = 'Grua'
+}
+
 -- Los uniformes ya existen en EUP. Esta tabla deja documentada la asignacion
 -- y preparada la integracion posterior con los identificadores de tus conjuntos.
 Config.Uniforms = {
@@ -55,40 +62,133 @@ Config.PointRewards = {
     investigation = 5,
     minorAction = 5,
 }
-
--- Los avisos no incluidos se consideran de dificultad normal.
-Config.CalloutDifficulties = {
-    ['Vehiculo abandonado'] = 'calloutVeryEasy',
-    ['Vehiculo muy pequeno'] = 'calloutVeryEasy',
-    ['Conductor demasiado lento'] = 'calloutEasy',
-    ['Vehiculo sobredimensionado'] = 'calloutEasy',
-    ['Venta de drogas en la playa'] = 'calloutComplex',
-    ['Secuestro'] = 'calloutComplex',
-    ['Secuestro en furgoneta'] = 'calloutComplex',
-    ['Tirador activo en el muelle'] = 'calloutHighRisk',
-    ['Persecucion de sospechosos armados'] = 'calloutHighRisk',
-    ['Tiradores con armas pesadas'] = 'calloutHighRisk',
-    ['Secta con rehenes'] = 'calloutHighRisk',
-}
-
--- Clasificación de los avisos de night_ers por su identificador interno.
--- Cualquier aviso de ERS no incluido se valora como normal (100 puntos).
 Config.ERSCalloutDifficulties = {
-    abandoned_vehicle = 'calloutVeryEasy',
-    animal_on_road = 'calloutVeryEasy',
-    taxi_fare_dodger = 'calloutEasy',
-    drunk_ped = 'calloutEasy',
-    traffic_incident = 'calloutNormal',
-    domestic_dispute = 'calloutNormal',
-    vehicle_theft = 'calloutComplex',
-    drug_deal = 'calloutComplex',
-    shop_robbery = 'calloutComplex',
-    armed_robbery = 'calloutHighRisk',
-    shots_fired = 'calloutHighRisk',
-    moneytruck_raid = 'calloutHighRisk',
-    prisoner_escape = 'calloutHighRisk',
-    riot = 'calloutHighRisk',
+
+    -- =========================
+    -- MUY FÁCIL (50 puntos)
+    -- =========================
+    abandoned_vehicle        = "calloutVeryEasy",
+    animal_on_road           = "calloutVeryEasy",
+    animal_on_tracks         = "calloutVeryEasy",
+    drunk_ped                = "calloutVeryEasy",
+    drunk_entering_vehicle   = "calloutVeryEasy",
+    illegal_dumping          = "calloutVeryEasy",
+    motorist_trouble         = "calloutVeryEasy",
+    road_rubble              = "calloutVeryEasy",
+    smoking_weed             = "calloutVeryEasy",
+    suspicious_situation     = "calloutVeryEasy",
+    taxi_fare_dodger         = "calloutVeryEasy",
+    unidentified_object      = "calloutVeryEasy",
+
+    -- =========================
+    -- FÁCIL (75 puntos)
+    -- =========================
+    airport_tresspass        = "calloutEasy",
+    animals_escaped          = "calloutEasy",
+    anpr_alert               = "calloutEasy",
+    bicycle_accident         = "calloutEasy",
+    boat_engine_fail         = "calloutEasy",
+    climate_protest          = "calloutEasy",
+    domestic_dispute         = "calloutEasy",
+    driving_seizure          = "calloutEasy",
+    emergency_heli_land      = "calloutEasy",
+    fall_height              = "calloutEasy",
+    fall_stairs              = "calloutEasy",
+    fire_dumpster            = "calloutEasy",
+    gas_smell                = "calloutEasy",
+    hitnrun_ped              = "calloutEasy",
+    illegal_party            = "calloutEasy",
+    inj_bone_fracture        = "calloutEasy",
+    inj_drowning             = "calloutEasy",
+    inj_stroke               = "calloutEasy",
+    inj_suffocation          = "calloutEasy",
+    missing_found            = "calloutEasy",
+    officer_assist           = "calloutEasy",
+    overheated_transformer   = "calloutEasy",
+    parachute_incident       = "calloutEasy",
+    repeated_hotline         = "calloutEasy",
+    stuck_roof               = "calloutEasy",
+    traffic_incident         = "calloutEasy",
+    unknown_smoke            = "calloutEasy",
+    vehicle_fire             = "calloutEasy",
+
+    -- =========================
+    -- NORMAL (100 puntos)
+    -- =========================
+    animal_dog_attack        = "calloutNormal",
+    animal_fire              = "calloutNormal",
+    animals_under_attack     = "calloutNormal",
+    arson                    = "calloutNormal",
+    atm_robbery              = "calloutNormal",
+    boat_fire                = "calloutNormal",
+    boat_migrants            = "calloutNormal",
+    brandishing              = "calloutNormal",
+    brandishing_transit      = "calloutNormal",
+    construction_incident    = "calloutNormal",
+    drug_deal                = "calloutNormal",
+    drug_overdose            = "calloutNormal",
+    fight                    = "calloutNormal",
+    fire                     = "calloutNormal",
+    fire_ped                 = "calloutNormal",
+    fire_petrol              = "calloutNormal",
+    house_fire               = "calloutNormal",
+    illegal_hunting          = "calloutNormal",
+    illegal_race             = "calloutNormal",
+    inj_cardiac_arrest       = "calloutNormal",
+    inj_electrocution        = "calloutNormal",
+    protest_haybales         = "calloutNormal",
+    reckless_driving_heavy   = "calloutNormal",
+    rock_thrower             = "calloutNormal",
+    sr_stranded_island       = "calloutNormal",
+    sr_wounded_hiker         = "calloutNormal",
+    suspect_identified       = "calloutNormal",
+    tree_fire                = "calloutNormal",
+    tunnel_smoke             = "calloutNormal",
+    valet_theft              = "calloutNormal",
+
+    -- =========================
+    -- COMPLEJO (150 puntos)
+    -- =========================
+    aircraft_hard_landing    = "calloutComplex",
+    airport_fire             = "calloutComplex",
+    animal_lion_loose        = "calloutComplex",
+    animal_rat_plague        = "calloutComplex",
+    capsized_bus             = "calloutComplex",
+    capsized_vehicle         = "calloutComplex",
+    drug_warehouse           = "calloutComplex",
+    highway_pileup           = "calloutComplex",
+    illegal_mining           = "calloutComplex",
+    moneytruck_incident      = "calloutComplex",
+    prisoner_escape          = "calloutComplex",
+    prisoner_escape_bus      = "calloutComplex",
+    road_rage                = "calloutComplex",
+    shop_robbery             = "calloutComplex",
+    stolen_boat              = "calloutComplex",
+    stolen_helicopter        = "calloutComplex",
+    stolen_plane             = "calloutComplex",
+    stolen_sportscar         = "calloutComplex",
+    stolen_tractor           = "calloutComplex",
+    stolen_truck             = "calloutComplex",
+    train_derailed           = "calloutComplex",
+
+    -- =========================
+    -- ALTO RIESGO (200 puntos)
+    -- =========================
+    armed_robbery            = "calloutHighRisk",
+    moneytruck_raid          = "calloutHighRisk",
+    possible_murder          = "calloutHighRisk",
+    riot                     = "calloutHighRisk",
+    shots_fired              = "calloutHighRisk",
+    taxi_kidnap              = "calloutHighRisk",
+    unidentified_body        = "calloutHighRisk",
+    vehicle_theft            = "calloutHighRisk",
+    wildfire                 = "calloutHighRisk",
+    Stolen_motorbike         = "calloutHighRisk",
 }
+
+
+
+
 
 Config.Ranks = {
     [1] = {

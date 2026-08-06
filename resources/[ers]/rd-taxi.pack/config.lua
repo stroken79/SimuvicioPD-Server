@@ -3,7 +3,7 @@ Config = {}
 -- ─────────────────────────────────────────────
 --  FRAMEWORK
 -- ─────────────────────────────────────────────
-Config.Framework = "standalone" -- Options: "qbcore", "esx", "standalone"
+Config.Framework = "esx" -- Options: "qbcore", "esx", "standalone"
 
 -- ─────────────────────────────────────────────
 --  PAYMENT
@@ -129,9 +129,10 @@ Config.TaxiDrivers = {
 --  STATUS CONSTANTS  (do not change)
 -- ─────────────────────────────────────────────
 Config.Status = {
-    AVAILABLE    = "available",
-    EN_ROUTE     = "en_route",
-    DELIVERING   = "delivering",
+    -- Internal protocol values. Keep these stable; translate only UI labels.
+    AVAILABLE     = "available",
+    EN_ROUTE      = "en_route",
+    DELIVERING    = "delivering",
     JUST_FINISHED = "just_finished",
-    RETURNING    = "returning"
+    RETURNING     = "returning"
 }

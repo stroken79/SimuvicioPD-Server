@@ -12,9 +12,9 @@ Citizen.CreateThread(function()
     end
 
     PlayerData = ESX.GetPlayerData()
-    if PlayerData.job.name == 'ambulance' or PlayerData.job.name == 'fire' then
-      PlayerData.job.name = 'police'
-    end
+    --- if PlayerData.job.name == 'ambulance' or PlayerData.job.name == 'fire' then
+     --- PlayerData.job.name = 'police'
+    --- end
     Wait(5000)
   end
 end)

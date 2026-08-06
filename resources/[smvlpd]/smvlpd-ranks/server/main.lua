@@ -1,9 +1,36 @@
 local activeCharacters = {}
 local playerRanks = {}
 local playerPoints = {}
+local activeServices = {}
 local activeCallouts = {}
 local activeExternalCallouts = {}
 local serviceSummaries = {}
+
+local supportedServices = {
+    police = true,
+    ambulance = true,
+    fire = true,
+    tow = true
+}
+
+local function getNightErsService(source)
+    if GetResourceState('night_ers') ~= 'started' then return nil end
+
+    local okShift, isOnShift = pcall(function()
+        return exports['night_ers']:getIsPlayerOnShift(source)
+    end)
+    if not okShift or isOnShift ~= true then return nil end
+
+    local okService, serviceType = pcall(function()
+        return exports['night_ers']:getPlayerActiveServiceType(source)
+    end)
+
+    if okService and supportedServices[serviceType] then
+        return serviceType
+    end
+
+    return nil
+end
 
 local function getRank(rankId)
     return Config.Ranks[tonumber(rankId) or 1] or Config.Ranks[1]
@@ -57,10 +84,13 @@ local function setPlayerRank(source, characterId, rankId, assignedBy)
     rankId = tonumber(rankId)
     if not Config.Ranks[rankId] then return false, 'Rango no valido.' end
 
-    MySQL.insert.await([[INSERT INTO smvlpd_police_ranks (character_id, rank_id, assigned_by)
-        VALUES (?, ?, ?)
+    local serviceType = activeServices[source]
+    if not supportedServices[serviceType] then return false, 'No hay un servicio activo.' end
+
+    MySQL.insert.await([[INSERT INTO smvlpd_police_ranks (character_id, service_type, rank_id, assigned_by)
+        VALUES (?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE rank_id = VALUES(rank_id), assigned_by = VALUES(assigned_by), updated_at = CURRENT_TIMESTAMP]], {
-        characterId, rankId, assignedBy
+        characterId, serviceType, rankId, assignedBy
     })
 
     playerRanks[source] = rankId
@@ -72,24 +102,111 @@ end
 MySQL.ready(function()
     MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_police_ranks (
         character_id INT UNSIGNED NOT NULL,
+        service_type VARCHAR(20) NOT NULL DEFAULT 'police',
         rank_id TINYINT UNSIGNED NOT NULL DEFAULT 1,
         assigned_by VARCHAR(80) NULL,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY (character_id),
+        PRIMARY KEY (character_id, service_type),
         CONSTRAINT fk_smvlpd_police_rank_character FOREIGN KEY (character_id)
             REFERENCES smvlpd_characters(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4]])
     MySQL.query.await([[CREATE TABLE IF NOT EXISTS smvlpd_police_points (
         character_id INT UNSIGNED NOT NULL,
+        service_type VARCHAR(20) NOT NULL DEFAULT 'police',
         points INT UNSIGNED NOT NULL DEFAULT 0,
         updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        PRIMARY KEY (character_id),
+        PRIMARY KEY (character_id, service_type),
         CONSTRAINT fk_smvlpd_police_points_character FOREIGN KEY (character_id)
             REFERENCES smvlpd_characters(id) ON DELETE CASCADE
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4]])
 
-    print('[smvlpd-ranks] Sistema de rangos y puntos listo.')
+    local rankServiceColumn = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_police_ranks' AND COLUMN_NAME = 'service_type']])) or 0
+    if rankServiceColumn == 0 then
+        MySQL.query.await("ALTER TABLE smvlpd_police_ranks ADD COLUMN service_type VARCHAR(20) NOT NULL DEFAULT 'police' AFTER character_id")
+    end
+
+    local rankServiceInPrimary = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_police_ranks'
+        AND CONSTRAINT_NAME = 'PRIMARY' AND COLUMN_NAME = 'service_type']])) or 0
+    if rankServiceInPrimary == 0 then
+        MySQL.query.await('ALTER TABLE smvlpd_police_ranks DROP PRIMARY KEY, ADD PRIMARY KEY (character_id, service_type)')
+    end
+
+    local pointsServiceColumn = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.COLUMNS
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_police_points' AND COLUMN_NAME = 'service_type']])) or 0
+    if pointsServiceColumn == 0 then
+        MySQL.query.await("ALTER TABLE smvlpd_police_points ADD COLUMN service_type VARCHAR(20) NOT NULL DEFAULT 'police' AFTER character_id")
+    end
+
+
+    local pointsServiceInPrimary = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE
+        WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_police_points'
+        AND CONSTRAINT_NAME = 'PRIMARY' AND COLUMN_NAME = 'service_type']])) or 0
+    if pointsServiceInPrimary == 0 then
+        MySQL.query.await('ALTER TABLE smvlpd_police_points DROP PRIMARY KEY, ADD PRIMARY KEY (character_id, service_type)')
+    end
+
+    print('[smvlpd-ranks] Sistema de rangos y puntos por servicio listo.')
 end)
+
+local function clearActiveProgress(playerSource)
+    activeCallouts[playerSource] = nil
+    activeExternalCallouts[playerSource] = nil
+    serviceSummaries[playerSource] = nil
+    activeServices[playerSource] = nil
+    playerRanks[playerSource] = nil
+    playerPoints[playerSource] = nil
+    Player(playerSource).state:set('smvlpdActiveService', nil, true)
+    Player(playerSource).state:set('smvlpdPoliceRank', 0, true)
+    Player(playerSource).state:set('smvlpdPolicePoints', 0, true)
+    TriggerClientEvent('smvlpd-ranks:client:serviceChanged', playerSource, nil)
+end
+
+local function loadServiceProgress(playerSource, characterId, serviceType)
+    if not supportedServices[serviceType] then
+        clearActiveProgress(playerSource)
+        return
+    end
+
+    local previousService = activeServices[playerSource]
+    if previousService and previousService ~= serviceType then
+        activeCallouts[playerSource] = nil
+        activeExternalCallouts[playerSource] = nil
+        serviceSummaries[playerSource] = nil
+    end
+
+    activeServices[playerSource] = serviceType
+
+    MySQL.insert.await(
+        'INSERT IGNORE INTO smvlpd_police_points (character_id, service_type, points) VALUES (?, ?, 0)',
+        { characterId, serviceType }
+    )
+
+    local points = tonumber(MySQL.scalar.await(
+        'SELECT points FROM smvlpd_police_points WHERE character_id = ? AND service_type = ?',
+        { characterId, serviceType }
+    )) or 0
+    playerPoints[playerSource] = points
+
+    local rankId = tonumber(MySQL.scalar.await(
+        'SELECT rank_id FROM smvlpd_police_ranks WHERE character_id = ? AND service_type = ?',
+        { characterId, serviceType }
+    ))
+
+    Player(playerSource).state:set('smvlpdActiveService', serviceType, true)
+    Player(playerSource).state:set('smvlpdPolicePoints', points, true)
+
+    if not rankId then
+        setPlayerRank(playerSource, characterId, 1, 'system')
+    else
+        playerRanks[playerSource] = rankId
+        Player(playerSource).state:set('smvlpdPoliceRank', rankId, true)
+        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label, serviceType)
+    end
+
+    TriggerClientEvent('smvlpd-ranks:client:serviceChanged', playerSource, serviceType)
+end
 
 local function loadCharacter(playerSource, characterId)
 
@@ -101,29 +218,52 @@ local function loadCharacter(playerSource, characterId)
     if not ownsCharacter then return end
 
     activeCharacters[playerSource] = characterId
-
-    MySQL.insert.await('INSERT IGNORE INTO smvlpd_police_points (character_id, points) VALUES (?, 0)', { characterId })
-
-    local points = tonumber(MySQL.scalar.await('SELECT points FROM smvlpd_police_points WHERE character_id = ?', { characterId })) or 0
-    playerPoints[playerSource] = points
-    Player(playerSource).state:set('smvlpdPolicePoints', points, true)
-
-    local rankId = tonumber(MySQL.scalar.await('SELECT rank_id FROM smvlpd_police_ranks WHERE character_id = ?', { characterId })) or 1
-
-    if not MySQL.scalar.await('SELECT 1 FROM smvlpd_police_ranks WHERE character_id = ?', { characterId }) then
-        setPlayerRank(playerSource, characterId, 1, 'system')
+    local serviceType = getNightErsService(playerSource)
+    if serviceType then
+        loadServiceProgress(playerSource, characterId, serviceType)
     else
-        playerRanks[playerSource] = rankId
-        Player(playerSource).state:set('smvlpdPoliceRank', rankId, true)
-        TriggerClientEvent('smvlpd-ranks:client:rankUpdated', playerSource, rankId, getRank(rankId).label)
+        clearActiveProgress(playerSource)
     end
 end
+
+RegisterNetEvent('ErsIntegration::OnToggleShift', function(reportedSource, isOnShift, serviceType)
+    local playerSource = source
+    if playerSource == 0 then playerSource = tonumber(reportedSource) end
+    if not playerSource or not activeCharacters[playerSource] then return end
+
+    if isOnShift == true and supportedServices[serviceType] then
+        loadServiceProgress(playerSource, activeCharacters[playerSource], serviceType)
+    elseif isOnShift == false then
+        clearActiveProgress(playerSource)
+    end
+end)
+
+CreateThread(function()
+    while true do
+        Wait(1000)
+
+        for playerSource, characterId in pairs(activeCharacters) do
+            local serviceType = getNightErsService(playerSource)
+
+            if serviceType ~= activeServices[playerSource] then
+                if serviceType then
+                    loadServiceProgress(playerSource, characterId, serviceType)
+                elseif activeServices[playerSource] then
+                    clearActiveProgress(playerSource)
+                end
+            end
+        end
+    end
+end)
 
 RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
     loadCharacter(source, characterId)
 end)
 
 lib.callback.register('smvlpd-ranks:server:getRank', function(source)
+
+    local serviceType = activeServices[source]
+    if not serviceType then return nil end
 
     local rankId = playerRanks[source] or 1
     local rank = getRank(rankId)
@@ -138,20 +278,21 @@ lib.callback.register('smvlpd-ranks:server:getRank', function(source)
             { characterId }
         ) or ""
     end
-    print("Apellido HUD:", surname)
-
     return {
         id = rankId,
         label = rank.label,
         uniform = Config.Uniforms[rankId],
         image = rank.image,
-        player = surname
+        player = surname,
+        service = serviceType
     }
 
 end)
 
 
 lib.callback.register('smvlpd-ranks:server:getPoints', function(source)
+    local serviceType = activeServices[source]
+    if not serviceType then return nil end
     local rankId = playerRanks[source] or 1
     local points = playerPoints[source] or 0
     local rank = getRank(rankId)
@@ -160,7 +301,8 @@ lib.callback.register('smvlpd-ranks:server:getPoints', function(source)
         rankId = rankId,
         rankLabel = rank.label,
         administrative = rankId >= 12,
-        nextRank = getNextRankInfo(rankId, points)
+        nextRank = getNextRankInfo(rankId, points),
+        service = serviceType
     }
 end)
 
@@ -173,11 +315,15 @@ local function addPoints(source, amount, reason)
 
     local characterId = activeCharacters[source]
     if not characterId then return false, 'El jugador no tiene un personaje activo.' end
+    local serviceType = activeServices[source]
+    if not serviceType then return false, 'El jugador no esta de servicio.' end
 
     local oldRank = playerRanks[source] or 1
     local newPoints = (playerPoints[source] or 0) + amount
 
-    MySQL.update.await('UPDATE smvlpd_police_points SET points = ? WHERE character_id = ?', { newPoints, characterId })
+    MySQL.update.await('UPDATE smvlpd_police_points SET points = ? WHERE character_id = ? AND service_type = ?', {
+        newPoints, characterId, serviceType
+    })
     playerPoints[source] = newPoints
     Player(source).state:set('smvlpdPolicePoints', newPoints, true)
 
@@ -225,24 +371,35 @@ exports('AwardExternalPoliceCallout', awardExternalCallout)
 exports('BeginExternalPoliceCallout', function(source)
     if not activeCharacters[source] then return false end
 
-    activeExternalCallouts[source] = true
+    activeExternalCallouts[source] = { lastAwardAt = {} }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
 
     return true
 end)
 
+exports('CancelExternalPoliceCallout', function(source)
+    activeExternalCallouts[tonumber(source)] = nil
+    return true
+end)
+
 RegisterNetEvent('smvlpd-ranks:server:calloutStarted', function(title)
     if not activeCharacters[source] then return end
-    activeCallouts[source] = { title = tostring(title or 'Aviso policial'), claimed = {} }
+    activeCallouts[source] = { title = tostring(title or 'Aviso policial'), lastAwardAt = {} }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
 end)
 
 RegisterNetEvent('smvlpd-ranks:server:awardCalloutAction', function(actionId)
-    local callout = activeCallouts[source]
+    local callout = activeCallouts[source] or activeExternalCallouts[source]
     local reward = Config.PointRewards[actionId]
-    if not callout or callout.claimed[actionId] or not reward then return end
+    if not callout or not reward then return end
 
-    callout.claimed[actionId] = true
+    callout.lastAwardAt = callout.lastAwardAt or {}
+    local now = GetGameTimer()
+    local cooldown = math.max(0, tonumber(Config.ActionRewardCooldownMs) or 1500)
+    local lastAwardAt = tonumber(callout.lastAwardAt[actionId]) or 0
+    if lastAwardAt > 0 and (now - lastAwardAt) < cooldown then return end
+
+    callout.lastAwardAt[actionId] = now
     local labels = {
         arrest = 'Arresto', citation = 'Multa', breathalyzer = 'Alcoholimetria', drugTest = 'Prueba de drogas', tow = 'Grua',
         searchPerson = 'Registro de persona', searchVehicle = 'Registro de vehiculo', documents = 'Documentacion',
@@ -372,6 +529,7 @@ exports('GetAllowedVehicles', GetAllowedVehicles)
 
 AddEventHandler('playerDropped', function()
     activeCharacters[source] = nil
+    activeServices[source] = nil
     playerRanks[source] = nil
     playerPoints[source] = nil
     activeCallouts[source] = nil

@@ -3,6 +3,8 @@ local currentRank = {
     label = "Novato"
 }
 
+local currentService
+
 local function updateHud(rank)
 
     currentRank = rank
@@ -11,6 +13,7 @@ local function updateHud(rank)
 
     SendNUIMessage({
         action = "update",
+        service = Config.ServiceLabels[rank.service] or rank.service or 'Servicio',
         rank = rank.label,
         image = rank.image,
         player = rank.player,
@@ -21,6 +24,23 @@ local function updateHud(rank)
     })
 
 end
+
+
+RegisterNetEvent('smvlpd-ranks:client:serviceChanged', function(serviceType)
+    currentService = serviceType
+
+    if not serviceType then
+        currentRank = { id = 1, label = 'Sin servicio' }
+        SendNUIMessage({ action = 'hide' })
+        return
+    end
+
+    CreateThread(function()
+        Wait(100)
+        local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
+        if rank then updateHud(rank) end
+    end)
+end)
 local function notify(description, notifyType)
     lib.notify({ description = description, type = notifyType or 'inform' })
 end

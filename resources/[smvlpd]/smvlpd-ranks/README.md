@@ -1,6 +1,17 @@
 # SMVLPD Ranks
 
-Recurso de rangos policiales persistentes para PD5M. Cada personaje comienza como **Novato** y el rango se guarda en la tabla `smvlpd_police_ranks`.
+Recurso de rangos y puntos persistentes por servicio para Night ERS.
+
+## Progreso por servicio
+
+Los puntos y rangos se guardan de forma independiente para:
+
+- `police`
+- `ambulance`
+- `fire`
+- `tow`
+
+Al cambiar de servicio se cargan automaticamente el rango y la puntuacion correspondientes. Los datos anteriores a la version 1.1.0 se conservan como progreso de `police`.
 
 ## Instalacion
 

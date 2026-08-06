@@ -1,5 +1,6 @@
 const hud = document.getElementById("hud");
 const rankImage = document.getElementById("rankImage");
+const serviceName = document.getElementById("serviceName");
 const rankName = document.getElementById("rankName");
 const playerName = document.getElementById("playerName");
 const playerPoints = document.getElementById("playerPoints");
@@ -10,8 +11,14 @@ hud.style.display = "none";
 window.addEventListener("message", function (event) {
     const data = event.data;
 
+    if (data.action === "hide") {
+        hud.style.display = "none";
+        return;
+    }
+
     if (data.action !== "update") return;
 
+    serviceName.innerText = data.service;
     rankName.innerText = data.rank;
     playerName.innerText = data.player;
     playerPoints.innerText = "⭐ Puntos: " + data.points;

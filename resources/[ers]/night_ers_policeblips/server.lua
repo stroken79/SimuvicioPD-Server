@@ -1,10 +1,10 @@
 local helpCooldowns = {}
 local helpRequests = {}
 local nextHelpRequestId = 0
-local officerNames = {}
+local unitNames = {}
 
-local function getOfficerName(sourceId)
-    local cached = officerNames[sourceId]
+local function getUnitName(sourceId)
+    local cached = unitNames[sourceId]
 
     if cached and cached.expiresAt > os.time() then
         return cached.name
@@ -36,7 +36,7 @@ local function getOfficerName(sourceId)
     end
 
     name = name or ('Unidad ' .. sourceId)
-    officerNames[sourceId] = {
+    unitNames[sourceId] = {
         name = name,
         expiresAt = os.time() + 10
     }
@@ -65,17 +65,17 @@ local function getNightErsShift(sourceId)
         return false, nil
     end
 
-    return serviceType == 'police', serviceType
+    return Config.ServiceBlips[serviceType] ~= nil, serviceType
 end
 
-local function getPoliceUnits()
+local function getServiceUnits()
     local units = {}
 
     for _, playerId in ipairs(GetPlayers()) do
         local sourceId = tonumber(playerId)
-        local isPolice = getNightErsShift(sourceId)
+        local isSupportedService, serviceType = getNightErsShift(sourceId)
 
-        if isPolice then
+        if isSupportedService then
             local ped = GetPlayerPed(sourceId)
 
             if ped and ped ~= 0 then
@@ -83,7 +83,8 @@ local function getPoliceUnits()
 
                 units[#units + 1] = {
                     source = sourceId,
-                    name = getOfficerName(sourceId),
+                    name = getUnitName(sourceId),
+                    service = serviceType,
                     coords = {
                         x = coords.x,
                         y = coords.y,
@@ -101,7 +102,7 @@ CreateThread(function()
     while true do
         Wait(Config.UpdateInterval)
 
-        local units = getPoliceUnits()
+        local units = getServiceUnits()
         local recipients = {}
 
         for _, unit in ipairs(units) do
@@ -125,10 +126,10 @@ RegisterCommand(Config.Help.command, function(sourceId)
         return
     end
 
-    local isPolice = getNightErsShift(sourceId)
+    local isSupportedService, requesterService = getNightErsShift(sourceId)
 
-    if not isPolice then
-        TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'Debes estar de servicio como policia para solicitar ayuda.')
+    if not isSupportedService then
+        TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'Debes estar en un servicio compatible para solicitar ayuda.')
         return
     end
 
@@ -152,18 +153,18 @@ RegisterCommand(Config.Help.command, function(sourceId)
     end
 
     local coords = GetEntityCoords(ped)
-    local requesterName = getOfficerName(sourceId)
-    local units = getPoliceUnits()
+    local requesterName = getUnitName(sourceId)
+    local units = getServiceUnits()
     local recipients = {}
 
     for _, unit in ipairs(units) do
-        if unit.source ~= sourceId then
+        if unit.source ~= sourceId and unit.service == requesterService then
             recipients[unit.source] = true
         end
     end
 
     if not next(recipients) then
-        TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'No hay otras patrullas de servicio disponibles.')
+        TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'No hay otras unidades de tu servicio disponibles.')
         return
     end
 
@@ -175,6 +176,7 @@ RegisterCommand(Config.Help.command, function(sourceId)
         id = requestId,
         source = sourceId,
         name = requesterName,
+        service = requesterService,
         coords = {
             x = coords.x,
             y = coords.y,
@@ -196,7 +198,7 @@ RegisterCommand(Config.Help.command, function(sourceId)
         })
     end
 
-    TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'Solicitud enviada a las patrullas disponibles.')
+    TriggerClientEvent('night_ers_policeblips:notify', sourceId, 'Solicitud enviada a las unidades de tu servicio.')
 
     SetTimeout(Config.Help.offerSeconds * 1000, function()
         local activeRequest = helpRequests[requestId]
@@ -224,17 +226,17 @@ RegisterNetEvent('night_ers_policeblips:respondHelp', function(requestId, accept
         return
     end
 
-    local isPolice = getNightErsShift(responder)
+    local isSupportedService, responderService = getNightErsShift(responder)
 
-    if not isPolice then
+    if not isSupportedService or responderService ~= request.service then
         request.recipients[responder] = nil
-        TriggerClientEvent('night_ers_policeblips:notify', responder, 'Debes estar de servicio como policia.')
+        TriggerClientEvent('night_ers_policeblips:notify', responder, 'Debes estar en el mismo servicio que la unidad solicitante.')
         return
     end
 
     request.recipients[responder] = nil
 
-    local responderName = getOfficerName(responder)
+    local responderName = getUnitName(responder)
 
     if accepted == true then
         TriggerClientEvent('night_ers_policeblips:helpAccepted', responder, {
@@ -264,7 +266,7 @@ end)
 
 AddEventHandler('playerDropped', function()
     helpCooldowns[source] = nil
-    officerNames[source] = nil
+    unitNames[source] = nil
 
     for requestId, request in pairs(helpRequests) do
         request.recipients[source] = nil

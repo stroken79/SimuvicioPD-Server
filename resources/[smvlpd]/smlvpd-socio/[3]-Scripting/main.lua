@@ -1,25 +1,67 @@
 local BuddySpawned = false
-function PoliceBuddy_Spawn(Uniform)
-    PlayerPosition = GetEntityCoords(GetPlayerPed(-1))
-    local BuddyModel = Uniform
+local BuddyServices = {}
+function PoliceBuddy_Spawn(Uniform, ServiceType)
+    -- Evita que una solicitud de borrado anterior elimine al nuevo companero.
+    Removal = false
+    local player = PlayerPedId()
+    local BuddyService = ServiceType or GetBuddyService()
+    local BuddyModel = tostring(Uniform or GetBuddyUniform(BuddyService))
     local BuddyModelHash = GetHashKey(BuddyModel)
-    RequestModel(BuddyModelHash)
-    while not HasModelLoaded(BuddyModelHash) do
-        Wait(1)
+
+    if not IsModelInCdimage(BuddyModelHash) or not IsModelValid(BuddyModelHash) then
+        ShowNotification(('~r~Modelo de companero no valido: %s'):format(BuddyModel))
+        BuddySpawned = false
+        return false
     end
-    local Buddy = CreatePed(6, BuddyModelHash, PlayerPosition, true, true)
+
+    RequestModel(BuddyModelHash)
+    local timeoutAt = GetGameTimer() + 5000
+    while not HasModelLoaded(BuddyModelHash) and GetGameTimer() < timeoutAt do
+        Wait(10)
+    end
+
+    if not HasModelLoaded(BuddyModelHash) then
+        ShowNotification(('~r~No se pudo cargar el modelo: %s'):format(BuddyModel))
+        BuddySpawned = false
+        return false
+    end
+
+    local spawnCoords = GetOffsetFromEntityInWorldCoords(player, 0.0, 1.5, 0.0)
+    local pedType = BuddyService == 'police' and 6 or 4
+    local Buddy = CreatePed(
+        pedType,
+        BuddyModelHash,
+        spawnCoords.x,
+        spawnCoords.y,
+        spawnCoords.z,
+        GetEntityHeading(player),
+        true,
+        true
+    )
+
+    SetModelAsNoLongerNeeded(BuddyModelHash)
+
     if DoesEntityExist(Buddy) then 
-        TriggerEvent('PoliceBuddy:SetBuddy',Buddy)
-        GiveWeaponToPed(Buddy,0x5EF9FEC4,1000,false,false)
-        SetPedCombatAbility(Buddy,100)
-        SetPedCombatAttributes(Buddy,46,true)
+        BuddyServices[Buddy] = BuddyService
+        TriggerEvent('PoliceBuddy:SetBuddy', Buddy, BuddyService)
+        if BuddyService == 'police' then
+            GiveWeaponToPed(Buddy,0x5EF9FEC4,1000,false,false)
+            SetPedCombatAbility(Buddy,100)
+            SetPedCombatAttributes(Buddy,46,true)
+        else
+            RemoveAllPedWeapons(Buddy, true)
+            SetPedFleeAttributes(Buddy, 0, false)
+        end
+        return true
     else
-        ShowNotification('Failed to create ped.')
+        BuddySpawned = false
+        ShowNotification('~r~No se pudo crear el companero.')
+        return false
     end
 end
 
 RegisterNetEvent('PoliceBuddy:SetBuddy')
-AddEventHandler('PoliceBuddy:SetBuddy', function(Bud)
+AddEventHandler('PoliceBuddy:SetBuddy', function(Bud, BuddyService)
 local player = GetPlayerPed(-1)
 local playerPos = GetEntityCoords( player )
 local inFrontOfPlayer = GetOffsetFromEntityInWorldCoords( player, 0.0, 2.0, 0.0 )
@@ -33,16 +75,25 @@ Bud = Bud
     playerGroupId = GetPedGroupIndex(player)
     SetPedAsGroupMember(Bud, playerGroupId)
     SetGroupFormationSpacing(playerGroupId,1.0,1.0,1.0)
-    SetPedArmour(Bud, math.random(50, 100))
-
     AddRelationshipGroup("BUM1")
-    SetPedCombatAttributes(Bud, 5, true)
-    SetPedCombatAbility(Bud, 100)
+    if BuddyService == 'ambulance' then
+        SetPedArmour(Bud, 0)
+        SetPedCombatAttributes(Bud, 5, false)
+        SetPedCombatAbility(Bud, 0)
+    else
+        SetPedArmour(Bud, math.random(50, 100))
+        SetPedCombatAttributes(Bud, 5, true)
+        SetPedCombatAbility(Bud, 100)
+    end
     SetRelationshipBetweenGroups(0, GetHashKey("BUM1"), GetHashKey("PLAYER"))
     SetPedRelationshipGroupHash(Bud, GetHashKey("BUM1"))
-    ShowNotification('~b~Buddy Created.')
+    if BuddyService == 'ambulance' then
+        ShowNotification('~r~Enfermera creada.')
+    else
+        ShowNotification('~b~Companero creado.')
+    end
     BuddyBlip = AddBlipForEntity(Bud)
-    SetBlipColour(BuddyBlip, 3)
+    SetBlipColour(BuddyBlip, BuddyService == 'ambulance' and 1 or 3)
     SetBlipSprite(BuddyBlip, 480)
     TriggerEvent('RegisterBuddy', Bud)
   else
@@ -68,6 +119,7 @@ Citizen.CreateThread(function()
                 LeaveCar = false 
             end
             if Removal then 
+                BuddyServices[Buddy] = nil
                 DeleteEntity(Buddy)
                 Buddy = nil
                 BuddyBlip = RemoveBlip(BuddyBlip)
@@ -77,6 +129,7 @@ Citizen.CreateThread(function()
                  
             end
             if IsPedDeadOrDying(GetPlayerPed(-1), 1) then 
+                BuddyServices[Buddy] = nil
                 DeleteEntity(Buddy)
                 Buddy = nil
                 BuddyBlip = RemoveBlip(BuddyBlip)
@@ -118,6 +171,7 @@ AddEventHandler('leavecar', function(Bud)
 local targetVehh = GetPlayersLastVehicle(player)
 local player = GetPlayerPed(-1)
 local playerGroupId = GetPedGroupIndex(player)
+local BuddyService = BuddyServices[Bud] or 'police'
 
 if DoesEntityExist(Bud) then
 	if IsPedInVehicle(Bud, targetVehh, false) then
@@ -129,10 +183,16 @@ if DoesEntityExist(Bud) then
 		SetBlockingOfNonTemporaryEvents(Bud, true)
 		SetPedAsGroupMember(Bud, playerGroupId)
 		SetGroupFormationSpacing(playerGroupId,1.0,1.0,1.0)
-		SetPedArmour(Bud, math.random(50, 100))
-		AddRelationshipGroup("BUM1")
-		SetPedCombatAttributes(Bud, 5, true)
-		SetPedCombatAbility(Bud, 100)
+        AddRelationshipGroup("BUM1")
+        if BuddyService == 'ambulance' then
+            SetPedArmour(Bud, 0)
+            SetPedCombatAttributes(Bud, 5, false)
+            SetPedCombatAbility(Bud, 0)
+        else
+            SetPedArmour(Bud, math.random(50, 100))
+            SetPedCombatAttributes(Bud, 5, true)
+            SetPedCombatAbility(Bud, 100)
+        end
 		SetRelationshipBetweenGroups(0, GetHashKey("BUM1"), GetHashKey("PLAYER"))
 		SetPedRelationshipGroupHash(Bud, GetHashKey("BUM1"))
 	else
@@ -152,7 +212,8 @@ AddEventHandler('smvlpd-socio:spawn', function()
     end
 
     BuddySpawned = true
-    PoliceBuddy_Spawn(ScriptUniform)
+    local serviceType = GetBuddyService()
+    PoliceBuddy_Spawn(GetBuddyUniform(serviceType), serviceType)
 
 end)
 

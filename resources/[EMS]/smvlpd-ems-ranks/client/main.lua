@@ -21,6 +21,17 @@ local function updateHud(rank)
     })
 
 end
+local function CanShowEmsHud()
+
+    local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
+
+    if not onDuty then
+        return false
+    end
+
+    return exports["night_ers"]:getPlayerActiveServiceType() == "ambulance"
+
+end
 local function notify(description, notifyType)
     lib.notify({ description = description, type = notifyType or 'inform' })
 end
@@ -105,9 +116,13 @@ RegisterNetEvent('smvlpd-ems-ranks:client:rankUpdated', function(rankId, rankLab
 
     local rank = lib.callback.await('smvlpd-ems-ranks:server:getRank', false)
 
-    if rank then
-        updateHud(rank)
-    end
+    if rank and CanShowEmsHud() then
+    updateHud(rank)
+else
+    SendNUIMessage({
+        action = "hide"
+    })
+end
 
     notify(('Rango actual: %s'):format(rankLabel), 'success')
 
@@ -163,9 +178,13 @@ RegisterNetEvent('smvlpd-character:client:characterLoaded', function(character)
 
         local rank = lib.callback.await('smvlpd-ems-ranks:server:getRank', false)
 
-        if rank then
-            updateHud(rank)
-        end
+        if rank and CanShowEmsHud() then
+    updateHud(rank)
+else
+    SendNUIMessage({
+        action = "hide"
+    })
+end
 
     end)
 
@@ -182,9 +201,13 @@ RegisterNetEvent('smvlpd-ems-ranks:client:pointsAdded', function(amount, total, 
 
     local rank = lib.callback.await('smvlpd-ems-ranks:server:getRank', false)
 
-    if rank then
-        updateHud(rank)
-    end
+    if rank and CanShowEmsHud() then
+    updateHud(rank)
+else
+    SendNUIMessage({
+        action = "hide"
+    })
+end
 
 end)
 
@@ -199,9 +222,13 @@ RegisterNetEvent('smvlpd-ems-ranks:client:promoted', function(rankId, rankLabel,
 
     local rank = lib.callback.await('smvlpd-ems-ranks:server:getRank', false)
 
-    if rank then
-        updateHud(rank)
-    end
+    if rank and CanShowEmsHud() then
+    updateHud(rank)
+else
+    SendNUIMessage({
+        action = "hide"
+    })
+end
 
 end)
 
@@ -275,21 +302,19 @@ CreateThread(function()
     local rank = lib.callback.await('smvlpd-ems-ranks:server:getRank', false)
 
     if rank then
-        updateHud(rank)
+
+        if CanShowEmsHud() then
+            updateHud(rank)
+        else
+            SendNUIMessage({
+                action = "hide"
+            })
+        end
 
         TriggerEvent(
-    "smvlpd-ems-clothing:client:updateRank",
-    rank.id
-)
+            "smvlpd-ems-clothing:client:updateRank",
+            rank.id
+        )
+
     end
-end)
-
-RegisterNetEvent('smvlpd-ems-ranks:client:reloadRank', function()
-
-    local character = exports['smvlpd-character']:GetCurrentCharacter()
-
-    if character then
-        TriggerServerEvent('smvlpd-ems-ranks:server:characterLoaded', character.id)
-    end
-
 end)

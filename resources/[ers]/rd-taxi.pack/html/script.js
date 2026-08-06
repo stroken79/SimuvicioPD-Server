@@ -287,7 +287,7 @@ function updateTaxiStatus(taxiId, status, eta) {
     if (driverItem) {
       const statusBadge = driverItem.querySelector(".status-badge");
       if (statusBadge) {
-        statusBadge.innerHTML = getStatusBadge(status);
+        statusBadge.innerHTML = getStatusBadge(status, taxi.stopsHere);
       }
     }
 
@@ -320,7 +320,7 @@ function callTaxi(taxiId, notifyType) {
   }, 1000);
 
   $.post(
-    "https://rd-taxi/notifyTaxi",
+    `https://${GetParentResourceName()}/notifyTaxi`,
     JSON.stringify({
       taxiId: taxiId,
       notifyType: notifyType,
@@ -341,7 +341,7 @@ function confirmWaypoint(confirmed) {
   dialog.classList.add("hidden");
 
   $.post(
-    "https://rd-taxi/confirmWaypoint",
+    `https://${GetParentResourceName()}/confirmWaypoint`,
     JSON.stringify({
       confirmed: confirmed,
     })
@@ -354,7 +354,7 @@ function closePanel() {
   selectedTaxiId = null;
   currentTaxis = [];
 
-  $.post("https://rd-taxi/close", JSON.stringify({}));
+  $.post(`https://${GetParentResourceName()}/close`, JSON.stringify({}));
 }
 
 document.addEventListener("keydown", function (event) {
@@ -400,7 +400,7 @@ function play3DAudio(audioFile, coords, vehicleNetId) {
   });
   
   audioUpdateInterval = setInterval(() => {
-    $.post("https://rd-taxi/getPlayerAndVehicleCoords", JSON.stringify({
+    $.post(`https://${GetParentResourceName()}/getPlayerAndVehicleCoords`, JSON.stringify({
       vehicleNetId: vehicleNetId
     }), function(response) {
       if (response && response.playerCoords && response.vehicleCoords) {
