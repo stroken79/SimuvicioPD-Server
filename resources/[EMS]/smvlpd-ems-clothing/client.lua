@@ -75,6 +75,8 @@ SetPedComponentVariation(
     0
 )
 
+exports["smvlpd-accessories"]:ReapplyAccessories()
+
 
 end
 
@@ -95,6 +97,15 @@ function OpenEMSLocker()
         id = "ems_locker_menu",
         title = Config.MenuTitle,
         options = {
+
+            {
+                title = "ACCESORIOS",
+                description = "Gestionar gafas, gorra y reloj sin cambiar el uniforme.",
+                icon = "glasses",
+                onSelect = function()
+                    exports["smvlpd-accessories"]:OpenAccessories()
+                end
+            },
 
             {
                 title = "👕 Uniforme reglamentario",

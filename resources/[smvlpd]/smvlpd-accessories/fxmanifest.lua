@@ -4,19 +4,12 @@ game 'gta5'
 lua54 'yes'
 
 author 'SimuvicioPD'
-description 'Sistema de vestuarios'
+description 'Accesorios compartidos para los vestuarios de servicio'
 version '1.0.0'
 
 dependency 'ox_lib'
-dependency 'smvlpd-ranks'
-dependency 'smvlpd-accessories'
 
 client_scripts {
     '@ox_lib/init.lua',
-    'config.lua',
     'client.lua'
-}
-
-server_scripts {
-    'server.lua'
 }

@@ -21,6 +21,7 @@ local function ApplyDutyUniform()
     end
 
     exports["pd5m"]:ApplyUniform(uniform)
+    exports["smvlpd-accessories"]:ReapplyAccessories()
 
     lib.notify({
         description = "Uniforme aplicado.",
@@ -41,6 +42,15 @@ local function OpenLocker()
                 description = "Equipar uniforme correspondiente a tu rango",
                 icon = "shirt",
                 onSelect = ApplyDutyUniform
+            },
+
+            {
+                title = "ACCESORIOS",
+                description = "Gestionar gafas, gorra y reloj sin cambiar el uniforme.",
+                icon = "glasses",
+                onSelect = function()
+                    exports["smvlpd-accessories"]:OpenAccessories()
+                end
             },
 
             {
