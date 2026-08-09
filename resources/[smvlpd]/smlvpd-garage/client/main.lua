@@ -1,9 +1,12 @@
-local function IsPoliceOnDuty()
+local function IsOnDuty()
 
     local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
     local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
 
-    return onDuty and service == "police"
+    return onDuty and (
+        service == "police"
+        or service == "ambulance"
+    )
 
 end
 local activeTextUI
@@ -26,7 +29,7 @@ end
 
 local function openGarage(garageId)
 
-    if not IsPoliceOnDuty() then
+    if not IsOnDuty() then
         lib.notify({
             title = 'Garaje',
             description = 'Debes estar de servicio para acceder al garaje.',

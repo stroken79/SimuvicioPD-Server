@@ -28,25 +28,52 @@ local function SpawnVehicle(model, livery, garage)
 
     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -1)
 
-    SetModelAsNoLongerNeeded(hash)
+if model == "dodgeems" then
+    SetVehRadioStation(vehicle, "OFF")
+end
+
+SetModelAsNoLongerNeeded(hash)
 
 end
 local lockerTextVisible = false
 local function OpenGarage(garage)
 
+    local vehicles = lib.callback.await(
+        'smvlpd-ranks:server:getAllowedVehicles',
+        false
+    )
+
+    if not vehicles or #vehicles == 0 then
+        lib.notify({
+            type = "error",
+            description = "No tienes vehículos disponibles para tu rango."
+        })
+        return
+    end
+
+    local options = {}
+
+    for _, vehicle in ipairs(vehicles) do
+
+        local model = type(vehicle) == "table" and vehicle.model or vehicle
+        local label = type(vehicle) == "table" and vehicle.label or model
+        local livery = type(vehicle) == "table" and vehicle.livery or nil
+
+        options[#options + 1] = {
+            title = label,
+            description = "Sacar vehículo",
+            icon = "truck-medical",
+            onSelect = function()
+                SpawnVehicle(model, livery, garage)
+            end
+        }
+
+    end
+
     lib.registerContext({
         id = "smvlpd_ems_garage",
         title = "Garaje EMS",
-        options = {
-    {
-        title = "Ambulancia",
-        description = "Sacar una ambulancia",
-        icon = "truck-medical",
-        onSelect = function()
-    SpawnVehicle("ambulance", nil, garage)
-end
-    }
-}
+        options = options
     })
 
     lib.showContext("smvlpd_ems_garage")

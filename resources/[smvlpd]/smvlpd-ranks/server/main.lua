@@ -621,6 +621,13 @@ local function GetAllowedVehicles(source)
     return vehicles[rankId] or {}
 
 end
+lib.callback.register('smvlpd-ranks:server:getAllowedVehicles', function(source)
+    return GetAllowedVehicles(source)
+end)
+
+lib.callback.register('smvlpd-ranks:server:getAllowedVehicles', function(source)
+    return GetAllowedVehicles(source)
+end)
 
 exports('GetAllowedVehicles', GetAllowedVehicles)
 
