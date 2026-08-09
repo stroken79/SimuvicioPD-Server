@@ -119,7 +119,7 @@ Config.Ranks = {
 
     [5] = {
         label = 'Paramedico Senior',
-        image = 'Paramedico Senior.png',
+        image = 'Paramedico_Senior.png',
         weapons = {}
     },
 
@@ -149,19 +149,19 @@ Config.Ranks = {
 
     [10] = {
         label = 'Director Adjunto',
-        image = 'Director Adjunto.png',
+        image = 'Director_Adjunto.png',
         administrative = true
     },
 
     [11] = {
         label = 'Director EMS',
-        image = 'Director EMS.png',
+        image = 'Director_EMS.png',
         administrative = true
     },
 
     [12] = {
         label = 'Director General',
-        image = 'Director General.png',
+        image = 'Director_General.png',
         administrative = true
     },
 }

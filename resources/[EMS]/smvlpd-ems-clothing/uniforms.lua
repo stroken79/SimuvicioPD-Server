@@ -42,75 +42,97 @@ EMSUniforms = {
 
         emt = {
 
-        male = {
+    male = {
 
-            components = {
+        components = {
 
-                [3] = {1,0},
-                [4] = {129,0},
-                [5] = {150,0},
-                [6] = {24,0},
-                [7] = {5,0},
-                [8] = {18,0},
-                [9] = {38,0},
-                [10] = {0,0},
+            [3] = {94,0},      -- Brazos
+            [4] = {129,0},     -- Pantalón
+            [5] = {150,0},     -- Bolsas
+            [6] = {24,0},      -- Zapatos
+            [10] = {1,0},      -- Insignias
+            [11] = {590,6},    -- Chaqueta
 
+        },
+
+        collections = {
+
+            [7] = {
+                collection = "mp_m_emergency",
+                drawable = 5,
+                texture = 0
             },
 
-            collections = {
+            [8] = {
+                collection = "mp_m_emergency",
+                drawable = 18,
+                texture = 0
+            },
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 590,
-                    texture = 6
-                }
-
+            [9] = {
+                collection = "mp_m_emergency",
+                drawable = 0,
+                texture = 0
             }
 
         },
 
-        female = {
+        props = {}
+    },
 
-            components = {
+    female = {
 
+        components = {},
+        collections = {},
+        props = {}
+
+    }
+
+},
+
+        aemt = {
+
+    male = {
+
+        components = {
+
+            [3] = {85, 0},
+            [4] = {129, 0},
+            [5] = {150, 0},
+            [6] = {24, 0},
+            [10] = {33, 0},
+
+        },
+
+        collections = {
+
+            [7] = {
+                collection = "mp_m_emergency",
+                drawable = 5,
+                texture = 0
             },
 
-            collections = {
+            [8] = {
+                collection = "mp_m_emergency",
+                drawable = 18,
+                texture = 0
+            },
 
+            [9] = {
+                collection = "mp_m_emergency",
+                drawable = 0,
+                texture = 0
+            },
+
+            [11] = {
+                collection = "mp_m_emergency",
+                drawable = 42,
+                texture = 6
             }
 
         }
 
     },
-
-        aemt = {
-
-        male = {
-
-            components = {
-
-                [3] = {1,0},
-                [4] = {129,0},
-                [5] = {150,0},
-                [6] = {24,0},
-                [7] = {5,0},
-                [8] = {18,0},
-                [9] = {38,0},
-                [10] = {33,0},
-
-            },
-
-            collections = {
-
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 37,
-                    texture = 8
-                }
-
-            }
-
-        },
 
         female = {
 
@@ -128,32 +150,45 @@ EMSUniforms = {
 
         paramedico = {
 
-        male = {
+    male = {
 
-            components = {
+        components = {
+            [3] = {85, 0},
+            [4] = {129, 0},
+            [5] = {150, 0},
+            [6] = {24, 0},
+            [9] = {62, 0},
+        },
 
-                [3] = {11,0},     -- Brazos
-                [4] = {129,0},    -- Pantalón
-                [5] = {150,0},    -- Bolsa
-                [6] = {24,0},     -- Zapatos
-                [7] = {5,0},      -- Accesorios
-                [8] = {15,0},     -- Camiseta
-                [9] = {62,0},     -- Chaleco
-                [10] = {0,0},     -- Insignias
+        collections = {
 
+            [7] = {
+                collection = "mp_m_emergency",
+                drawable = 5,
+                texture = 0
             },
 
-            collections = {
+            [8] = {
+                collection = "mp_m_emergency",
+                drawable = 15,
+                texture = 0
+            },
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 30,
-                    texture = 0
-                }
+            [10] = {
+                collection = "mp_m_emergency",
+                drawable = 28,
+                texture = 0
+            },
 
+            [11] = {
+                collection = "mp_m_emergency",
+                drawable = 30,
+                texture = 0
             }
 
-        },
+        }
+
+    },
 
         female = {
 
@@ -169,220 +204,203 @@ EMSUniforms = {
 
     },
 
-        paramedico_senior = {
+       paramedico_senior = {
 
-        male = {
+    male = {
 
-            components = {
-
-                [3] = {11,0},
-                [4] = {129,0},
-                [5] = {150,0},
-                [6] = {24,0},
-                [7] = {5,0},
-                [8] = {15,0},
-                [9] = {62,0},
-                [10] = {239,0}
-
-            },
-
-            collections = {
-
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 30,
-                    texture = 0
-                }
-
-            }
-
+        components = {
+            [3] = {86, 0},
+            [4] = {129, 0},
+            [5] = {0, 0},
+            [6] = {24, 0},
+            [8] = {57, 0},
+            [9] = {66, 0},
+            [11] = {589, 0},
         },
 
-        female = {
+        collections = {
 
-            components = {
-
+            [7] = {
+                collection = "mp_m_emergency",
+                drawable = 22,
+                texture = 0
             },
 
-            collections = {
-
+            [10] = {
+                collection = "mp_m_emergency",
+                drawable = 28,
+                texture = 0
             }
 
         }
 
     },
+
+    female = {
+
+        components = {
+
+        },
+
+        collections = {
+
+        }
+
+    }
+
+},
+
+        
 
         medico = {
 
-        male = {
+    male = {
 
-            components = {
+        components = {
 
-                [3] = {11,0},
-                [4] = {129,0},
-                [5] = {122,0},
-                [6] = {24,0},
-                [7] = {38,0},
-                [8] = {235,0},
-                [9] = {0,0},
-                [10] = {0,0}
-
-            },
-
-            collections = {
-
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 26,
-                    texture = 0
-                }
-
-            }
+            [3] = {86, 0},
+            [4] = {129, 0},
+            [5] = {150, 0},
+            [6] = {24, 0},
+            [7] = {197, 0},
+            [8] = {256, 0},
+            [9] = {0, 0},
+            [10] = {0, 0},
+            [11] = {607, 0}
 
         },
 
-        female = {
-
-            components = {
-
-            },
-
-            collections = {
-
-            }
+        collections = {
 
         }
 
     },
+
+    female = {
+
+        components = {
+
+        },
+
+        collections = {
+
+        }
+
+    }
+
+},
 
         cirujano = {
 
-        male = {
+    male = {
 
-            components = {
+        components = {
 
-                [3] = {11,0},
-                [4] = {129,0},
-                [5] = {122,0},
-                [6] = {24,0},
-                [7] = {38,0},
-                [8] = {256,0},
-                [9] = {0,0},
-                [10] = {0,0}
-
-            },
-
-            collections = {
-
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 26,
-                    texture = 0
-                }
-
-            }
+            [3] = {86, 0},
+            [4] = {143, 0},
+            [5] = {150, 0},
+            [6] = {10, 0},
+            [7] = {197, 0},
+            [8] = {256, 0},
+            [9] = {0, 0},
+            [10] = {238, 0},
+            [11] = {607, 0}
 
         },
 
-        female = {
-
-            components = {
-
-            },
-
-            collections = {
-
-            }
+        collections = {
 
         }
 
     },
+
+    female = {
+
+        components = {
+
+        },
+
+        collections = {
+
+        }
+
+    }
+
+},
 
         especialista = {
 
-        male = {
+    male = {
 
-            components = {
+        components = {
 
-                [3] = {11,0},
-                [4] = {129,0},
-                [5] = {122,0},
-                [6] = {24,0},
-                [7] = {38,0},
-                [8] = {13,0},
-                [9] = {0,0},
-                [10] = {0,0}
-
-            },
-
-            collections = {
-
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 26,
-                    texture = 0
-                }
-
-            }
+            [3] = {88, 0},      -- Brazos
+            [4] = {129, 0},     -- Pantalón
+            [5] = {0, 0},       -- Bolsas
+            [6] = {10, 0},      -- Zapatos
+            [7] = {127, 0},     -- Accesorios
+            [8] = {10, 0},      -- Camiseta
+            [9] = {0, 0},       -- Chaleco
+            [10] = {0, 0},      -- Insignias
+            [11] = {4, 0}       -- Chaqueta
 
         },
 
-        female = {
-
-            components = {
-
-            },
-
-            collections = {
-
-            }
+        collections = {
 
         }
 
     },
 
-        supervisor = {
+    female = {
 
-        male = {
+        components = {
 
-            components = {
+        },
 
-                [3] = {1,0},
-                [4] = {187,0},
-                [5] = {0,0},
-                [6] = {0,0},
-                [7] = {210,0},
-                [8] = {3,2},
-                [9] = {0,0},
-                [10] = {0,0}
+        collections = {
+
+        }
+
+    }
+
+},
+
+                supervisor = {
+
+            male = {
+
+                components = {
+
+                    [3] = {1, 0},       -- Brazos
+                    [4] = {10, 0},      -- Pantalón
+                    [7] = {26, 5},      -- Accesorios
+                    [6] = {10, 0},      -- Zapatos
+                    [8] = {35, 0},      -- Camiseta
+                    [9] = {107, 0},     -- Chaleco
+                    [11] = {295, 0},    -- Chaqueta
+
+                },
+
+                collections = {
+
+                }
 
             },
 
-            collections = {
+            female = {
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 59,
-                    texture = 2
+                components = {
+
+                },
+
+                collections = {
+
                 }
 
             }
 
         },
-
-        female = {
-
-            components = {
-
-            },
-
-            collections = {
-
-            }
-
-        }
-
-    },
 
         director_adjunto = {
 
@@ -390,24 +408,18 @@ EMSUniforms = {
 
             components = {
 
-                [3] = {1,0},
-                [4] = {187,0},
-                [5] = {0,0},
-                [6] = {0,0},
-                [7] = {210,0},
-                [8] = {3,2},
-                [9] = {0,0},
-                [10] = {0,0}
+                    [3] = {1, 0},       -- Brazos
+                    [4] = {10, 0},      -- Pantalón
+                    [7] = {26, 5},      -- Accesorios
+                    [6] = {10, 0},      -- Zapatos
+                    [8] = {35, 0},      -- Camiseta
+                    [9] = {107, 0},     -- Chaleco
+                    [11] = {295, 0},    -- Chaqueta
 
-            },
+                },
 
             collections = {
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 10,
-                    texture = 0
-                }
 
             }
 
@@ -431,26 +443,20 @@ EMSUniforms = {
 
         male = {
 
-            components = {
+             components = {
 
-                [3] = {1,0},
-                [4] = {187,0},
-                [5] = {0,0},
-                [6] = {0,0},
-                [7] = {210,0},
-                [8] = {3,2},
-                [9] = {0,0},
-                [10] = {0,0}
+                    [3] = {1, 0},       -- Brazos
+                    [4] = {10, 0},      -- Pantalón
+                    [7] = {26, 5},      -- Accesorios
+                    [6] = {10, 0},      -- Zapatos
+                    [8] = {35, 0},      -- Camiseta
+                    [9] = {107, 0},     -- Chaleco
+                    [11] = {295, 0},    -- Chaqueta
 
-            },
+                },
 
             collections = {
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 10,
-                    texture = 0
-                }
 
             }
 
@@ -474,26 +480,21 @@ EMSUniforms = {
 
         male = {
 
-            components = {
+             components = {
 
-                [3] = {1,0},
-                [4] = {187,0},
-                [5] = {0,0},
-                [6] = {0,0},
-                [7] = {210,0},
-                [8] = {3,2},
-                [9] = {0,0},
-                [10] = {0,0}
+                    [3] = {1, 0},       -- Brazos
+                    [4] = {10, 0},      -- Pantalón
+                    [7] = {26, 5},      -- Accesorios
+                    [6] = {10, 0},      -- Zapatos
+                    [8] = {35, 0},      -- Camiseta
+                    [9] = {107, 0},     -- Chaleco
+                    [11] = {295, 0},    -- Chaqueta
 
-            },
+                },
 
             collections = {
 
-                [11] = {
-                    collection = "mp_m_emergency",
-                    drawable = 10,
-                    texture = 0
-                }
+               
 
             }
 

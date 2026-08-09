@@ -33,11 +33,11 @@ local function getNightErsService(source)
 end
 
 local function getServiceRanks(serviceType)
-    return (Config.ServiceRanks and Config.ServiceRanks[serviceType]) or Config.Ranks or {}
+    return Config.Ranks[serviceType] or {}
 end
 
 local function getServiceRankPoints(serviceType)
-    return (Config.ServiceRankPoints and Config.ServiceRankPoints[serviceType]) or Config.RankPoints or { [1] = 0 }
+    return Config.RankPoints[serviceType] or {}
 end
 
 local function getRank(rankId, serviceType)
@@ -160,9 +160,7 @@ MySQL.ready(function()
     local oldEmsRanks = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.TABLES
         WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'smvlpd_ems_ranks']])) or 0
     if oldEmsRanks > 0 then
-        MySQL.query.await([[INSERT IGNORE INTO smvlpd_police_ranks
-            (character_id, service_type, rank_id, assigned_by, updated_at)
-            SELECT character_id, 'ambulance', rank_id, assigned_by, updated_at FROM smvlpd_ems_ranks]])
+        
     end
 
     local oldEmsPoints = tonumber(MySQL.scalar.await([[SELECT COUNT(*) FROM information_schema.TABLES
@@ -237,6 +235,7 @@ end
 local function loadCharacter(playerSource, characterId)
 
     characterId = tonumber(characterId)
+    
     if not characterId then return end
 
     local license = GetPlayerIdentifierByType(playerSource, 'license')
@@ -253,15 +252,27 @@ local function loadCharacter(playerSource, characterId)
 end
 
 RegisterNetEvent('ErsIntegration::OnToggleShift', function(reportedSource, isOnShift, serviceType)
+
     local playerSource = source
-    if playerSource == 0 then playerSource = tonumber(reportedSource) end
-    if not playerSource or not activeCharacters[playerSource] then return end
+
+    if playerSource == 0 then
+        playerSource = tonumber(reportedSource)
+    end
+
+    if not playerSource or not activeCharacters[playerSource] then
+        return
+    end
 
     if isOnShift == true and supportedServices[serviceType] then
-        loadServiceProgress(playerSource, activeCharacters[playerSource], serviceType)
+        loadServiceProgress(
+            playerSource,
+            activeCharacters[playerSource],
+            serviceType
+        )
     elseif isOnShift == false then
         clearActiveProgress(playerSource)
     end
+
 end)
 
 RegisterNetEvent('smvlpd-ranks:server:syncClientService', function(serviceType)
@@ -303,6 +314,8 @@ RegisterNetEvent('smvlpd-ranks:server:characterLoaded', function(characterId)
     loadCharacter(source, characterId)
 end)
 
+
+
 lib.callback.register('smvlpd-ranks:server:getRank', function(source)
 
     local serviceType = activeServices[source]
@@ -324,7 +337,7 @@ lib.callback.register('smvlpd-ranks:server:getRank', function(source)
     return {
         id = rankId,
         label = rank.label,
-        uniform = ((Config.ServiceUniforms and Config.ServiceUniforms[serviceType]) or Config.Uniforms or {})[rankId],
+        uniform = (Config.Uniforms[serviceType] or {})[rankId],
         image = rank.image,
         player = surname,
         service = serviceType
@@ -537,27 +550,48 @@ end)
 
 RegisterNetEvent('smvlpd-ranks:server:requestManagement', function()
     local source = source
+
     if not isManager(source) then
-        return TriggerClientEvent('ox_lib:notify', source, { type = 'error', description = 'No tienes permiso para gestionar rangos.' })
+        return TriggerClientEvent('ox_lib:notify', source, {
+            type = 'error',
+            description = 'No tienes permiso para gestionar rangos.'
+        })
     end
 
     local players = {}
-    local managerService = activeServices[source]
+
     for _, playerId in ipairs(GetPlayers()) do
         playerId = tonumber(playerId)
-        if activeCharacters[playerId] and activeServices[playerId] == managerService then
-            local rankId = playerRanks[playerId] or 1
-            players[#players + 1] = {
-                serverId = playerId,
-                name = GetPlayerName(playerId) or ('ID %s'):format(playerId),
-                rankId = rankId,
-                rankLabel = getRank(rankId, managerService).label,
-                service = managerService,
-            }
+
+        if activeCharacters[playerId] then
+
+            local serviceType = activeServices[playerId]
+
+            if serviceType then
+
+                local rankId = playerRanks[playerId] or 1
+                local rank = getRank(rankId, serviceType)
+
+                players[#players + 1] = {
+                    serverId = playerId,
+                    name = GetPlayerName(playerId) or ('ID %s'):format(playerId),
+                    service = serviceType,
+                    rankId = rankId,
+                    rankLabel = rank.label,
+                }
+
+            end
         end
     end
-    TriggerClientEvent('smvlpd-ranks:client:openManagement', source, players)
+
+    TriggerClientEvent(
+        'smvlpd-ranks:client:openManagement',
+        source,
+        players
+    )
 end)
+
+
 
 RegisterNetEvent('smvlpd-ranks:server:setRank', function(targetId, rankId)
     local source = source

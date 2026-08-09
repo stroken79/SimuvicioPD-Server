@@ -17,6 +17,8 @@ local function ApplyUniform(rank)
 
     local ped = PlayerPedId()
 
+    SetPedDefaultComponentVariation(ped)
+
     local gender = "male"
 
     if IsPedModel(ped, `mp_f_freemode_01`) then
@@ -89,17 +91,17 @@ function OpenEMSLocker()
                 icon = "shirt",
                 onSelect = function()
 
-                    local rank = exports["smvlpd-ranks"]:GetPlayerEMSRank()
+                    local rank = lib.callback.await('smvlpd-ranks:server:getRank', false)
 
-                    if not rank then
-                        lib.notify({
-                            description = "No se pudo obtener tu rango.",
-                            type = "error"
-                        })
-                        return
-                    end
+if not rank or rank.service ~= "ambulance" then
+    lib.notify({
+        description = "No se pudo obtener tu rango EMS.",
+        type = "error"
+    })
+    return
+end
 
-                    ApplyUniform(rank.id)
+ApplyUniform(rank.id)
 
                     lib.notify({
                         description = "Uniforme aplicado.",

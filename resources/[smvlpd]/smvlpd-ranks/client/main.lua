@@ -189,19 +189,36 @@ RegisterNetEvent('smvlpd-ranks:client:openManagement', function(players)
 end)
 
 RegisterNetEvent('smvlpd-ranks:client:chooseRank', function(player)
+
     local options = {}
-    local serviceRanks = (Config.ServiceRanks and Config.ServiceRanks[player.service or currentService]) or Config.Ranks or {}
+
+    local serviceType = player.service or currentService
+    local serviceRanks = Config.Ranks[serviceType] or {}
+
     for rankId, rank in ipairs(serviceRanks) do
+
         options[#options + 1] = {
             title = rank.label,
             description = rankId == player.rankId and 'Rango actual' or nil,
             icon = rank.administrative and 'user-tie' or 'shield-halved',
             event = 'smvlpd-ranks:client:confirmRank',
-            args = { targetId = player.serverId, rankId = rankId },
+            args = {
+                targetId = player.serverId,
+                rankId = rankId
+            },
         }
+
     end
-    lib.registerContext({ id = 'smvlpd_rank_choose', title = ('Rango para %s'):format(player.name), menu = 'smvlpd_rank_management', options = options })
+
+    lib.registerContext({
+        id = 'smvlpd_rank_choose',
+        title = ('Rango para %s'):format(player.name),
+        menu = 'smvlpd_rank_management',
+        options = options
+    })
+
     lib.showContext('smvlpd_rank_choose')
+
 end)
 
 RegisterNetEvent('smvlpd-ranks:client:confirmRank', function(data)
