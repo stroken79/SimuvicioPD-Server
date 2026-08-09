@@ -2,7 +2,7 @@ Config = Config or {}
 
 --====================== Stretcher Settings ======================--
 
-Config.EnableStretcherSpawnEverywhere = true  -- false = only allow spawn stretchers from given vehicle models | true = allows stretcher spawn command everywhere + allows grabbing from vehicles.
+Config.EnableStretcherSpawnEverywhere = false -- Limita la camilla a los vehículos configurados abajo.
 Config.PlayerLayDownOnStretcherBedAnimDict = "switch@trevor@annoys_sunbathers"
 Config.PlayerLayDownOnStretcherBedAnim = "trev_annoys_sunbathers_loop_girl"
 Config.RangeToCheckNearbyAmbulance = 10.0      -- Distance to check for nearby ambulances.    
@@ -10,13 +10,6 @@ Config.RangeToCheckForStretcherPoint = 3.0     -- Distance (radius) from the amb
 Config.VehiclesWithStretchers = {
     -- INFO: behindVehicle is how far behind the ambulance the stretcher is, depth is how deep into the ambulance the stretcher is, height is the offset height of the stretcher inside the ambulance.
     {hash = "ambulance", behindVehicle = -6.0, sideways = 0.1, depth = -1.25, height = 0.65}, -- Default setting. 
-
-    -- Custom vehicles we used to test.
-    {hash = "ambumercbox", behindVehicle = -6.0, sideways = 0.0, depth = -1.4, height = 0.28},
-    {hash = "ukambu1", behindVehicle = -6.0, sideways = 0.0, depth = -1.5, height = 0.28},
-    {hash = "ukambu2", behindVehicle = -6.0, sideways = 0.0, depth = -1.5, height = 0.28},
-    -- {hash = "your_ambulance", behindVehicle = -6.0, sideways = 0.0, depth = -1.5, height = 0.28},
-    -- Add more here.
 }
 
 Config.ShowSavedScreen = true           -- Shows victim saved in GTA style, when dropping off a victim.

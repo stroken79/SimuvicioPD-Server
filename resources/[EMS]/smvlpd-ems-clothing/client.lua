@@ -17,9 +17,12 @@ local function ApplyUniform(rank)
 
     local ped = PlayerPedId()
 
-    SetPedDefaultComponentVariation(ped)
+local hairDrawable = GetPedDrawableVariation(ped, 2)
+local hairTexture = GetPedTextureVariation(ped, 2)
 
-    local gender = "male"
+SetPedDefaultComponentVariation(ped)
+
+local gender = "male"
 
     if IsPedModel(ped, `mp_f_freemode_01`) then
         gender = "female"
@@ -64,6 +67,14 @@ local function ApplyUniform(rank)
             )
         end
     end
+SetPedComponentVariation(
+    ped,
+    2,
+    hairDrawable,
+    hairTexture,
+    0
+)
+
 
 end
 
