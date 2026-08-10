@@ -28,16 +28,26 @@ EMSUniforms = {
 
         female = {
 
-            components = {
+    components = {
 
-            },
+        [11] = {635, 6},    -- Chaqueta
+        [8]  = {269, 0},    -- Camiseta
+        [4]  = {226, 0},    -- Pantalón
+        [5]  = {153, 0},    -- Bolsas
+        [6]  = {115, 0},    -- Zapatos
+        [7]  = {169, 0},    -- Accesorios
+        [9]  = {130, 0},    -- Chaleco
+        [3]  = {101, 0},    -- Brazos
 
-            collections = {
+    },
 
-            }
+    collections = {
 
-        }
+    },
 
+    props = {}
+
+}
     },
 
         emt = {
@@ -82,11 +92,26 @@ EMSUniforms = {
 
     female = {
 
-        components = {},
-        collections = {},
-        props = {}
+    components = {
 
-    }
+        [11] = {629, 6},    -- Chaqueta
+        [8]  = {289, 0},    -- Camiseta
+        [4]  = {226, 0},    -- Pantalón
+        [9]  = {63, 0},     -- Chaleco
+        [7]  = {173, 0},    -- Accesorios
+        [5] = {153, 0},     -- Bolsas
+        [6] = {115, 0},     -- Zapatos
+        [3] = {98, 0},      -- Brazos
+
+    },
+
+    collections = {
+
+    },
+
+    props = {}
+
+}
 
 },
 
@@ -136,16 +161,26 @@ EMSUniforms = {
 
         female = {
 
-            components = {
+    components = {
 
-            },
+        [11] = {629, 6},    -- Chaqueta
+        [8]  = {289, 0},    -- Camiseta
+        [4]  = {226, 0},    -- Pantalón
+        [9]  = {63, 0},     -- Chaleco
+        [7] = {167, 0},    -- Accesorios
+        [5] = {153, 0},     -- Bolsas
+        [6] = {115, 0},     -- Zapatos
+        [3] = {98, 0},      -- Brazos
 
-            collections = {
+    },
 
-            }
+    collections = {
 
-        }
+    },
 
+    props = {}
+
+}
     },
 
         paramedico = {
@@ -192,16 +227,28 @@ EMSUniforms = {
 
         female = {
 
-            components = {
+    components = {
 
-            },
+        [7]  = {97, 0},     -- Accesorios
+        [10] = {252, 1},    -- Insignias
+        [11] = {636, 0},    -- Chaqueta
+        [8]  = {283, 0},    -- Camiseta
+        [5]  = {0, 0},      -- Bolsas
+        [3]  = {101, 0},    -- Brazos
+        [9]  = {0, 0},      -- Chaleco
 
-            collections = {
+        [4]  = {226, 0},    -- Pantalón
+        [6]  = {115, 0},    -- Zapatos
 
-            }
+    },
 
-        }
+    collections = {
 
+    },
+
+    props = {}
+
+}
     },
 
        paramedico_senior = {
@@ -238,16 +285,28 @@ EMSUniforms = {
 
     female = {
 
-        components = {
+    components = {
 
-        },
+        [7]  = {96, 0},     -- Accesorios
+        [10] = {252, 1},    -- Insignias
+        [11] = {636, 0},    -- Chaqueta
+        [8]  = {283, 0},    -- Camiseta
+        [5]  = {0, 0},      -- Bolsas
+        [3]  = {101, 0},    -- Brazos
+        [9]  = {0, 0},      -- Chaleco
 
-        collections = {
+        [4]  = {226, 0},    -- Pantalón
+        [6]  = {115, 0},    -- Zapatos
 
-        }
+    },
 
-    }
+    collections = {
 
+    },
+
+    props = {}
+
+}
 },
 
         
@@ -278,15 +337,28 @@ EMSUniforms = {
 
     female = {
 
-        components = {
+    components = {
 
-        },
+        [7]  = {173, 0},     -- Accesorios
+        [10] = {0, 0},    -- Insignias
+        [11] = {670, 6},    -- Chaqueta
+        [8]  = {217, 0},  -- Camiseta
+        [5]  = {0, 0},    -- Bolsas
+        [3]  = {101, 0},    -- Brazos
+        [9]  = {43, 0},      -- Chaleco
 
-        collections = {
+        [4]  = {246, 0},    -- Pantalón
+        [6]  = {115, 0},    -- Zapatos
 
-        }
+    },
 
-    }
+    collections = {
+
+    },
+
+    props = {}
+
+}
 
 },
 
@@ -316,16 +388,28 @@ EMSUniforms = {
 
     female = {
 
-        components = {
+    components = {
 
-        },
+        [7]  = {169, 0},    -- Accesorios
+        [10] = {0, 0},    -- Insignias
+        [11] = {666, 0},    -- Chaqueta
+        [8]  = {217, 0},  -- Camiseta
+        [5]  = {0, 0},      -- Bolsas
+        [3]  = {101, 0},    -- Brazos
+        [9]  = {43, 0},      -- Chaleco
+        [4]  = {3, 12},     -- Pantalón
+        [6]  = {55, 0},     -- Zapatos
 
-        collections = {
 
-        }
+    },
 
-    }
+    collections = {
 
+    },
+
+    props = {}
+
+}
 },
 
         especialista = {
@@ -354,16 +438,28 @@ EMSUniforms = {
 
     female = {
 
-        components = {
+    components = {
 
-        },
+        [7]  = {164, 0},    -- Accesorios
+        [10] = {0, 0},    -- Insignias
+        [11] = {7, 1},      -- Chaqueta
+        [8]  = {217, 0},  -- Camiseta
+        [5]  = {0, 0},      -- Bolsas
+        [3]  = {101, 0},    -- Brazos
+        [9]  = {43, 0},      -- Chaleco
+        [4]  = {3, 12},     -- Pantalón
+        [6]  = {55, 0},     -- Zapatos
 
-        collections = {
 
-        }
+    },
 
-    }
+    collections = {
 
+    },
+
+    props = {}
+
+}
 },
 
                 supervisor = {
@@ -390,15 +486,25 @@ EMSUniforms = {
 
             female = {
 
-                components = {
+    components = {
 
-                },
+        [11] = {52, 2},     -- Chaqueta
+        [8]  = {151, 9},    -- Camiseta
+        [3]  = {1, 0},      -- Brazos
+        [4] = {7, 0},      -- Pantalón
+        [6]  = {42, 2},     -- Zapatos
+        [7] = {173, 0},    -- Accesorios
+        [5] = {0, 0},      -- Bolsas
 
-                collections = {
+    },
 
-                }
+    collections = {
 
-            }
+    },
+
+    props = {}
+
+}
 
         },
 
@@ -427,15 +533,25 @@ EMSUniforms = {
 
         female = {
 
-            components = {
+    components = {
 
-            },
+        [11] = {52, 2},     -- Chaqueta
+        [8]  = {151, 9},    -- Camiseta
+        [3]  = {1, 0},      -- Brazos
+        [4] = {7, 0},      -- Pantalón
+        [6]  = {42, 2},     -- Zapatos
+        [7] = {173, 0},    -- Accesorios
+        [5] = {0, 0},      -- Bolsas
 
-            collections = {
+    },
 
-            }
+    collections = {
 
-        }
+    },
+
+    props = {}
+
+}
 
     },
 
@@ -462,17 +578,27 @@ EMSUniforms = {
 
         },
 
-        female = {
+       female = {
 
-            components = {
+    components = {
 
-            },
+        [11] = {52, 2},     -- Chaqueta
+        [8]  = {151, 9},    -- Camiseta
+        [3]  = {1, 0},      -- Brazos
+        [4] = {7, 0},      -- Pantalón
+        [6]  = {42, 2},     -- Zapatos
+        [7] = {173, 0},    -- Accesorios
+        [5] = {0, 0},      -- Bolsas
 
-            collections = {
+    },
 
-            }
+    collections = {
 
-        }
+    },
+
+    props = {}
+
+}
 
     },
 
@@ -502,15 +628,25 @@ EMSUniforms = {
 
         female = {
 
-            components = {
+    components = {
 
-            },
+        [11] = {52, 2},     -- Chaqueta
+        [8]  = {151, 9},    -- Camiseta
+        [3]  = {1, 0},      -- Brazos
+        [4] = {7, 0},      -- Pantalón
+        [6]  = {42, 2},     -- Zapatos
+        [7] = {173, 0},    -- Accesorios
+        [5] = {0, 0},      -- Bolsas
 
-            collections = {
+    },
 
-            }
+    collections = {
 
-        }
+    },
+
+    props = {}
+
+}
 
     }
 
