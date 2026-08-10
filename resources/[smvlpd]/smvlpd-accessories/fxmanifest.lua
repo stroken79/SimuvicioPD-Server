@@ -11,5 +11,6 @@ dependency 'ox_lib'
 
 client_scripts {
     '@ox_lib/init.lua',
+    'config.lua',
     'client.lua'
 }

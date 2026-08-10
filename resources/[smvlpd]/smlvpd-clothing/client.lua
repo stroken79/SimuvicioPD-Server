@@ -49,7 +49,7 @@ local function OpenLocker()
                 description = "Gestionar gafas, gorra y reloj sin cambiar el uniforme.",
                 icon = "glasses",
                 onSelect = function()
-                    exports["smvlpd-accessories"]:OpenAccessories()
+                    exports["smvlpd-accessories"]:OpenAccessories("police")
                 end
             },
 

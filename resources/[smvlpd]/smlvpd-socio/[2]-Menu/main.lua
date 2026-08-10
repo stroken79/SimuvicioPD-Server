@@ -29,10 +29,16 @@ Citizen.CreateThread(function()
             elseif WarMenu.IsMenuOpened('BuddyMenu:Spawning') then 
                 local serviceType = GetBuddyService()
                 local uniform = GetBuddyUniform(serviceType)
-                local buddyLabel = serviceType == 'ambulance' and 'Crear enfermera' or 'Crear companero'
-                if WarMenu.Button(buddyLabel..' ('..uniform..')') then 
-                    PoliceBuddy_Spawn(uniform, serviceType)
+
+                -- El recurso socio queda disponible para Policia.
+                -- EMS no debe mostrar ni poder usar el compañero.
+                if serviceType ~= 'ambulance' then
+                    local buddyLabel = 'Crear companero'
+                    if WarMenu.Button(buddyLabel..' ('..uniform..')') then
+                        PoliceBuddy_Spawn(uniform, serviceType)
+                    end
                 end
+
                 WarMenu.Display()
             --Actions
             elseif WarMenu.IsMenuOpened('BuddyMenu:Action') then 

@@ -1,76 +1,120 @@
-local accessories = {
+local categories = {
     glasses = { label = 'Gafas', icon = 'glasses', prop = 1 },
-    cap = { label = 'Gorra', icon = 'hat-cowboy', prop = 0 },
-    watch = { label = 'Reloj', icon = 'clock', prop = 6 }
+    hats = { label = 'Gorras / gorros / sombreros', icon = 'hat-cowboy', prop = 0 },
+    watches = { label = 'Relojes', icon = 'clock', prop = 6 }
 }
 
-local accessoryOrder = { 'glasses', 'cap', 'watch' }
+local categoryOrder = { 'glasses', 'hats', 'watches' }
 local selectedAccessories = {}
+local previousAccessories = {}
 
-local function applyAccessory(key, drawable, texture)
+local function getGender(ped)
+    return IsPedModel(ped, `mp_f_freemode_01`) and 'female' or 'male'
+end
+
+local function capturePreviousAccessory(key)
+    if previousAccessories[key] then return end
+    local prop = categories[key].prop
     local ped = PlayerPedId()
-    local accessory = accessories[key]
-    if not accessory or not DoesEntityExist(ped) then return end
-    SetPedPropIndex(ped, accessory.prop, drawable, texture, true)
-    selectedAccessories[key] = { drawable = drawable, texture = texture }
+    previousAccessories[key] = {
+        drawable = GetPedPropIndex(ped, prop),
+        texture = GetPedPropTextureIndex(ped, prop)
+    }
+end
+
+local function applyEntry(key, entry)
+    local ped = PlayerPedId()
+    local values = entry[getGender(ped)]
+    if not values or not DoesEntityExist(ped) then return false end
+
+    local prop = categories[key].prop
+    if values.drawable < 0 or values.drawable >= GetNumberOfPedPropDrawableVariations(ped, prop) then
+        return false
+    end
+    if values.texture < 0 or values.texture >= GetNumberOfPedPropTextureVariations(ped, prop, values.drawable) then
+        return false
+    end
+
+    capturePreviousAccessory(key)
+    if entry.collection then
+        SetPedCollectionPropIndex(ped, prop, entry.collection, values.drawable, values.texture or 0, true)
+    else
+        SetPedPropIndex(ped, prop, values.drawable, values.texture or 0, true)
+    end
+    selectedAccessories[key] = entry
+    return true
 end
 
 local function removeAccessory(key)
-    local accessory = accessories[key]
-    if not accessory then return end
-    ClearPedProp(PlayerPedId(), accessory.prop)
-    selectedAccessories[key] = nil
-end
-
-local function showTextureMenu(key, drawable)
-    local ped = PlayerPedId()
-    local accessory = accessories[key]
-    local textureCount = GetNumberOfPedPropTextureVariations(ped, accessory.prop, drawable)
-    local options = {}
-    for texture = 0, textureCount - 1 do
-        options[#options + 1] = { title = ('Variante %s'):format(texture), icon = accessory.icon, onSelect = function()
-            applyAccessory(key, drawable, texture)
-            lib.showContext('smvlpd_accessories_' .. key)
-        end }
+    local prop = categories[key].prop
+    local previous = previousAccessories[key]
+    if previous and previous.drawable >= 0 then
+        SetPedPropIndex(PlayerPedId(), prop, previous.drawable, previous.texture or 0, true)
+    else
+        ClearPedProp(PlayerPedId(), prop)
     end
-    lib.registerContext({ id = 'smvlpd_accessories_textures_' .. key .. '_' .. drawable, title = accessory.label .. ' - modelo ' .. drawable, menu = 'smvlpd_accessories_' .. key, options = options })
-    lib.showContext('smvlpd_accessories_textures_' .. key .. '_' .. drawable)
+    selectedAccessories[key] = nil
+    previousAccessories[key] = nil
 end
 
-local function showDrawableMenu(key)
-    local ped = PlayerPedId()
-    local accessory = accessories[key]
-    local drawableCount = GetNumberOfPedPropDrawableVariations(ped, accessory.prop)
+local function showCategory(service, key)
+    local category = categories[key]
+    local entries = (Config.Accessories[service] or {})[key] or {}
     local options = {
-        { title = 'Quitar ' .. string.lower(accessory.label), description = 'No modifica ninguna otra prenda del uniforme.', icon = 'xmark', onSelect = function()
+        { title = 'Quitar', description = 'Restaura el accesorio que llevaba el uniforme.', icon = 'xmark', onSelect = function()
             removeAccessory(key)
-            lib.showContext('smvlpd_accessories_' .. key)
+            lib.showContext('smvlpd_accessories_' .. service)
         end }
     }
-    for drawable = 0, drawableCount - 1 do
-        options[#options + 1] = { title = ('Modelo %s'):format(drawable), description = 'Elegir variante de color/textura.', icon = accessory.icon, onSelect = function()
-            showTextureMenu(key, drawable)
+
+    for _, entry in ipairs(entries) do
+        options[#options + 1] = { title = entry.label, icon = category.icon, onSelect = function()
+            if not applyEntry(key, entry) then
+                lib.notify({ type = 'error', description = 'Este accesorio no está configurado para tu modelo de personaje.' })
+                return
+            end
+            lib.showContext('smvlpd_accessories_' .. service)
         end }
     end
-    lib.registerContext({ id = 'smvlpd_accessories_' .. key, title = accessory.label, menu = 'smvlpd_accessories_menu', options = options })
-    lib.showContext('smvlpd_accessories_' .. key)
+
+    lib.registerContext({ id = 'smvlpd_accessories_' .. service .. '_' .. key, title = category.label, menu = 'smvlpd_accessories_' .. service, options = options })
+    lib.showContext('smvlpd_accessories_' .. service .. '_' .. key)
 end
 
-local function OpenAccessories()
+local function OpenAccessories(service)
+    service = service == 'ambulance' and 'ems' or service
+    if not Config.Accessories[service] then
+        lib.notify({ type = 'error', description = 'No hay una whitelist de accesorios configurada para este servicio.' })
+        return
+    end
+
     local options = {}
-    for _, key in ipairs(accessoryOrder) do
-        local accessory = accessories[key]
-        options[#options + 1] = { title = accessory.label, description = 'Poner, cambiar o quitar ' .. string.lower(accessory.label) .. '.', icon = accessory.icon, onSelect = function()
-            showDrawableMenu(key)
+    for _, key in ipairs(categoryOrder) do
+        local category = categories[key]
+        options[#options + 1] = { title = category.label, description = 'Accesorios permitidos para este servicio.', icon = category.icon, onSelect = function()
+            showCategory(service, key)
         end }
     end
-    lib.registerContext({ id = 'smvlpd_accessories_menu', title = 'ACCESORIOS', options = options })
-    lib.showContext('smvlpd_accessories_menu')
+    lib.registerContext({ id = 'smvlpd_accessories_' .. service, title = 'ACCESORIOS', options = options })
+    lib.showContext('smvlpd_accessories_' .. service)
 end
 
 local function ReapplyAccessories()
-    for key, selection in pairs(selectedAccessories) do applyAccessory(key, selection.drawable, selection.texture) end
+    for key, entry in pairs(selectedAccessories) do
+        previousAccessories[key] = nil
+        applyEntry(key, entry)
+    end
 end
+
+RegisterCommand('accessorycatalog', function()
+    local ped = PlayerPedId()
+    print(('[smvlpd-accessories] modelo=%s | gorra=%s | gafas=%s | reloj=%s'):format(
+        getGender(ped),
+        GetNumberOfPedPropDrawableVariations(ped, 0),
+        GetNumberOfPedPropDrawableVariations(ped, 1),
+        GetNumberOfPedPropDrawableVariations(ped, 6)
+    ))
+end, false)
 
 exports('OpenAccessories', OpenAccessories)
 exports('ReapplyAccessories', ReapplyAccessories)

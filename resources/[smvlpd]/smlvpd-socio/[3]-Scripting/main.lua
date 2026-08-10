@@ -213,6 +213,14 @@ AddEventHandler('smvlpd-socio:spawn', function()
 
     BuddySpawned = true
     local serviceType = GetBuddyService()
+
+    -- EMS no puede utilizar el recurso socio.
+    if serviceType == 'ambulance' then
+        BuddySpawned = false
+        ShowNotification('~r~El servicio EMS no dispone de compañero.')
+        return
+    end
+
     PoliceBuddy_Spawn(GetBuddyUniform(serviceType), serviceType)
 
 end)
