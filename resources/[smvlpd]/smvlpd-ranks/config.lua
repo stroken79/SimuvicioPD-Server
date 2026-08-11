@@ -470,11 +470,23 @@ Config.Ranks = {
             administrative = true
         }
 
+    },
+
+    -- Servicio independiente de Bomberos. Sin armas ni imágenes hasta que se
+    -- configuren recursos propios; no altera los rangos de Policía o EMS.
+    fire = {
+        [1] = { label = 'Cadete', weapons = {} },
+        [2] = { label = 'Bombero I', weapons = {} },
+        [3] = { label = 'Bombero II', weapons = {} },
+        [4] = { label = 'Bombero III', weapons = {} },
+        [5] = { label = 'Sargento I', weapons = {} },
+        [6] = { label = 'Sargento II', weapons = {} },
+        [7] = { label = 'Teniente I', weapons = {} },
+        [8] = { label = 'Teniente II', weapons = {} }
     }
 
 }
 
 -- Los uniformes ya existen en EUP. Esta tabla deja documentada la asignacion
 -- y preparada la integracion posterior con los identificadores de tus conjuntos.
-
 

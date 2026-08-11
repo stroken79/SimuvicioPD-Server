@@ -298,5 +298,13 @@ Config.ServiceVehicles = {
                 label = "Dodge EMS"
             }
         },
+    },
+
+    -- Los vehículos de Bomberos se configuran en smvlpd-fire/config.lua.
+    -- Estas listas vacías evitan que un recurso genérico entregue vehículos
+    -- policiales a un jugador que esté de servicio como fire.
+    fire = {
+        [1] = {}, [2] = {}, [3] = {}, [4] = {},
+        [5] = {}, [6] = {}, [7] = {}, [8] = {}
     }
 }

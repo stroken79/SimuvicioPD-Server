@@ -26,9 +26,14 @@ Config.StretcherDropOffBlipData = {     -- https://docs.fivem.net/docs/game-refe
 }
 Config.StretcherDropOffLocations = {        -- Drop off for stretchers with victims on it. Basically a transfer to hospital personel.
     vector3(358.6897, -591.0747, 28.7968),  -- Pillbox Hill
+    vector3(346.9316, -582.9800, 43.3150),  -- Pillbox Hill
     vector3(1827.6267, 3692.5576, 34.2244), -- Sandy Shores
     vector3(-246.6335, 6330.6113, 32.4262), -- Paleto Bay
-    -- Add more here.
+    vector3(294.1713, -1447.4521, 29.9666),  -- Davis Hospital
+    vector3(1155.3138, -1580.8673, 35.1900),  -- El Burro Heights
+    vector3(-661.7425, 310.3904, 83.0862),  -- West Vinewood
+    vector3(-449.1041, -339.8789, 34.5018),  --Burton
+        -- Add more here.
 }
 
 Config.StretcherSoundSettings = {
