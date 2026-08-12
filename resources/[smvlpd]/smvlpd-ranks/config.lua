@@ -42,14 +42,17 @@ Config.Uniforms = {
 
        
     fire = {
-        [1] = 'Cadete',
-        [2] = 'Bombero I',
-        [3] = 'Bombero II',
-        [4] = 'Bombero III',
-        [5] = 'Sargento I',
-        [6] = 'Sargento II',
-        [7] = 'Teniente I',
-        [8] = 'Teniente II',
+    [1] = 'cadete',
+    [2] = 'bombero_2',
+    [3] = 'bombero_3',
+    [4] = 'ingeniero',
+    [5] = 'teniente',
+    [6] = 'capitan',
+    [7] = 'jefe_batallon',
+    [8] = 'jefe_division',
+    [9] = 'ayudante_jefe',
+    [10] = 'jefe_bomberos'
+   
     },
     tow = {
         [1] = 'Cadete',
@@ -90,13 +93,15 @@ Config.RankPoints = {
     },
     fire = {
         [1] = 0,
-        [2] = 2500,
+        [2] = 3000,
         [3] = 7500,
         [4] = 15000,
-        [5] = 30000,
-        [6] = 50000,
-        [7] = 80000,
-        [8] = 120000,
+        [5] = 25000,
+        [6] = 45000,
+        [7] = 65000,
+        [8] = 80000,
+        [9] = 150000,
+        [10] = 250000,
     },
     tow = {
         [1] = 0,
@@ -475,14 +480,16 @@ Config.Ranks = {
     -- Servicio independiente de Bomberos. Sin armas ni imágenes hasta que se
     -- configuren recursos propios; no altera los rangos de Policía o EMS.
     fire = {
-        [1] = { label = 'Cadete', weapons = {} },
-        [2] = { label = 'Bombero I', weapons = {} },
-        [3] = { label = 'Bombero II', weapons = {} },
-        [4] = { label = 'Bombero III', weapons = {} },
-        [5] = { label = 'Sargento I', weapons = {} },
-        [6] = { label = 'Sargento II', weapons = {} },
-        [7] = { label = 'Teniente I', weapons = {} },
-        [8] = { label = 'Teniente II', weapons = {} }
+        [1] = { label = 'Cadete', image = nil, weapons = {} },
+        [2] = { label = 'Bombero II', image = nil, weapons = {} },
+        [3] = { label = 'Bombero III', image = nil, weapons = {} },
+        [4] = { label = 'Ingeniero', image = nil, weapons = {} },
+        [5] = { label = 'Teniente', image = 'teniente.png', weapons = {} },
+        [6] = { label = 'Capitán', image = 'capitan.png', weapons = {} },
+        [7] = { label = 'Jefe de Batallón', image = 'jefe_batallon.png', weapons = {} },
+        [8] = { label = 'Jefe de División', image = 'jefe_division.png', weapons = {} },
+        [9] = { label = 'Ayudante de Jefe', image = 'ayudante_jefe.png', weapons = {} },
+        [10] = { label = 'Jefe de Bomberos', image = 'jefe_bomberos.png', weapons = {} }
     }
 
 }

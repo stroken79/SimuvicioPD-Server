@@ -144,3 +144,15 @@ body{
     font-weight:bold;
 
 }
+
+/* Colores por servicio */
+#hud.service-fire #header{
+    background:linear-gradient(90deg,#7a0000,#c40000);
+}
+
+#rankImage[src=""]{
+    display:none;
+}
+#hud.service-fire #header{
+    background:linear-gradient(90deg,#7a0000,#c40000);
+}

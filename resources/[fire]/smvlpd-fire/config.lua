@@ -22,13 +22,15 @@ Config.Marker = {
 -- AÑADIR RANGOS DE BOMBEROS AQUÍ. Las claves deben coincidir con uniforms.lua.
 Config.Ranks = {
     [1] = { name = 'cadete' },
-    [2] = { name = 'bombero_1' },
-    [3] = { name = 'bombero_2' },
-    [4] = { name = 'bombero_3' },
-    [5] = { name = 'sargento_1' },
-    [6] = { name = 'sargento_2' },
-    [7] = { name = 'teniente_1' },
-    [8] = { name = 'teniente_2' }
+    [2] = { name = 'bombero_2' },
+    [3] = { name = 'bombero_3' },
+    [4] = { name = 'ingeniero' },
+    [5] = { name = 'teniente' },
+    [6] = { name = 'capitan' },
+    [7] = { name = 'jefe_batallon' },
+    [8] = { name = 'jefe_division' },
+    [9] = { name = 'ayudante_jefe' },
+    [10] = { name = 'jefe_bomberos' }
 }
 
 -- AÑADIR PUNTOS DE SERVICIO AQUÍ.
@@ -84,6 +86,13 @@ Config.VehiclesByRank = {
     [1] = {
         -- { model = 'modelo_vehiculo', label = 'Nombre visible', livery = 0 }
     },
-    [2] = {}, [3] = {}, [4] = {}, [5] = {},
-    [6] = {}, [7] = {}, [8] = {}
+    [2] = {},
+    [3] = {},
+    [4] = {},
+    [5] = {},
+    [6] = {},
+    [7] = {},
+    [8] = {},
+    [9] = {},
+    [10] = {}
 }

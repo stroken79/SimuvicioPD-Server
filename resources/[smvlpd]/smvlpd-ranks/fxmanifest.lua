@@ -41,5 +41,7 @@ files {
     'html/script.js',
     'html/img/*.png',
     'html/img/police/*.png',
-    'html/img/ambulance/*.png'
+    'html/img/ambulance/*.png',
+    'html/img/fire/*.png',
+    'html/img/tow/*.png'
 }

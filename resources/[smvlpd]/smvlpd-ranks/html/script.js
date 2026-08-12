@@ -21,9 +21,26 @@ window.addEventListener("message", function (event) {
     if (data.action !== "update") return;
 
     serviceName.innerText = data.service;
-    const serviceFolder = data.serviceType === "ambulance" ? "ambulance" : "police";
+    const serviceFolders = {
+        police: "police",
+        ambulance: "ambulance",
+        fire: "fire",
+        tow: "tow"
+    };
+
+    const serviceTitles = {
+        police: "SIMUVICIO PD",
+        ambulance: "SIMUVICIO EMS",
+        fire: "SIMUVICIO BOMBEROS",
+        tow: "SIMUVICIO GRÚA"
+    };
+
+    const serviceFolder = serviceFolders[data.serviceType] || "police";
     logo.src = "img/" + serviceFolder + "/logo.png";
-    headerTitle.innerText = serviceFolder === "ambulance" ? "SIMUVICIO EMS" : "SIMUVICIO PD";
+    headerTitle.innerText = serviceTitles[data.serviceType] || "SIMUVICIO PD";
+
+    hud.classList.remove("service-police", "service-ambulance", "service-fire", "service-tow");
+    hud.classList.add("service-" + (data.serviceType || "police"));
     rankName.innerText = data.rank;
     playerName.innerText = data.player;
     playerPoints.innerText = "⭐ Puntos: " + data.points;
@@ -31,7 +48,7 @@ nextRank.innerText = "⬆ Siguiente rango: " + data.nextRank;
 pointsLeft.innerText = "📌 Faltan: " + data.pointsLeft + " puntos";
 
     if (data.image) {
-        rankImage.src = "img/" + serviceFolder + "/" + data.image;
+        rankImage.src = data.image ? ("img/" + serviceFolder + "/" + data.image) : "";
         rankImage.style.display = "block";
     } else {
         rankImage.style.display = "none";
