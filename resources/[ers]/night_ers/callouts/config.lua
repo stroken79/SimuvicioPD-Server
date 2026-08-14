@@ -118,7 +118,7 @@ Config = {
     -- Callout Offers
     OfferCalloutsWithinRangeOf = 3000,      -- Distance in GTA meters between player and callouts, as the crow flies (lineair dist).
     OfferCalloutInterval = {120, 300},      -- Seconds inbetween which a callout is offered. (3-5 minutes by default) (Minimum 60 seconds, maximum no limit)
-    OfferedCalloutTimeout = 15,             -- Seconds after which the callout offer is expired. (15 seconds by default)
+    OfferedCalloutTimeout = 40,             -- Seconds after which the callout offer is expired. (15 seconds by default)
     EnableOnScreenCalloutWaypoint = true,   -- true: Shows an on-screen waypoint towards the callout. false: Doesn't.
 
     -- Dispatch messages

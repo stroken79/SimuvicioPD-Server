@@ -124,12 +124,27 @@ Config.Accessories = {
 
     fire = {
         glasses = {
-            { label = 'Gafas profesionales oscuras', male = { drawable = 5, texture = 1 }, female = { drawable = 11, texture = 0 } }
-        },
+             { label = 'Gafas tácticas', male = { drawable = 23, texture = 0 }, female = { drawable = 25, texture = 0 } },
+            { label = 'Gafas profesionales oscuras', male = { drawable = 5, texture = 1 }, female = { drawable = 11, texture = 0 } },
+            { label = 'Gafas profesionales claras', male = { drawable = 5, texture = 2 }, female = { drawable = 11, texture = 5 } },
+            { label = 'Gafas EMS 63-0', male = { drawable = 63, texture = 0 }, female = { drawable = 63, texture = 0 } },
+            { label = 'Gafas EMS 1-1', male = { drawable = 1, texture = 1 }, female = { drawable = 1, texture = 1 } },
+            { label = 'Gafas EMS 2-2', male = { drawable = 2, texture = 2 }, female = { drawable = 2, texture = 2 } },
+            { label = 'Gafas EMS 3-9', male = { drawable = 3, texture = 9 }, female = { drawable = 3, texture = 9 } },
+            { label = 'Gafas EMS 4-6', male = { drawable = 4, texture = 6 }, female = { drawable = 4, texture = 6 } },
+            { label = 'Gafas EMS 7-7', male = { drawable = 7, texture = 7 }, female = { drawable = 7, texture = 7 } },
+            { label = 'Gafas EMS 9-9', male = { drawable = 9, texture = 9 }, female = { drawable = 9, texture = 9 } },
+            { label = 'Gafas EMS 15-7', male = { drawable = 15, texture = 7 }, female = { drawable = 15, texture = 7 } },
+            { label = 'Gafas EMS 17-7', male = { drawable = 17, texture = 7 }, female = { drawable = 17, texture = 7 } },
+            { label = 'Gafas EMS 17-9', male = { drawable = 17, texture = 9 }, female = { drawable = 17, texture = 9 } },
+            { label = 'Gafas EMS 19-9', male = { drawable = 19, texture = 9 }, female = { drawable = 19, texture = 9 } },
+            { label = 'Gafas EMS 20-2', male = { drawable = 20, texture = 2 }, female = { drawable = 20, texture = 2 } },
+            { label = 'Gafas EMS 34-0', male = { drawable = 34, texture = 0 }, female = { drawable = 34, texture = 0 } },
+            { label = 'Gafas EMS 35-0', male = { drawable = 35, texture = 0 }, female = { drawable = 35, texture = 0 } },
+            { label = 'Gafas EMS 37-0', male = { drawable = 37, texture = 0 }, female = { drawable = 37, texture = 0 } }
         hats = {
             { label = 'Gorra de bombero', male = { drawable = 10, texture = 0 }, female = { drawable = 10, texture = 0 } },
-            { label = 'Casco LSFD', male = { drawable = 45, texture = 0 }, female = { drawable = 44, texture = 0 } },
-            { label = 'Casco BCFD', male = { drawable = 45, texture = 3 }, female = { drawable = 44, texture = 3 } }
+           
         },
         watches = {
             { label = 'Reloj EmergencyEUP 1', male = { drawable = 1, texture = 0 }, female = { drawable = 1, texture = 0 } },
