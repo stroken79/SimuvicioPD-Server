@@ -426,18 +426,68 @@ end
 exports('AwardExternalPoliceCallout', awardExternalCallout)
 exports('AwardExternalEMSCallout', awardExternalCallout)
 
-exports('BeginExternalPoliceCallout', function(source)
+-- Recompensa por objetivos individuales de ERS.
+-- Cada unidad de progreso completada de una categoria otorga puntos extra.
+-- La recompensa se controla por aviso/categoria para evitar duplicados.
+exports('AwardExternalCalloutTask', function(source, calloutId, taskType, amount)
+    source = tonumber(source)
+    local callout = source and activeExternalCallouts[source]
+    if not callout then
+        return false, 'El jugador no tiene un aviso ERS activo.'
+    end
+
+    local expectedId = tostring(callout.calloutId or '')
+    local receivedId = tostring(calloutId or '')
+    if expectedId ~= '' and receivedId ~= '' and expectedId ~= receivedId then
+        return false, 'El aviso ERS no coincide.'
+    end
+
+    local delta = math.floor(tonumber(amount) or 0)
+    if delta <= 0 or delta > 20 then
+        return false, 'Cantidad de objetivos no valida.'
+    end
+
+    taskType = tostring(taskType or 'task')
+    callout.taskAwards = callout.taskAwards or {}
+    local previous = tonumber(callout.taskAwards[taskType]) or 0
+    local newTotal = previous + delta
+
+    -- El cliente solo informa de decrementos del contador. Nunca permitimos
+    -- una cifra absurda que pueda convertir el aviso en una fuente infinita.
+    if newTotal > 50 then
+        return false, 'Limite de objetivos ERS superado.'
+    end
+
+    callout.taskAwards[taskType] = newTotal
+
+    local perTask = tonumber(Config.PointRewards.ersTask) or 15
+    return addPoints(
+        source,
+        perTask * delta,
+        ('Objetivo ERS completado (%s) x%d'):format(taskType, delta)
+    )
+end)
+
+exports('BeginExternalPoliceCallout', function(source, calloutId)
     if not activeCharacters[source] then return false end
 
-    activeExternalCallouts[source] = { lastAwardAt = {} }
+    activeExternalCallouts[source] = {
+        calloutId = tostring(calloutId or ''),
+        lastAwardAt = {},
+        taskAwards = {}
+    }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
 
     return true
 end)
 
-exports('BeginExternalEMSCallout', function(source)
+exports('BeginExternalEMSCallout', function(source, calloutId)
     if not activeCharacters[source] or activeServices[source] ~= 'ambulance' then return false end
-    activeExternalCallouts[source] = { lastAwardAt = {} }
+    activeExternalCallouts[source] = {
+        calloutId = tostring(calloutId or ''),
+        lastAwardAt = {},
+        taskAwards = {}
+    }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
     return true
 end)

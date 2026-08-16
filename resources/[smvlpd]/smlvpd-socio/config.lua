@@ -6,7 +6,7 @@ ScriptEnabled = true
 -- Keys can be found here: https://docs.fivem.net/docs/game-references/controls/
 -- To disable a key input, set to false. (Default is F3)
 -- To enable a command to open the menu, put a single command string below, example: "buddymenu"
-ScriptKey = 170 
+ScriptKey = false
 ScriptCommand = "buddymenu"
 
 

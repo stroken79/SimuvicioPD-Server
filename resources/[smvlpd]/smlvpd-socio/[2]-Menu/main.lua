@@ -49,7 +49,7 @@ Citizen.CreateThread(function()
                 end
             --Open Menu Key
                 WarMenu.Display()
-            elseif IsControlPressed('0',ScriptKey) and GetLastInputMethod('2') then 
+            elseif ScriptKey and IsControlPressed('0', ScriptKey) and GetLastInputMethod('2') then 
                 WarMenu.OpenMenu('BuddyMenu:One')
             end
         end

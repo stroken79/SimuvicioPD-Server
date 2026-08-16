@@ -115,6 +115,7 @@ Config.RankPoints = {
 
 -- Puntos complementarios base. La integracion con callouts/acciones se hara en la siguiente fase.
 Config.PointRewards = {
+    ersTask = 15,
     calloutVeryEasy = 50,
     calloutEasy = 75,
     calloutNormal = 100,
@@ -163,14 +164,14 @@ Config.ERSCalloutDifficulties = {
     emergency_heli_land      = "calloutEasy",
     fall_height              = "calloutEasy",
     fall_stairs              = "calloutEasy",
-    fire_dumpster            = "calloutEasy",
-    gas_smell                = "calloutEasy",
+    fire_dumpster            = "calloutNormal",
+    gas_smell                = "calloutNormal",
     hitnrun_ped              = "calloutEasy",
     illegal_party            = "calloutEasy",
     inj_bone_fracture        = "calloutEasy",
-    inj_drowning             = "calloutEasy",
-    inj_stroke               = "calloutEasy",
-    inj_suffocation          = "calloutEasy",
+    inj_drowning             = "calloutNormal",
+    inj_stroke               = "calloutNormal",
+    inj_suffocation          = "calloutNormal",
     missing_found            = "calloutEasy",
     officer_assist           = "calloutEasy",
     overheated_transformer   = "calloutEasy",
@@ -178,8 +179,8 @@ Config.ERSCalloutDifficulties = {
     repeated_hotline         = "calloutEasy",
     stuck_roof               = "calloutEasy",
     traffic_incident         = "calloutEasy",
-    unknown_smoke            = "calloutEasy",
-    vehicle_fire             = "calloutEasy",
+    unknown_smoke            = "calloutNormal",
+    vehicle_fire             = "calloutNormal",
 
     -- =========================
     -- NORMAL (100 puntos)
@@ -195,16 +196,16 @@ Config.ERSCalloutDifficulties = {
     brandishing_transit      = "calloutNormal",
     construction_incident    = "calloutNormal",
     drug_deal                = "calloutNormal",
-    drug_overdose            = "calloutNormal",
+    drug_overdose            = "calloutComplex",
     fight                    = "calloutNormal",
     fire                     = "calloutNormal",
     fire_ped                 = "calloutNormal",
-    fire_petrol              = "calloutNormal",
-    house_fire               = "calloutNormal",
+    fire_petrol              = "calloutComplex",
+    house_fire               = "calloutComplex",
     illegal_hunting          = "calloutNormal",
     illegal_race             = "calloutNormal",
-    inj_cardiac_arrest       = "calloutNormal",
-    inj_electrocution        = "calloutNormal",
+    inj_cardiac_arrest       = "calloutComplex",
+    inj_electrocution        = "calloutComplex",
     protest_haybales         = "calloutNormal",
     reckless_driving_heavy   = "calloutNormal",
     rock_thrower             = "calloutNormal",
@@ -218,8 +219,8 @@ Config.ERSCalloutDifficulties = {
     -- =========================
     -- COMPLEJO (150 puntos)
     -- =========================
-    aircraft_hard_landing    = "calloutComplex",
-    airport_fire             = "calloutComplex",
+    aircraft_hard_landing    = "calloutHighRisk",
+    airport_fire             = "calloutHighRisk",
     animal_lion_loose        = "calloutComplex",
     animal_rat_plague        = "calloutComplex",
     capsized_bus             = "calloutComplex",
@@ -238,7 +239,7 @@ Config.ERSCalloutDifficulties = {
     stolen_sportscar         = "calloutComplex",
     stolen_tractor           = "calloutComplex",
     stolen_truck             = "calloutComplex",
-    train_derailed           = "calloutComplex",
+    train_derailed           = "calloutHighRisk",
 
     -- =========================
     -- ALTO RIESGO (200 puntos)
@@ -252,7 +253,7 @@ Config.ERSCalloutDifficulties = {
     unidentified_body        = "calloutHighRisk",
     vehicle_theft            = "calloutHighRisk",
     wildfire                 = "calloutHighRisk",
-    Stolen_motorbike         = "calloutHighRisk",
+    Stolen_motorbike         = "calloutNormal",
 }
 
 

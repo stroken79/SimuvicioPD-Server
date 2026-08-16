@@ -142,6 +142,7 @@ Config.Accessories = {
             { label = 'Gafas EMS 34-0', male = { drawable = 34, texture = 0 }, female = { drawable = 34, texture = 0 } },
             { label = 'Gafas EMS 35-0', male = { drawable = 35, texture = 0 }, female = { drawable = 35, texture = 0 } },
             { label = 'Gafas EMS 37-0', male = { drawable = 37, texture = 0 }, female = { drawable = 37, texture = 0 } }
+        },
         hats = {
             { label = 'Gorra de bombero', male = { drawable = 10, texture = 0 }, female = { drawable = 10, texture = 0 } },
            

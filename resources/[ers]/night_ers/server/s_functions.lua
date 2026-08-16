@@ -394,6 +394,21 @@ AddEventHandler("ErsIntegration::OnEndedACallout", function()
     exports['smvlpd-ranks']:CancelExternalPoliceCallout(src)
 end)
 
+--- Handles progress of an individual ERS callout task.
+-- This event is triggered by the NUI task tracker when a task counter decreases.
+RegisterServerEvent("ErsIntegration::OnCalloutTaskProgress")
+AddEventHandler("ErsIntegration::OnCalloutTaskProgress", function(calloutId, taskType, amount)
+    local src = source
+    if GetResourceState('smvlpd-ranks') ~= 'started' then return end
+
+    exports['smvlpd-ranks']:AwardExternalCalloutTask(
+        src,
+        calloutId,
+        taskType,
+        amount
+    )
+end)
+
 --- Handles when a callout is completed successfully.
 -- @param calloutData table The data of the callout.
 RegisterServerEvent("ErsIntegration::OnCalloutCompletedSuccesfully")

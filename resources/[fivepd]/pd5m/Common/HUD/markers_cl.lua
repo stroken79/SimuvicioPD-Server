@@ -2201,7 +2201,7 @@ if ActivateHelpMarkers then
 
 				if ActivateCrosshair then
 					BeginTextCommandThefeedPost("TWOSTRINGS")
-					AddTextComponentSubstringPlayerName("Pulsa ~b~F3~s~ para mostrar un punto. Esto te ayuda a saber a que estas mirando.")
+					AddTextComponentSubstringPlayerName("Pulsa ~b~F3~s~ para activar o desactivar el punto de mira.")
 					EndTextCommandThefeedPostTicker(false, false)
 				end
 
@@ -2211,7 +2211,7 @@ if ActivateHelpMarkers then
 					EndTextCommandThefeedPostTicker(false, false)
 
 					BeginTextCommandThefeedPost("TWOSTRINGS")
-					AddTextComponentSubstringPlayerName("Manten ~r~X~s~ para ver las acciones disponibles. Mueve el raton sobre una opcion y suelta X")
+					AddTextComponentSubstringPlayerName("Manten ~r~X~s~ para ver las acciones disponibles. Mueve el raton sobre una opción y suelta X")
                     AddTextComponentSubstringPlayerName("para realizarla.")
 					EndTextCommandThefeedPostTicker(false, false)
 				else
@@ -2226,7 +2226,7 @@ if ActivateHelpMarkers then
 				end
 
 				BeginTextCommandThefeedPost("TWOSTRINGS")
-				AddTextComponentSubstringPlayerName("Al realizar una accion, asegurate de estar mirando a la persona correcta")
+				AddTextComponentSubstringPlayerName("Al realizar una acción, asegúrate de estar mirando a la persona correcta")
                 AddTextComponentSubstringPlayerName("y de haberle informado de lo que vas a hacer.")
 				EndTextCommandThefeedPostTicker(false, false)
 
@@ -2236,7 +2236,7 @@ if ActivateHelpMarkers then
 				EndTextCommandThefeedPostTicker(false, false)
 
 				BeginTextCommandThefeedPost("TWOSTRINGS")
-				AddTextComponentSubstringPlayerName("Escribe ~o~/rank~s~ en el chat para seleccionar tu rango en cada departamento.")
+				AddTextComponentSubstringPlayerName("Pulsa ~y~F11~s~ para elegir el tipo de servicio que vas ha desarrollar.")
 				EndTextCommandThefeedPostTicker(false, false)
 			end
 		Wait(0)

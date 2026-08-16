@@ -37,6 +37,28 @@ Citizen.CreateThread(function()
     tryInitQBox()
 end)
 
+
+-- ERS task-progress bridge for smvlpd-ranks.
+-- The NUI task tracker reports a decrement in one of its objective counters.
+RegisterNUICallback('ersTaskProgress', function(data, cb)
+    data = type(data) == 'table' and data or {}
+
+    local calloutId = data.calloutId
+    local taskType = tostring(data.taskType or 'task')
+    local amount = math.floor(tonumber(data.amount) or 0)
+
+    if calloutId and amount > 0 then
+        TriggerServerEvent(
+            'ErsIntegration::OnCalloutTaskProgress',
+            calloutId,
+            taskType,
+            amount
+        )
+    end
+
+    cb({ ok = true })
+end)
+
 -- ============================================
 -- FUNCTIONS FOR EXTERNAL USAGE (For developers only, no support will be provided for this by Nights Software)
 -- ============================================
