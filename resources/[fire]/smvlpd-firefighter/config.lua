@@ -37,3 +37,7 @@ Config.CannonMaxDistance = 45.0
 
 -- Aviso cuando la intervención requiere una unidad de apoyo de ERS.
 Config.SupportNoticeCooldown = 15000
+
+-- Tras este tiempo usando agua sin resultado, se informa de que ERS puede
+-- requerir una unidad de apoyo.
+Config.SupportPromptAfter = 2500

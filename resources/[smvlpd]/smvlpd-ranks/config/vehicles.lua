@@ -304,7 +304,80 @@ Config.ServiceVehicles = {
     -- Estas listas vacías evitan que un recurso genérico entregue vehículos
     -- policiales a un jugador que esté de servicio como fire.
     fire = {
-        [1] = {}, [2] = {}, [3] = {}, [4] = {},
-        [5] = {}, [6] = {}, [7] = {}, [8] = {}
+        -- Cadete
+        [1] = {
+            { model = "pumper", label = "Pumper" }
+        },
+
+        -- Bombero II
+        [2] = {
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" }
+        },
+
+        -- Bombero III
+        [3] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" }
+        },
+
+        -- Ingeniero
+        [4] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" }
+        },
+
+        -- Teniente
+        [5] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" }
+        },
+
+        -- Capitan
+        [6] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" }
+        },
+
+        -- Jefe de Batallon
+        [7] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" }
+        },
+
+        -- Jefe de Division
+        [8] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" }
+        },
+
+        -- Ayudante de Jefe
+        [9] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" },
+            { model = "qrv", label = "QRV Jefatura", livery = 3 }
+        },
+
+        -- Jefe de Bomberos
+        [10] = {
+            { model = "firetruk", label = "Fire Truck GTA V" },
+            { model = "pumper", label = "Pumper" },
+            { model = "ferrara", label = "Ferrara" },
+            { model = "spartan", label = "Spartan" },
+            { model = "qrv", label = "QRV Jefatura", livery = 3 }
+        }
     }
 }

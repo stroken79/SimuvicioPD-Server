@@ -109,4 +109,9 @@ Config.VehicleLabels = {
     pd = "Dodge Charger",
     police4 = "Crown Victoria Camuflado",
     ndds63sivil = "Mercedes s63",
+    pumper = "Pumper",
+    ferrara = "Ferrara",
+    firetruk = "Fire Truck GTA V",
+    spartan = "Spartan",
+    qrv = "QRV Jefatura",
 }

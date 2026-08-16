@@ -83,18 +83,107 @@ Config.LockerRooms = {
 
 -- AÑADIR VEHÍCULOS POR RANGO AQUÍ. No se han inventado modelos.
 Config.VehiclesByRank = {
+    -- Cadete
     [1] = {
-        -- { model = 'modelo_vehiculo', label = 'Nombre visible', livery = 0 }
+        { model = 'pumper', label = 'Pumper' }
     },
-    [2] = {},
-    [3] = {},
-    [4] = {},
-    [5] = {},
-    [6] = {},
-    [7] = {},
-    [8] = {},
-    [9] = {},
-    [10] = {}
+
+    -- Bombero II
+    [2] = {
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' }
+    },
+
+    -- Bombero III
+    [3] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' }
+    },
+
+    -- Ingeniero
+    [4] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' }
+    },
+
+    -- Teniente
+    [5] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' }
+    },
+
+    -- Capitán
+    [6] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' }
+    },
+
+    -- Jefe de Batallón
+    [7] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' }
+    },
+
+    -- Jefe de División
+    [8] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' }
+    },
+
+    -- Ayudante de Jefe
+    [9] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' },
+        { model = 'qrv', label = 'QRV Jefatura', livery = 4 }
+    },
+
+    -- Jefe de Bomberos
+    [10] = {
+        { model = 'firetruk', label = 'Fire Truck GTA V' },
+        { model = 'pumper', label = 'Pumper' },
+        { model = 'ferrara', label = 'Ferrara' },
+        { model = 'spartan', label = 'Spartan' },
+        { model = 'qrv', label = 'QRV Jefatura', livery = 4 }
+    }
+}
+
+
+-- =========================================================
+-- VEHICULO ESPECIAL POR ESTACION
+-- GMC: solo Paleto y Sandy Shores, desde Ingeniero (rango 4)
+-- =========================================================
+Config.GarageExtraVehicles = {
+    ['Estación Paleto'] = {
+        [4] = { { model = 'gmc', label = 'GMC' } },
+        [5] = { { model = 'gmc', label = 'GMC' } },
+        [6] = { { model = 'gmc', label = 'GMC' } },
+        [7] = { { model = 'gmc', label = 'GMC' } },
+        [8] = { { model = 'gmc', label = 'GMC' } },
+        [9] = { { model = 'gmc', label = 'GMC' } },
+        [10] = { { model = 'gmc', label = 'GMC' } }
+    },
+    ['Estación Sandy Shores'] = {
+        [4] = { { model = 'gmc', label = 'GMC' } },
+        [5] = { { model = 'gmc', label = 'GMC' } },
+        [6] = { { model = 'gmc', label = 'GMC' } },
+        [7] = { { model = 'gmc', label = 'GMC' } },
+        [8] = { { model = 'gmc', label = 'GMC' } },
+        [9] = { { model = 'gmc', label = 'GMC' } },
+        [10] = { { model = 'gmc', label = 'GMC' } }
+    }
 }
 
 -- =========================================================

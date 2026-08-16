@@ -2,14 +2,17 @@ local function IsOnDuty()
 
     local onDuty = exports["night_ers"]:getIsPlayerOnShift(PlayerId())
     local service = exports["night_ers"]:getPlayerActiveServiceType(PlayerId())
+    currentServiceType = service
 
     return onDuty and (
         service == "police"
         or service == "ambulance"
+        or service == "fire"
     )
 
 end
 local activeTextUI
+local currentServiceType
 
 local function setTextUI(text)
     if activeTextUI == text then
@@ -66,7 +69,7 @@ local function openGarage(garageId)
 
     lib.registerContext({
         id = 'smvlpd_garage',
-        title = 'Garaje policial',
+        title = (currentServiceType == 'fire' and 'Garaje de Bomberos' or 'Garaje policial'),
         options = options
     })
 

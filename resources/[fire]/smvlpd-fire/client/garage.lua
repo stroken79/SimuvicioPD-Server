@@ -41,8 +41,23 @@ local function openGarage(garage)
         return
     end
 
-    local options = {}
+    local garageVehicles = {}
     for _, entry in ipairs(vehicles) do
+        garageVehicles[#garageVehicles + 1] = entry
+    end
+
+    local extras = Config.GarageExtraVehicles
+        and Config.GarageExtraVehicles[garage.name]
+        and Config.GarageExtraVehicles[garage.name][rankId]
+
+    if extras then
+        for _, entry in ipairs(extras) do
+            garageVehicles[#garageVehicles + 1] = entry
+        end
+    end
+
+    local options = {}
+    for _, entry in ipairs(garageVehicles) do
         options[#options + 1] = {
             title = entry.label or entry.model,
             description = 'Sacar vehículo',

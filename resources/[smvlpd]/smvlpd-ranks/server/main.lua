@@ -611,15 +611,49 @@ RegisterNetEvent('smvlpd-ranks:server:setRank', function(targetId, rankId)
 end)
 local function GetAllowedVehicles(source)
 
-    local rankId = playerRanks[source] or 1
+    source = tonumber(source)
+    if not source then
+        return {}
+    end
+
+    -- Primero usamos la caché del sistema de rangos.
+    local rankId = tonumber(playerRanks[source])
     local serviceType = activeServices[source]
+
+    -- Si la caché todavía no se ha sincronizado con ERS, recuperamos el
+    -- servicio actual directamente de ERS y el rango persistido del statebag.
+    if not serviceType and GetResourceState('night_ers') == 'started' then
+        local ok, currentService = pcall(function()
+            return exports['night_ers']:getPlayerActiveServiceType(source)
+        end)
+        if ok and currentService then
+            serviceType = currentService
+        end
+    end
+
+    if not rankId then
+        local state = Player(source).state
+        rankId = tonumber(state.smvlpdPoliceRank)
+    end
+
+    rankId = rankId or 1
+
     local vehiclesByService = Config.ServiceVehicles and Config.ServiceVehicles[serviceType]
-    local vehicles = vehiclesByService or Config.Vehicles
 
-    print("[RANKS] Vehiculos rango "..rankId..": "..json.encode(vehicles[rankId]))
+    if not vehiclesByService then
+        print(('[RANKS] Sin tabla de vehiculos para servicio %s (jugador %s).'):format(
+            tostring(serviceType), source
+        ))
+        return {}
+    end
 
-    return vehicles[rankId] or {}
+    local vehicles = vehiclesByService[rankId] or {}
 
+    print(('[RANKS] Servicio=%s Rango=%s Vehiculos=%s'):format(
+        tostring(serviceType), tostring(rankId), json.encode(vehicles)
+    ))
+
+    return vehicles
 end
 lib.callback.register('smvlpd-ranks:server:getAllowedVehicles', function(source)
     return GetAllowedVehicles(source)
