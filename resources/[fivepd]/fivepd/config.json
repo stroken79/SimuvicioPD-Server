@@ -1,11 +1,11 @@
 {
-  "db": "db_18515510_1",
+  "db": "sqlite",
   "database": {
-    "username": "db_18515510_1",
+    "username": "db_18612938_1",
     "password": "Jc0djGTqu8XzX1ErURKijeEl",
     "host": "db2.sql.g-portal.com",
     "port": 3306,
-    "database": "fivepd"
+    "database": "db_18612938_1"
   },
   "stationBlips": true,
   "maxReportLength": 1000,

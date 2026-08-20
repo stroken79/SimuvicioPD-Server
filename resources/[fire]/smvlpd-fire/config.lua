@@ -215,8 +215,8 @@ Config.Accessories = {
         hats = {
             {
                 label = 'Gorra de bombero',
-                male = { drawable = 10, texture = 0 },
-                female = { drawable = 10, texture = 0 }
+                male = { drawable = 248, texture = 0 },
+                female = { drawable = 247, texture = 0 }
             },
            
         },
