@@ -71,7 +71,7 @@ Config.Callouts["animal_rat_plague"] = {
 
         local diameter = 20
 
-        local randomAmountOfAnimals = math.random(15, 25)
+        local randomAmountOfAnimals = math.random(25, 50)
         local randomAnimalPedModel = "a_c_rat"
         for i = 1, randomAmountOfAnimals do
             -- Build animals of the same type.
