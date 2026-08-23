@@ -1,0 +1,59 @@
+Config = {}
+
+-- ERS identifica el servicio de Grua como "tow". El nombre visible siempre es LSDOT.
+Config.ServiceType = 'tow'
+Config.DepartmentName = 'LSDOT'
+Config.ServiceName = 'Grúa'
+Config.InteractionDistance = 2.0
+Config.PointDrawDistance = 50.0
+
+Config.Text = {
+    ServiceOn = '[E] Entrar de servicio como LSDOT - Grúa',
+    ServiceOff = '[E] Salir de servicio de LSDOT - Grúa',
+    Garage = '[E] Garaje LSDOT - Grúa',
+    Store = '[E] Guardar vehiculo LSDOT',
+    Locker = '[E] Vestuario LSDOT - Grúa'
+}
+
+Config.Marker = {
+    type = 24,
+    scale = vec3(0.45, 0.45, 0.45),
+    color = { r = 242, g = 151, b = 35, a = 190 }
+}
+
+-- Deben coincidir con los ids ya existentes de smvlpd-ranks para "tow".
+Config.Ranks = {
+    [1] = { name = 'aprendiz' },
+    [2] = { name = 'operador' },
+    [3] = { name = 'ingeniero' },
+    [4] = { name = 'supervisor' },
+    [5] = { name = 'capataz' },
+    [6] = { name = 'jefe_operaciones' },
+    [7] = { name = 'subdirector' },
+    [8] = { name = 'director' }
+}
+
+-- Configura una sede LSDOT verificada antes de activar los puntos.
+Config.ServicePoints = {
+}
+
+-- Cada entrada requiere name, marker, spawn y store. No se han inventado coordenadas.
+Config.Garages = {
+}
+
+-- Cada entrada requiere name y coords. No se han inventado coordenadas.
+Config.LockerRooms = {
+    {
+        name = "Taller de Benny's",
+        coords = vec3(-224.2341, -1320.4956, 30.8904)
+    }
+}
+
+-- Vehiculos independientes de LSDOT por rango. No se han inventado modelos.
+Config.VehiclesByRank = {
+    [1] = {},
+    [2] = {},
+    [3] = {},
+    [4] = {},
+    [5] = {}
+}
