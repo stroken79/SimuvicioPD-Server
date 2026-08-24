@@ -391,19 +391,9 @@ Config.Ranks = {
         }
     },
 
+   
+
     [12] = {
-        label = 'Commander / Comandante',
-        image = 'comandante.png',
-        administrative = true
-    },
-
-    [13] = {
-        label = 'Assistant Chief / Jefe asistente',
-        image = 'ayudante.png',
-        administrative = true
-    },
-
-    [14] = {
         label = 'Chief of Police / Jefe de Policia',
         image = 'jefe.png',
         administrative = true
@@ -465,18 +455,6 @@ Config.Ranks = {
         },
 
         [10] = {
-            label = 'Director Adjunto',
-            image = 'director_adjunto.png',
-            administrative = true
-        },
-
-        [11] = {
-            label = 'Director EMS',
-            image = 'director_ems.png',
-            administrative = true
-        },
-
-        [12] = {
             label = 'Director General',
             image = 'director_general.png',
             administrative = true
@@ -540,14 +518,12 @@ Config.Ranks = {
             label = 'Subdirector LSDOT',
             image = 'subdirector.png',
             weapons = {},
-            administrative = true
         },
 
         [8] = {
             label = 'Director LSDOT',
             image = 'director.png',
             weapons = {},
-            administrative = true
         }
     }
 

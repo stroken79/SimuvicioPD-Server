@@ -46,6 +46,38 @@ Config.LockerRooms = {
     {
         name = "Taller de Benny's",
         coords = vec3(-224.2341, -1320.4956, 30.8904)
+    },
+    {
+        name = "Taller del Aeropuerto",
+        coords = vec3(-1149.1045, -2000.4191, 13.1803)
+    },
+    {
+        name = "LS Customs",
+        coords = vec3(-346.6447, -133.7080, 39.0096)
+    },
+	{
+    name = "Taller de Harmony",
+    coords = vec3(1172.7771, 2636.4121, 37.7866)
+    },
+	{
+    name = "Taller de La Mesa",
+    coords = vec3(728.3059, -1064.1039, 22.1687)
+    },
+	{
+    name = "Taller de Mirror Park",
+    coords = vec3(1135.7019, -784.9609, 57.5987)
+    },
+	{
+    name = "Taller de Paleto",
+    coords = vec3(110.8035, 6630.5859, 31.7873)
+    },
+	{
+    name = "Taller de Sandy Shores",
+    coords = vec3(2506.3953, 4097.4810, 38.7061)
+    },
+	{
+    name = "Taller de Vinewood",
+    coords = vec3(540.1017, -196.9521, 54.4900)
     }
 }
 
