@@ -156,3 +156,7 @@ body{
 #hud.service-fire #header{
     background:linear-gradient(90deg,#7a0000,#c40000);
 }
+
+#hud.service-tow #header{
+    background:linear-gradient(90deg,#194b96,#0f63c7);
+}
