@@ -3,16 +3,16 @@ Config = {}
 -- ERS identifica el servicio de Grua como "tow". El nombre visible siempre es LSDOT.
 Config.ServiceType = 'tow'
 Config.DepartmentName = 'LSDOT'
-Config.ServiceName = 'Grua'
+Config.ServiceName = 'Grúa'
 Config.InteractionDistance = 2.0
 Config.PointDrawDistance = 50.0
 
 Config.Text = {
-    ServiceOn = '[E] Entrar de servicio como LSDOT - Grua',
-    ServiceOff = '[E] Salir de servicio de LSDOT - Grua',
-    Garage = '[E] Garaje LSDOT - Grua',
+    ServiceOn = '[E] Entrar de servicio como LSDOT - Grúa',
+    ServiceOff = '[E] Salir de servicio de LSDOT - Grúa',
+    Garage = '[E] Garaje LSDOT - Grúa',
     Store = '[E] Guardar vehiculo LSDOT',
-    Locker = '[E] Vestuario LSDOT - Grua'
+    Locker = '[E] Vestuario LSDOT - Grúa'
 }
 
 Config.Marker = {
@@ -94,8 +94,6 @@ Config.Garages = {
     store = vec3(550.0651, -213.0064, 52.9670)
     }
 }
-
-
 -- Cada entrada requiere name y coords. No se han inventado coordenadas.
 Config.LockerRooms = {
     {

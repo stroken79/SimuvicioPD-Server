@@ -189,3 +189,12 @@ LsdotUniforms['director'] = {
         props = {}
     }
 }
+
+for _, rankName in ipairs({ 'cadete', 'gruero_1', 'gruero_2', 'gruero_3', 'supervisor' }) do
+    if not LsdotUniforms[rankName] then
+        LsdotUniforms[rankName] = {
+            male = { components = {}, collections = {}, props = {} },
+            female = { components = {}, collections = {}, props = {} }
+        }
+    end
+end
