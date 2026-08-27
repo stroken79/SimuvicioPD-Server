@@ -1,0 +1,35 @@
+
+Tow Truck [fivem] by candimods
+2019 F450 Superduty Platinum 4 Door
+
+working tow arm and tow hook, non els, multi livery capable up to 8 skins, several liveries included, transparent liveries where you can change the color in Vehicle Trainer or body-shop  vehicle components, and traffic cones
+
+
+camel tow pink camouflage 
+camel tow white transparent [change color in vehicle trainer]
+camel tow yellow/black
+San Andreas DOT 
+Transparent skin [change color in vehicle trainer]
+
+known bugs:
+during testing it was better to tow vehicels from the rear with this tow truck
+
+
+vehicle components 
+
+extra_1 winch
+extra_2 - empty
+extra_3 - light bar rear loads lights
+extra_4  rear amber leds
+extra_5 - low rear lods lights
+
+
+
+credits 
+liberty gen2 
+leds 
+siderunners hg2
+whlelen slmfighter
+tow rear 
+F450 base model converted by troopergoeetz
+LEDs 

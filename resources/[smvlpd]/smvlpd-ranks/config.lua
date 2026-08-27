@@ -55,11 +55,14 @@ Config.Uniforms = {
    
     },
     tow = {
-        [1] = 'Cadete',
-        [2] = 'Gruero I',
-        [3] = 'Gruero II',
-        [4] = 'Gruero III',
-        [5] = 'Supervisor',
+        [1] = 'Aprendiz LSDOT',
+        [2] = 'Operador LSDOT',
+        [3] = 'Ingeniero LSDOT',
+        [4] = 'Supervisor LSDOT',
+        [5] = 'Capataz LSDOT',
+        [6] = 'Jefe de Operaciones LSDOT',
+        [7] = 'Subdirector LSDOT',
+        [8] = 'Director LSDOT',
     }
 }
 
@@ -105,10 +108,13 @@ Config.RankPoints = {
     },
     tow = {
         [1] = 0,
-        [2] = 2500,
+        [2] = 3000,
         [3] = 7500,
         [4] = 15000,
         [5] = 30000,
+        [6] = 50000,
+        [7] = 80000,
+        [8] = 120000,
     }
 }
 
@@ -385,19 +391,9 @@ Config.Ranks = {
         }
     },
 
+   
+
     [12] = {
-        label = 'Commander / Comandante',
-        image = 'comandante.png',
-        administrative = true
-    },
-
-    [13] = {
-        label = 'Assistant Chief / Jefe asistente',
-        image = 'ayudante.png',
-        administrative = true
-    },
-
-    [14] = {
         label = 'Chief of Police / Jefe de Policia',
         image = 'jefe.png',
         administrative = true
@@ -459,18 +455,6 @@ Config.Ranks = {
         },
 
         [10] = {
-            label = 'Director Adjunto',
-            image = 'director_adjunto.png',
-            administrative = true
-        },
-
-        [11] = {
-            label = 'Director EMS',
-            image = 'director_ems.png',
-            administrative = true
-        },
-
-        [12] = {
             label = 'Director General',
             image = 'director_general.png',
             administrative = true
@@ -491,6 +475,56 @@ Config.Ranks = {
         [8] = { label = 'Jefe de División', image = 'jefe_division.png', weapons = {} },
         [9] = { label = 'Ayudante de Jefe', image = 'ayudante_jefe.png', weapons = {} },
         [10] = { label = 'Jefe de Bomberos', image = 'jefe_bomberos.png', weapons = {} }
+    },
+
+    tow = {
+        [1] = {
+            label = 'Aprendiz LSDOT',
+            image = 'aprendiz.png',
+            weapons = {}
+        },
+
+        [2] = {
+            label = 'Operador LSDOT',
+            image = 'operador.png',
+            weapons = {}
+        },
+
+        [3] = {
+            label = 'Ingeniero LSDOT',
+            image = 'ingeniero.png',
+            weapons = {}
+        },
+
+        [4] = {
+            label = 'Supervisor LSDOT',
+            image = 'supervisor.png',
+            weapons = {}
+        },
+
+        [5] = {
+            label = 'Capataz LSDOT',
+            image = 'capataz.png',
+            weapons = {}
+        },
+
+        [6] = {
+            label = 'Jefe de Operaciones LSDOT',
+            image = 'jefe_operaciones.png',
+            weapons = {}
+        },
+
+        [7] = {
+            label = 'Subdirector LSDOT',
+            image = 'subdirector.png',
+            weapons = {},
+        },
+
+        [8] = {
+            label = 'Director LSDOT',
+            image = 'director.png',
+            weapons = {},
+        }
     }
 
 }

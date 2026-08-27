@@ -1,0 +1,2 @@
+-- Recurso preparado para futura integracion con night_ers y smvlpd-ranks.
+-- En esta primera version, el acceso se limita al modelo de grua.
