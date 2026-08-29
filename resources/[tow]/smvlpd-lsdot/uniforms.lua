@@ -6,21 +6,31 @@ LsdotUniforms = {}
 LsdotUniforms['aprendiz'] = {
     male = {
         components = {
-            [11] = { 558, 0 },
-            [4]  = { 36, 0 },
+            [11] = { 533, 0 },
+            [4]  = { 197, 0 },
             [3]  = { 195, 0 },
             [9]  = { 0, 0 },
-            [8]  = { 259, 0 },
+            [8]  = { 235, 0 },
             [7]  = { 0, 0 },
             [6]  = { 86, 0 },
             [10] = { 0, 0 },
-            [5]  = { 113, 0 }
+            [5]  = { 0, 0 }
         },
         collections = {},
         props = {}
     },
     female = {
-        components = {},
+        components = {
+            [11] = { 577, 0 },  -- Chaqueta / Top
+            [4]  = { 211, 0 },   -- Pantalón
+            [3]  = { 240, 0 }, -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 292, 0 }, -- Camiseta / Interior
+            [7]  = { 0, 0 },   -- Accesorios
+            [6]  = { 137, 0 }, -- Zapatos
+            [10] = { 0, 0 },   -- Insignias / Decals
+            [5]  = { 113, 0 }  -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -43,7 +53,17 @@ LsdotUniforms['operador'] = {
         props = {}
     },
     female = {
-        components = {},
+        components = {
+            [11] = { 352, 3 },  -- Chaqueta / Top
+            [4]  = { 35, 0 },   -- Pantalón
+            [3]  = { 212, 0 },  -- Brazos / Torso
+            [9]  = { 67, 5 },   -- Chaleco / Armor
+            [8]  = { 292, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 137, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 113, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -66,7 +86,17 @@ LsdotUniforms['ingeniero'] = {
         props = {}
     },
     female = {
-        components = {},
+        components = {
+            [11] = { 352, 3 },  -- Chaqueta / Top
+            [4]  = { 218, 0 },  -- Pantalón
+            [3]  = { 212, 0 },  -- Brazos / Torso
+            [9]  = { 67, 5 },   -- Chaleco / Armor
+            [8]  = { 292, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 137, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 113, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -88,8 +118,18 @@ LsdotUniforms['supervisor'] = {
         collections = {},
         props = {}
     },
-    female = {
-        components = {},
+     female = {
+        components = {
+            [11] = { 352, 3 },  -- Chaqueta / Top
+            [4]  = { 201, 0 },  -- Pantalón
+            [3]  = { 212, 0 },  -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 294, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 115, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 0, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -111,8 +151,18 @@ LsdotUniforms['capataz'] = {
         collections = {},
         props = {}
     },
-    female = {
-        components = {},
+     female = {
+        components = {
+            [11] = { 352, 3 },  -- Chaqueta / Top
+            [4]  = { 201, 0 },  -- Pantalón
+            [3]  = { 212, 0 },  -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 294, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 115, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 0, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -136,7 +186,17 @@ LsdotUniforms['jefe_operaciones'] = {
     },
 
     female = {
-        components = {},
+        components = {
+            [11] = { 329, 8 },  -- Chaqueta / Top
+            [4]  = { 201, 0 },  -- Pantalón
+            [3]  = { 0, 0 },  -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 295, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 77, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 0, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -160,7 +220,17 @@ LsdotUniforms['subdirector'] = {
     },
 
     female = {
-        components = {},
+        components = {
+            [11] = { 329, 8 },  -- Chaqueta / Top
+            [4]  = { 201, 0 },  -- Pantalón
+            [3]  = { 0, 0 },  -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 295, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 77, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 0, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
@@ -184,7 +254,17 @@ LsdotUniforms['director'] = {
     },
 
     female = {
-        components = {},
+        components = {
+            [11] = { 329, 8 },  -- Chaqueta / Top
+            [4]  = { 201, 0 },  -- Pantalón
+            [3]  = { 0, 0 },  -- Brazos / Torso
+            [9]  = { 0, 0 },   -- Chaleco / Armor
+            [8]  = { 295, 0 },  -- Camiseta / Interior
+            [7]  = { 0, 0 },    -- Accesorios
+            [6]  = { 77, 0 },  -- Zapatos
+            [10] = { 0, 0 },    -- Insignias / Decals
+            [5]  = { 0, 0 }   -- Bolsas
+        },
         collections = {},
         props = {}
     }
