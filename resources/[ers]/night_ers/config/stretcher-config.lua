@@ -9,7 +9,8 @@ Config.RangeToCheckNearbyAmbulance = 10.0      -- Distance to check for nearby a
 Config.RangeToCheckForStretcherPoint = 3.0     -- Distance (radius) from the ambulance stretcher point (behindVehicle) to get a prompt saying you can put/take stretcher from it.
 Config.VehiclesWithStretchers = {
     -- INFO: behindVehicle is how far behind the ambulance the stretcher is, depth is how deep into the ambulance the stretcher is, height is the offset height of the stretcher inside the ambulance.
-    {hash = "ambulance", behindVehicle = -6.0, sideways = 0.1, depth = -1.25, height = 0.65}, -- Default setting. 
+    {hash = "ambulance", behindVehicle = -6.0, sideways = 0.1, depth = -1.25, height = 0.65}, -- Default setting.
+    {hash = "aw109", behindVehicle = -2.8, sideways = 0.0, depth = -1.2, height = 0.4}, -- AW109 EMS. 
 }
 
 Config.ShowSavedScreen = true           -- Shows victim saved in GTA style, when dropping off a victim.
