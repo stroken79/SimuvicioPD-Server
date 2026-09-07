@@ -1,3 +1,54 @@
+
+local activeVehicle = 0
+local activeVehicleBlip = nil
+
+local function removeActiveVehicleBlip()
+    if activeVehicleBlip and DoesBlipExist(activeVehicleBlip) then
+        RemoveBlip(activeVehicleBlip)
+    end
+
+    activeVehicleBlip = nil
+    activeVehicle = 0
+end
+
+local function createActiveVehicleBlip(vehicle)
+    removeActiveVehicleBlip()
+
+    if vehicle == 0 or not DoesEntityExist(vehicle) then
+        return
+    end
+
+    activeVehicle = vehicle
+    activeVehicleBlip = AddBlipForEntity(vehicle)
+
+    SetBlipSprite(activeVehicleBlip, 225)
+    SetBlipColour(activeVehicleBlip, 3)
+    SetBlipScale(activeVehicleBlip, 0.75)
+    SetBlipAsShortRange(activeVehicleBlip, false)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString('Mi vehículo')
+    EndTextCommandSetBlipName(activeVehicleBlip)
+end
+
+CreateThread(function()
+    while true do
+        if activeVehicle ~= 0 then
+            if DoesEntityExist(activeVehicle) then
+                if not activeVehicleBlip or not DoesBlipExist(activeVehicleBlip) then
+                    createActiveVehicleBlip(activeVehicle)
+                end
+                Wait(1000)
+            else
+                removeActiveVehicleBlip()
+                Wait(1000)
+            end
+        else
+            Wait(1500)
+        end
+    end
+end)
+
 local contextId = 'smvlpd_boatgarage'
 
 local function notify(message, notifyType)
@@ -69,6 +120,7 @@ local function spawnBoat(entry, garage)
 
     SetEntityAsMissionEntity(vehicle, true, true)
     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -1)
+        createActiveVehicleBlip(vehicle)
     SetModelAsNoLongerNeeded(hash)
 end
 
@@ -123,6 +175,9 @@ local function storeBoat()
     Wait(500)
     SetEntityAsMissionEntity(vehicle, true, true)
     DeleteVehicle(vehicle)
+                    if vehicle == activeVehicle then
+                        removeActiveVehicleBlip()
+                    end
 end
 
 CreateThread(function()

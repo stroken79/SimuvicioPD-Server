@@ -4,6 +4,7 @@ local playerPoints = {}
 local activeServices = {}
 local activeCallouts = {}
 local activeExternalCallouts = {}
+local activeFivePDCallouts = {}
 local serviceSummaries = {}
 
 local supportedServices = {
@@ -177,6 +178,7 @@ end)
 local function clearActiveProgress(playerSource)
     activeCallouts[playerSource] = nil
     activeExternalCallouts[playerSource] = nil
+    activeFivePDCallouts[playerSource] = nil
     serviceSummaries[playerSource] = nil
     activeServices[playerSource] = nil
     playerRanks[playerSource] = nil
@@ -197,6 +199,7 @@ local function loadServiceProgress(playerSource, characterId, serviceType)
     if previousService and previousService ~= serviceType then
         activeCallouts[playerSource] = nil
         activeExternalCallouts[playerSource] = nil
+        activeFivePDCallouts[playerSource] = nil
         serviceSummaries[playerSource] = nil
     end
 
@@ -406,22 +409,81 @@ exports('AddPolicePoints', addPoints)
 exports('AddEMSPoints', addPoints)
 
 -- API exclusiva de servidor para los recursos de avisos externos (como ERS).
+local function normalizeCalloutName(name)
+    name = tostring(name or ''):lower()
+    name = name:gsub('^%s+', ''):gsub('%s+$', '')
+    return name
+end
+
+-- Resuelve la dificultad de ERS por ID y, si el ID no coincide, por el
+-- CalloutName real de night_ers. Esto cubre callouts de packs y IDs dinámicos.
+local function resolveERSRewardId(calloutId, calloutName)
+    local id = tostring(calloutId or '')
+    local rewardId = Config.ERSCalloutDifficulties[id]
+    if rewardId then return rewardId, 'id' end
+
+    local wantedName = normalizeCalloutName(calloutName)
+    if wantedName == '' or GetResourceState('night_ers') ~= 'started' then
+        return nil, nil
+    end
+
+    local ok, callouts = pcall(function()
+        return exports['night_ers']:getCallouts()
+    end)
+    if not ok or type(callouts) ~= 'table' then return nil, nil end
+
+    for key, data in pairs(callouts) do
+        if type(data) == 'table' and normalizeCalloutName(data.CalloutName) == wantedName then
+            local baseId = tostring(key or data.id or data.CalloutId or '')
+            local byId = Config.ERSCalloutDifficulties[baseId]
+            if byId then return byId, 'name' end
+        end
+    end
+
+    return nil, nil
+end
+
 local function awardExternalCallout(source, calloutId, calloutName)
-    if not activeExternalCallouts[source] then
+    local callout = activeExternalCallouts[source]
+    if not callout then
         return false, 'El jugador no tiene un aviso ERS activo.'
     end
 
+    local rewardId, matchedBy = resolveERSRewardId(
+        calloutId or callout.calloutId,
+        calloutName or callout.calloutName
+    )
+
+    if not rewardId then
+        print(('[smvlpd-ranks] ERS sin clasificar: id=%s nombre=%s'):format(
+            tostring(calloutId or callout.calloutId or ''),
+            tostring(calloutName or callout.calloutName or '')
+        ))
+        return false, 'Aviso ERS sin clasificar.'
+    end
+
+    local amount = Config.PointRewards[rewardId]
+    if not amount then return false, 'Recompensa ERS no configurada.' end
+
+    -- Solo lo eliminamos después de resolver la recompensa.
     activeExternalCallouts[source] = nil
 
-    local rewardId = Config.ERSCalloutDifficulties[tostring(calloutId or '')] or 'calloutNormal'
-    local amount = Config.PointRewards[rewardId]
+    print(('[smvlpd-ranks] ERS completado para %s: id=%s nombre=%s -> %s (%d puntos, por %s)'):format(
+        tostring(source),
+        tostring(calloutId or callout.calloutId or ''),
+        tostring(calloutName or callout.calloutName or 'Aviso policial'),
+        tostring(rewardId),
+        amount,
+        tostring(matchedBy or 'desconocido')
+    ))
 
     return addPoints(
         source,
         amount,
-        'Aviso ERS completado: ' .. tostring(calloutName or 'Aviso policial')
+        'Aviso ERS completado: ' .. tostring(calloutName or callout.calloutName or 'Aviso policial')
     )
 end
+
 
 exports('AwardExternalPoliceCallout', awardExternalCallout)
 exports('AwardExternalEMSCallout', awardExternalCallout)
@@ -468,15 +530,20 @@ exports('AwardExternalCalloutTask', function(source, calloutId, taskType, amount
     )
 end)
 
-exports('BeginExternalPoliceCallout', function(source, calloutId)
+exports('BeginExternalPoliceCallout', function(source, calloutId, calloutName)
     if not activeCharacters[source] then return false end
 
     activeExternalCallouts[source] = {
         calloutId = tostring(calloutId or ''),
+        calloutName = tostring(calloutName or ''),
         lastAwardAt = {},
         taskAwards = {}
     }
     serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
+
+    print(('[smvlpd-ranks] ERS iniciado para %s: id=%s nombre=%s'):format(
+        tostring(source), tostring(calloutId or ''), tostring(calloutName or '')
+    ))
 
     return true
 end)
@@ -502,6 +569,63 @@ exports('CancelExternalEMSCallout', function(source)
     return true
 end)
 
+-- API de servidor para fivepd-police_v2. Se mantiene separada de los avisos
+-- externos de ERS para que ambos sistemas puedan coexistir sin pisarse.
+exports('BeginFivePDCallout', function(source, calloutName)
+    source = tonumber(source)
+    calloutName = tostring(calloutName or '')
+    if not source or calloutName == '' then return false, 'Aviso FivePD no valido.' end
+
+    -- FivePD ya es un recurso local del servidor y su propio gestor de avisos
+    -- controla cuando el agente acepta el aviso. No debemos exigir aqui que
+    -- night_ers vuelva a confirmar el turno: esa comprobacion hacia que los
+    -- avisos se ignorasen cuando el estado local de ERS aun no estaba
+    -- sincronizado. El estado de servicio oficial de ranks es suficiente.
+    if not activeCharacters[source] or activeServices[source] ~= 'police' then
+        print(('[smvlpd-ranks] FivePD no registrado para %s: servicio no activo.'):format(tostring(source)))
+        return false, 'El jugador no esta de servicio policial.'
+    end
+
+    activeFivePDCallouts[source] = { title = calloutName, startedAt = GetGameTimer() }
+    serviceSummaries[source] = serviceSummaries[source] or { total = 0, entries = {} }
+    print(('[smvlpd-ranks] FivePD iniciado para %s: %s'):format(tostring(source), calloutName))
+    return true
+end)
+
+exports('CompleteFivePDCallout', function(source)
+    source = tonumber(source)
+    local callout = source and activeFivePDCallouts[source]
+    if not callout then
+        print(('[smvlpd-ranks] FivePD completado sin aviso activo para %s.'):format(tostring(source)))
+        return false, 'El jugador no tiene un aviso FivePD activo.'
+    end
+
+    -- Se elimina antes de conceder puntos: una repeticion no puede puntuar dos veces.
+    activeFivePDCallouts[source] = nil
+
+    if activeServices[source] ~= 'police' then
+        return false, 'El jugador ya no esta de servicio policial.'
+    end
+
+    local rewardId = Config.FivePDCalloutDifficulties[tostring(callout.title)]
+    local amount = rewardId and Config.PointRewards[rewardId]
+    if not amount then
+        print(('[smvlpd-ranks] Aviso FivePD sin clasificar, no se conceden puntos: %s'):format(tostring(callout.title)))
+        return false, 'Aviso FivePD sin clasificar.'
+    end
+
+    print(('[smvlpd-ranks] FivePD completado para %s: %s -> %s (%d puntos)'):format(
+        tostring(source), tostring(callout.title), tostring(rewardId), amount
+    ))
+    return addPoints(source, amount, 'Aviso FivePD completado: ' .. tostring(callout.title))
+end)
+
+exports('CancelFivePDCallout', function(source)
+    source = tonumber(source)
+    if source then activeFivePDCallouts[source] = nil end
+    return true
+end)
+
 RegisterNetEvent('smvlpd-ranks:server:calloutStarted', function(title)
     if not activeCharacters[source] then return end
     activeCallouts[source] = { title = tostring(title or 'Aviso policial'), lastAwardAt = {} }
@@ -509,7 +633,7 @@ RegisterNetEvent('smvlpd-ranks:server:calloutStarted', function(title)
 end)
 
 RegisterNetEvent('smvlpd-ranks:server:awardCalloutAction', function(actionId)
-    local callout = activeCallouts[source] or activeExternalCallouts[source]
+    local callout = activeCallouts[source] or activeExternalCallouts[source] or activeFivePDCallouts[source]
     local reward = Config.PointRewards[actionId]
     if not callout or not reward then return end
 
@@ -722,6 +846,7 @@ AddEventHandler('playerDropped', function()
     playerPoints[source] = nil
     activeCallouts[source] = nil
     activeExternalCallouts[source] = nil
+    activeFivePDCallouts[source] = nil
     serviceSummaries[source] = nil
 end)
 AddEventHandler('onResourceStart', function(resource)

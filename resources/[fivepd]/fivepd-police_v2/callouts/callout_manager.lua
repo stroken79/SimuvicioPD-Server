@@ -53,12 +53,17 @@ local entities = {}
 local suspects = {}
 local suspectNetIds = {}
 local suspectProgress = {}
+local suspectResolved = {}
 local fires = {}
 local supportRequestId = nil
 local supportActive = false
 local supportOffer = nil
 local supportRouteBlip = nil
 local supportSuspectNetIds = {}
+
+-- Declaracion adelantada: varias rutinas pueden finalizar el aviso antes de la
+-- definicion completa de Finish().
+local Finish
 
 local function Notify(message)
     SetNotificationTextEntry("STRING")
@@ -122,6 +127,7 @@ local function DeleteTrackedEntities()
 end
 
 local function Reset(deleteEntities)
+    TriggerServerEvent('fivepd-police:pointsCancel')
     RemoveBlips()
     StopFires()
 
@@ -146,6 +152,7 @@ local function Reset(deleteEntities)
     suspects = {}
     suspectNetIds = {}
     suspectProgress = {}
+    suspectResolved = {}
     supportRequestId = nil
     TriggerEvent("pd5m:hud:SetPoliceCalloutState", false)
 end
@@ -200,14 +207,55 @@ local function GetMissingRequirements(netId)
     return missing
 end
 
-local function Finish(message)
+local function AllSuspectsResolved()
+    if #suspectNetIds == 0 then
+        return true
+    end
+
+    for _, netId in ipairs(suspectNetIds) do
+        if not suspectResolved[netId] then
+            return false
+        end
+    end
+
+    return true
+end
+
+local function ResolveDeadOrMissingSuspects()
+    if not active or not spawned or #suspectNetIds == 0 then
+        return
+    end
+
+    local newlyResolved = false
+
+    for _, netId in ipairs(suspectNetIds) do
+        if not suspectResolved[netId] then
+            local ped = NetToPed(netId)
+
+            -- Un sospechoso muerto cuenta como resuelto.
+            -- Si el ped ya desaparecio, tambien se considera resuelto para evitar
+            -- que callouts de grupo queden bloqueados indefinidamente.
+            if ped == 0 or not DoesEntityExist(ped) or IsEntityDead(ped) then
+                suspectResolved[netId] = true
+                newlyResolved = true
+                print("^3[FIVEPD-POLICE] Sospechoso resuelto por muerte/desaparicion: " .. tostring(netId) .. "^7")
+            end
+        end
+    end
+
+    if newlyResolved and AllSuspectsResolved() then
+        Finish("Todos los sospechosos han sido resueltos.")
+    end
+end
+
+Finish = function(message)
     if not active or finishing then
         return
     end
 
     finishing = true
     Notify("~b~CENTRAL: ~g~Aviso finalizado.~n~~w~" .. message)
-    TriggerServerEvent('smvlpd-ranks:server:calloutCompleted')
+    TriggerServerEvent('fivepd-police:pointsComplete')
 
     if supportRequestId then
         TriggerServerEvent("fivepd-police:supportFinish", supportRequestId, message)
@@ -356,6 +404,7 @@ end, false)
 RegisterCommand("cancelcallout", function()
     if not active then
         if supportActive then
+            TriggerServerEvent('fivepd-police:pointsCancel')
             RemoveSupportBlip()
             supportActive = false
             supportRequestId = nil
@@ -500,7 +549,7 @@ CreateThread(function()
 
         if active and not accepted and IsControlJustReleased(0, ACCEPT_KEY) then
             accepted = true
-            TriggerServerEvent('smvlpd-ranks:server:calloutStarted', current.title)
+            TriggerServerEvent('fivepd-police:pointsStart', current.title)
 
             Notify(current.accept)
 
@@ -547,6 +596,32 @@ CreateThread(function()
     end
 end)
 
+CreateThread(function()
+    while true do
+        Wait(0)
+
+        if active and accepted and spawned and located and current and current.finishHelp then
+            -- Los avisos sin sospechosos requieren cierre manual en la escena.
+            -- Los avisos con sospechosos se cierran al resolverlos para no saltarse
+            -- el flujo de identificacion/procesado.
+            if #suspectNetIds == 0 then
+                Help(current.finishHelp)
+
+                if IsControlJustReleased(0, FINISH_KEY) then
+                    Finish("Gestion del aviso completada.")
+                end
+            end
+        end
+    end
+end)
+
+CreateThread(function()
+    while true do
+        Wait(1000)
+        ResolveDeadOrMissingSuspects()
+    end
+end)
+
 RegisterNetEvent("fivepd-police:suspectImprisoned")
 AddEventHandler("fivepd-police:suspectImprisoned", function(imprisonedNetId)
     if supportActive and supportRequestId then
@@ -564,7 +639,12 @@ AddEventHandler("fivepd-police:suspectImprisoned", function(imprisonedNetId)
 
     for _, netId in ipairs(suspectNetIds) do
         if netId == imprisonedNetId then
-            Finish("Sospechoso detenido y procesado.")
+            suspectResolved[netId] = true
+            if AllSuspectsResolved() then
+                Finish("Todos los sospechosos han sido detenidos o neutralizados.")
+            else
+                Notify("~b~CENTRAL: ~g~Sospechoso procesado.~n~~w~Quedan implicados pendientes.")
+            end
             return
         end
     end
@@ -594,7 +674,12 @@ AddEventHandler("fivepd-police:suspectReleased", function(releasedNetId)
                 return
             end
 
-            Finish("Sospechoso identificado y liberado.")
+            suspectResolved[releasedNetId] = true
+            if AllSuspectsResolved() then
+                Finish("Todos los sospechosos han sido resueltos.")
+            else
+                Notify("~b~CENTRAL: ~g~Sospechoso identificado y liberado.~n~~w~Quedan implicados pendientes.")
+            end
             return
         end
     end

@@ -12,6 +12,7 @@ Config.AdminJbib = {
 -- Componentes de ropa (ID GTA/FiveM)
 Config.Components = {
     [4]  = { drawable = 36,  texture = 0, palette = 0 }, -- Pantalón
+    [3]  = { drawable = 17, texture = 0, palette = 0 }, -- Brazos
     [5]  = { drawable = 82,  texture = 0, palette = 0 }, -- Bolsas
     [6]  = { drawable = 111, texture = 0, palette = 0 }, -- Zapatos
     [7]  = { drawable = 200, texture = 0, palette = 0 }, -- Accesorios

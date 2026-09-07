@@ -1,47 +1,5 @@
 PL = {}
  
------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------
---Misc-----------------------------------------------------------------------------------------------------------------------------------------
-
---These values are in seconds.
-
-PL.LoopTimer = 1                                --Script update time to display text.
-
-PL.WaitTimer = 0.5                              --Timer between the blackscreen.
-PL.ScreenFadeOutTimer = 1                       --How long it should take for screen to fade out.
-PL.ScreenFadeInTimer = 1                        --How long it should take for screen to fade in.
-
------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------
---General--------------------------------------------------------------------------------------------------------------------------------------
- 
-PL.TeleportInVehicle = false                    --If players can teleport while being inside a vehicle.
-PL.DisplayText = "DrawText"                     --Which export used to display text. Options: "DrawText" | "j-textui" | "cd_drawtextui"
-PL.DisplayTextDistance = 3                      --Distance from when people are able to see the text tooltip.
-PL.UseTeleportDistance = 2                      --Distance from when people are able to use the teleporter.
-PL.FreezePlayerOnTeleport = false               --If players should be freezed during the teleport.
- 
------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------
---Blips----------------------------------------------------------------------------------------------------------------------------------------
-
-PL.UseBlips = true
-
-PL.BlipSprite = 304                             --Set the global blip sprite. Full list: https://docs.fivem.net/docs/game-references/blips/
-PL.BlipColor = 48                               --Set the global blip color. Full list: https://docs.fivem.net/docs/game-references/blips/
-PL.BlipScale = 0.7                              --Set the global blip scale.
- 
------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------
---Keybinds-------------------------------------------------------------------------------------------------------------------------------------
- 
-PL.Keybind = 38                                 --Key to use to teleport. Current keybind is "E", full list: https://docs.fivem.net/docs/game-references/controls/
- 
------------------------------------------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------
---Locations------------------------------------------------------------------------------------------------------------------------------------
- 
 PL.Locations = {
     [1] = {
         location = {
@@ -68,4 +26,76 @@ PL.Locations = {
             textColor = "White",
         },
     },
+    [3] = {
+        location = {
+            from = vector3(338.9248, -583.9759, 74.1656),
+            to = vector3(299.6251, -579.7481, 43.2608),
+            toHeading = 35.3898,
+
+            showBlip = false,
+            blipText = "Pillbox Hill - Helipuerto",
+
+            text = "Bajar a la calle",
+            textColor = "Blue",
+        },
+    },
+    [4] = {
+        location = {
+          from = vector3(334.6747, -1432.1895, 46.5117),
+          to = vector3(296.2348, -1449.7047, 29.9666),
+          toHeading = 297.9025,
+
+          showBlip = false,
+          blipText = "Davis EMS - Helipuerto",
+
+          text = "Bajar a la calle",
+          textColor = "Blue",
+        },
+    },
+    [5] = {
+    location = {
+        from = vector3(-1106.9772, -832.6552, 37.6754),
+        to = vector3(-1107.6895, -844.8572, 19.3170),
+        toHeading = 140.7594,
+
+        showBlip = false,
+        blipText = "Vespucci LSPD - Helipuerto",
+
+        text = "Bajar a la calle",
+        textColor = "Blue",
+    },
+},
+[6] = {
+    location = {
+        from = vector3(566.3610, 4.5882, 103.2336),
+        to = vector3(638.1849, 1.7995, 82.7864),
+        toHeading = 255.7661,
+
+        showBlip = false,
+        blipText = "Vinewood LSPD - Helipuerto",
+
+        text = "Bajar a la calle",
+        textColor = "Blue",
+    },
+},
+
 }
+
+-- Configuración general del recurso
+PL.UseBlips = true
+PL.BlipSprite = 43
+PL.BlipColor = 3
+PL.BlipScale = 0.75
+
+PL.DisplayText = "DrawText"
+PL.DisplayTextDistance = 10.0
+PL.UseTeleportDistance = 2.0
+
+PL.TeleportInVehicle = false
+PL.FreezePlayerOnTeleport = false
+
+PL.ScreenFadeOutTimer = 0.25
+PL.ScreenFadeInTimer = 0.25
+
+PL.LoopTimer = 0.5
+PL.WaitTimer = 1.0

@@ -1,0 +1,1 @@
+-- No requiere logica de servidor. El sistema de combustible funciona del lado del cliente.

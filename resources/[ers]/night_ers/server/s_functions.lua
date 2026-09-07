@@ -374,7 +374,7 @@ RegisterServerEvent("ErsIntegration::OnAcceptedCalloutOffer")
 AddEventHandler("ErsIntegration::OnAcceptedCalloutOffer", function(calloutData)
     local src = source
     if GetResourceState('smvlpd-ranks') ~= 'started' or type(calloutData) ~= 'table' then return end
-    exports['smvlpd-ranks']:BeginExternalPoliceCallout(src, calloutData.calloutId)
+    exports['smvlpd-ranks']:BeginExternalPoliceCallout(src, calloutData.calloutId, calloutData.CalloutName)
 end)
 
 --- Handles when a callout is arrived at.

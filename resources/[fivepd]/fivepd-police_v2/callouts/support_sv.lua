@@ -50,6 +50,7 @@ AddEventHandler("fivepd-police:supportJoin", function(requestId)
     end
 
     request.joined[sourcePlayer] = true
+    TriggerEvent('fivepd-police:serverSupportJoined', request, sourcePlayer)
     TriggerClientEvent("fivepd-police:supportJoined", sourcePlayer, request)
     Notify(request.owner, "~b~CENTRAL: ~w~Una unidad se ha unido al aviso.")
 end)
@@ -79,6 +80,8 @@ AddEventHandler("fivepd-police:supportFinish", function(requestId, message)
         return
     end
 
+    TriggerEvent('fivepd-police:serverSupportFinished', request)
+
     TriggerClientEvent("fivepd-police:supportFinished", request.owner, requestId, message or "Aviso finalizado.")
 
     for playerId in pairs(request.joined) do
@@ -95,6 +98,7 @@ AddEventHandler("playerDropped", function()
         request.joined[sourcePlayer] = nil
 
         if request.owner == sourcePlayer then
+            TriggerEvent('fivepd-police:serverSupportCancelled', request)
             for playerId in pairs(request.joined) do
                 TriggerClientEvent("fivepd-police:supportFinished", playerId, requestId, "La unidad principal se ha desconectado.")
             end

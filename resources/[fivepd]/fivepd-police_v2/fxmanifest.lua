@@ -13,6 +13,7 @@ files {
 
 client_script 'config.lua'
 server_script 'callouts/support_sv.lua'
+server_script 'callouts/points_sv.lua'
 client_script 'uniforms/patrol.lua'
 client_script 'client/main.lua'
 client_script 'client/nui.lua'

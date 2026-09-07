@@ -24,3 +24,4 @@ dependencies {
     'night_ers',
     'smvlpd-ranks'
 }
+client_script 'client/blips.lua'

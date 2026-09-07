@@ -262,6 +262,57 @@ Config.ERSCalloutDifficulties = {
     Stolen_motorbike         = "calloutNormal",
 }
 
+-- Avisos del gestor local fivepd-police_v2. Las claves son los titulos reales
+-- registrados por ese recurso. Un titulo que no figure aqui no concede puntos.
+Config.FivePDCalloutDifficulties = {
+    -- MUY FACIL (50 puntos)
+    ["Vehiculo abandonado"] = "calloutVeryEasy",
+    ["Conductor demasiado lento"] = "calloutVeryEasy",
+    ["Vehiculo muy pequeno"] = "calloutVeryEasy",
+    ["Vehiculo marcha atras"] = "calloutVeryEasy",
+    ["Persona ebria causando problemas"] = "calloutVeryEasy",
+    ["Grupo lanzando fuegos artificiales"] = "calloutVeryEasy",
+
+    -- FACIL (75 puntos)
+    ["Vehiculo sobredimensionado"] = "calloutEasy",
+    ["Conductor temerario"] = "calloutEasy",
+    ["Conductor ebrio"] = "calloutEasy",
+    ["Motorista ebrio"] = "calloutEasy",
+    ["Pelea de personas ebrias"] = "calloutEasy",
+    ["Senderista atrapado"] = "calloutEasy",
+    ["Cadaver encontrado"] = "calloutEasy",
+    ["Cadaver encontrado en sendero"] = "calloutEasy",
+    ["Embarcacion varada"] = "calloutEasy",
+
+    -- NORMAL (100 puntos)
+    ["Ataque de puma"] = "calloutNormal",
+    ["Ataque de jauria"] = "calloutNormal",
+    ["Venta de drogas en la playa"] = "calloutNormal",
+    ["Pelea multitudinaria en la playa"] = "calloutNormal",
+    ["Pelea grupal"] = "calloutNormal",
+    ["Ataque grupal a civil"] = "calloutNormal",
+    ["Senderista atacado"] = "calloutNormal",
+    ["Plantacion de marihuana"] = "calloutNormal",
+    ["Robo en la playa"] = "calloutNormal",
+
+    -- COMPLEJO (150 puntos)
+    ["Conductor ebrio en fuga"] = "calloutComplex",
+    ["Ambulancia robada"] = "calloutComplex",
+    ["Camion de bomberos robado"] = "calloutComplex",
+    ["Vehiculo policial robado"] = "calloutComplex",
+    ["Secuestro en furgoneta"] = "calloutComplex",
+    ["Secuestro"] = "calloutComplex",
+    ["Tiroteo grupal"] = "calloutComplex",
+
+    -- ALTO RIESGO (200 puntos)
+    ["Persecucion de sospechosos armados"] = "calloutHighRisk",
+    ["Patrulla robada con rehen"] = "calloutHighRisk",
+    ["Furgoneta con sospechosos armados"] = "calloutHighRisk",
+    ["Tirador activo en el muelle"] = "calloutHighRisk",
+    ["Tiradores con armas pesadas"] = "calloutHighRisk",
+    ["Secta con rehenes"] = "calloutHighRisk",
+}
+
 
 
 
@@ -531,4 +582,3 @@ Config.Ranks = {
 
 -- Los uniformes ya existen en EUP. Esta tabla deja documentada la asignacion
 -- y preparada la integracion posterior con los identificadores de tus conjuntos.
-

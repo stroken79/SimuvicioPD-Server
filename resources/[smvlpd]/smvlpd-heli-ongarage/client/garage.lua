@@ -1,3 +1,54 @@
+
+local activeVehicle = 0
+local activeVehicleBlip = nil
+
+local function removeActiveVehicleBlip()
+    if activeVehicleBlip and DoesBlipExist(activeVehicleBlip) then
+        RemoveBlip(activeVehicleBlip)
+    end
+
+    activeVehicleBlip = nil
+    activeVehicle = 0
+end
+
+local function createActiveVehicleBlip(vehicle)
+    removeActiveVehicleBlip()
+
+    if vehicle == 0 or not DoesEntityExist(vehicle) then
+        return
+    end
+
+    activeVehicle = vehicle
+    activeVehicleBlip = AddBlipForEntity(vehicle)
+
+    SetBlipSprite(activeVehicleBlip, 225)
+    SetBlipColour(activeVehicleBlip, 3)
+    SetBlipScale(activeVehicleBlip, 0.75)
+    SetBlipAsShortRange(activeVehicleBlip, false)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString('Mi vehículo')
+    EndTextCommandSetBlipName(activeVehicleBlip)
+end
+
+CreateThread(function()
+    while true do
+        if activeVehicle ~= 0 then
+            if DoesEntityExist(activeVehicle) then
+                if not activeVehicleBlip or not DoesBlipExist(activeVehicleBlip) then
+                    createActiveVehicleBlip(activeVehicle)
+                end
+                Wait(1000)
+            else
+                removeActiveVehicleBlip()
+                Wait(1000)
+            end
+        else
+            Wait(1500)
+        end
+    end
+end)
+
 local contextId = 'smvlpd_heli_ongarage'
 
 local function notify(message, notifyType)
@@ -83,7 +134,14 @@ local function spawnHelicopter(entry, garage)
 
     SetEntityAsMissionEntity(vehicle, true, true)
     applyColor(vehicle, entry.color)
+
+    -- Aplica la livery configurada para el helicóptero.
+    if entry.livery ~= nil then
+        SetVehicleLivery(vehicle, tonumber(entry.livery))
+    end
+
     TaskWarpPedIntoVehicle(PlayerPedId(), vehicle, -1)
+        createActiveVehicleBlip(vehicle)
     SetModelAsNoLongerNeeded(hash)
 end
 
@@ -141,20 +199,6 @@ local function storeHelicopter()
     end
 
     local model = GetEntityModel(vehicle)
-    local service = getCurrentService()
-    local rank = getPlayerRank()
-    if not service or (service ~= 'police' and service ~= 'ambulance') then
-        return notify('Debes estar de servicio como LSPD o EMS.', 'error')
-    end
-
-    local allowed, minRank = isAllowedHelicopterForService(model, service)
-    if not allowed then
-        return notify('Este helicóptero no está autorizado para tu servicio.', 'error')
-    end
-
-    if rank < minRank then
-        return notify('No tienes rango suficiente para guardar este helicóptero.', 'error')
-    end
     if not IsThisModelAHeli(model) then
         return notify('Solo puedes guardar helicópteros aquí.', 'error')
     end
@@ -167,7 +211,9 @@ local function storeHelicopter()
     Wait(500)
     SetEntityAsMissionEntity(vehicle, true, true)
     DeleteVehicle(vehicle)
-end
+                    if vehicle == activeVehicle then
+                        removeActiveVehicleBlip()
+                    end
 end
 
 local function horizontalDistance(a, b)
